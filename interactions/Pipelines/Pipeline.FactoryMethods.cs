@@ -3,24 +3,24 @@ using Interactions.Core;
 
 namespace Interactions.Pipelines;
 
-public static partial class Pipeline<T1, T2> {
+public static partial class Pipeline<T1, T4> {
 
-  public static PipelineBuilder<T1, T2, T3, T4> Use<T3, T4>(Func<T1, Handler<T3, T4>, T2> pipeline) {
+  public static PipelineBuilder<T1, T2, T3, T4> Use<T2, T3>(Func<T1, Handler<T2, T3>, T4> pipeline) {
     return new PipelineBuilder<T1, T2, T3, T4>(new AnonymousPipeline<T1, T2, T3, T4>(pipeline));
   }
 
-  public static PipelineBuilder<T1, T2, T3, T4> Use<T3, T4>(Func<T1, Func<T3, T4>, T2> pipeline) {
+  public static PipelineBuilder<T1, T2, T3, T4> Use<T2, T3>(Func<T1, Func<T2, T3>, T4> pipeline) {
     return new PipelineBuilder<T1, T2, T3, T4>(new AnonymousPipeline<T1, T2, T3, T4>((input, handler) => pipeline(input, handler.Handle)));
   }
 
-  public static PipelineBuilder<T1, T2, T3, Unit> Use<T3>(Func<T1, Action<T3>, T2> pipeline) {
-    return new PipelineBuilder<T1, T2, T3, Unit>(new AnonymousPipeline<T1, T2, T3, Unit>((input, handler) => {
+  public static PipelineBuilder<T1, T2, Unit, T4> Use<T2>(Func<T1, Action<T2>, T4> pipeline) {
+    return new PipelineBuilder<T1, T2, Unit, T4>(new AnonymousPipeline<T1, T2, Unit, T4>((input, handler) => {
       return pipeline(input, i => handler.Handle(i));
     }));
   }
 
-  public static PipelineBuilder<T1, T2, Unit, Unit> Use(Func<T1, Action, T2> pipeline) {
-    return new PipelineBuilder<T1, T2, Unit, Unit>(new AnonymousPipeline<T1, T2, Unit, Unit>((input, handler) => {
+  public static PipelineBuilder<T1, Unit, Unit, T4> Use(Func<T1, Action, T4> pipeline) {
+    return new PipelineBuilder<T1, Unit, Unit, T4>(new AnonymousPipeline<T1, Unit, Unit, T4>((input, handler) => {
       return pipeline(input, () => handler.Handle(default));
     }));
   }
@@ -29,16 +29,16 @@ public static partial class Pipeline<T1, T2> {
 
 public static partial class Pipeline<T> {
 
-  public static PipelineBuilder<T, Unit, T1, T2> Use<T1, T2>(Action<T, Handler<T1, T2>> pipeline) {
-    return new PipelineBuilder<T, Unit, T1, T2>(new AnonymousPipeline<T, T1, T2>(pipeline));
+  public static PipelineBuilder<T, T1, T2, Unit> Use<T1, T2>(Action<T, Handler<T1, T2>> pipeline) {
+    return new PipelineBuilder<T, T1, T2, Unit>(new AnonymousPipeline<T, T1, T2>(pipeline));
   }
 
-  public static PipelineBuilder<T, Unit, T1, T2> Use<T1, T2>(Action<T, Func<T1, T2>> pipeline) {
-    return new PipelineBuilder<T, Unit, T1, T2>(new AnonymousPipeline<T, T1, T2>((input, handler) => pipeline(input, handler.Handle)));
+  public static PipelineBuilder<T, T1, T2, Unit> Use<T1, T2>(Action<T, Func<T1, T2>> pipeline) {
+    return new PipelineBuilder<T, T1, T2, Unit>(new AnonymousPipeline<T, T1, T2>((input, handler) => pipeline(input, handler.Handle)));
   }
 
-  public static PipelineBuilder<T, Unit, T1, Unit> Use<T1>(Action<T, Action<T1>> pipeline) {
-    return new PipelineBuilder<T, Unit, T1, Unit>(new AnonymousPipeline<T, T1, Unit>((input, handler) => {
+  public static PipelineBuilder<T, T1, Unit, Unit> Use<T1>(Action<T, Action<T1>> pipeline) {
+    return new PipelineBuilder<T, T1, Unit, Unit>(new AnonymousPipeline<T, T1, Unit>((input, handler) => {
       pipeline(input, i => handler.Handle(i));
     }));
   }
