@@ -1,5 +1,6 @@
 using System.Diagnostics.Contracts;
 using System.Text.RegularExpressions;
+using Interactions.Core;
 using Interactions.Extensions;
 
 namespace Interactions.Validation;
@@ -28,6 +29,7 @@ public static class Validator {
 
   [Pure]
   public static Validator<T> Not<T>(Validator<T> other) {
+    ExceptionsHelper.ThrowIfNull(other, nameof(other));
     return new NotValidator<T>(other);
   }
 
@@ -80,11 +82,13 @@ public static class Validator {
 
   [Pure]
   public static Validator<string> StringLength(Validator<int> lengthValidator) {
+    ExceptionsHelper.ThrowIfNull(lengthValidator, nameof(lengthValidator));
     return new StringLengthValidator(lengthValidator);
   }
 
   [Pure]
   public static Validator<ICollection<T>> CollectionCount<T>(Validator<int> validator) {
+    ExceptionsHelper.ThrowIfNull(validator, nameof(validator));
     return new CollectionCountValidator<T>(validator);
   }
 
@@ -95,16 +99,19 @@ public static class Validator {
 
   [Pure]
   public static Validator<IEnumerable<T>> All<T>(Validator<T> itemValidator) {
+    ExceptionsHelper.ThrowIfNull(itemValidator, nameof(itemValidator));
     return new AllValidator<T>(itemValidator);
   }
 
   [Pure]
   public static Validator<IEnumerable<T>> Any<T>(Validator<T> itemValidator) {
+    ExceptionsHelper.ThrowIfNull(itemValidator, nameof(itemValidator));
     return new AnyValidator<T>(itemValidator);
   }
 
   [Pure]
   public static Validator<string> Match(string pattern, RegexOptions options = RegexOptions.None) {
+    ExceptionsHelper.ThrowIfNullOrEmpty(pattern, nameof(pattern));
     return new RegexValidator(pattern, options);
   }
 
@@ -115,6 +122,8 @@ public static class Validator {
 
   [Pure]
   public static Validator<T> FromMethod<T>(Func<T, bool> validation, string errorMessage) {
+    ExceptionsHelper.ThrowIfNull(validation, nameof(validation));
+    ExceptionsHelper.ThrowIfNullOrEmpty(errorMessage, nameof(errorMessage));
     return new AnonymousValidator<T>(validation, errorMessage);
   }
 

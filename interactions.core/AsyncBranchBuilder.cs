@@ -12,16 +12,21 @@ public class AsyncBranchBuilder<T1, T2> {
   }
 
   internal static AsyncBranchBuilder<T1, T2> If(Func<bool> condition, AsyncHandler<T1, T2> handler) {
+    ExceptionsHelper.ThrowIfNull(condition, nameof(condition));
+    ExceptionsHelper.ThrowIfNull(handler, nameof(handler));
     return new AsyncBranchBuilder<T1, T2>(condition, handler);
   }
 
   public AsyncBranchBuilder<T1, T2> ElseIf(Func<bool> condition, AsyncHandler<T1, T2> handler) {
+    ExceptionsHelper.ThrowIfNull(condition, nameof(condition));
+    ExceptionsHelper.ThrowIfNull(handler, nameof(handler));
     _nodes.Add((condition, handler));
     return this;
   }
 
   [Pure]
   public AsyncHandler<T1, T2> Else(AsyncHandler<T1, T2> handler) {
+    ExceptionsHelper.ThrowIfNull(handler, nameof(handler));
     return _nodes
       .AsEnumerable()
       .Reverse()

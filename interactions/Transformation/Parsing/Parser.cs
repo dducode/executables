@@ -1,5 +1,6 @@
 using System.Diagnostics.Contracts;
 using System.Globalization;
+using Interactions.Core;
 
 namespace Interactions.Transformation.Parsing;
 
@@ -42,6 +43,7 @@ public static class Parser {
 
   [Pure]
   public static Parser<T> FromMethod<T>(Func<string, T> parsing) {
+    ExceptionsHelper.ThrowIfNull(parsing, nameof(parsing));
     return new AnonymousParser<T>(parsing);
   }
 

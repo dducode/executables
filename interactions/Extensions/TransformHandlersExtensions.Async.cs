@@ -10,6 +10,7 @@ public static partial class TransformHandlersExtensions {
 
   [Pure]
   public static AsyncHandler<T2, T2> Transform<T1, T2>(this AsyncHandler<T1, T1> handler, SymmetricTransformer<T2, T1> transformer) {
+    ExceptionsHelper.ThrowIfNull(transformer, nameof(transformer));
     return new AsyncSymmetricTransformHandler<T2, T1>(transformer, handler);
   }
 

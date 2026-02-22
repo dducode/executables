@@ -11,11 +11,13 @@ public static class HandlersExtensions {
 
   [Pure]
   public static Handler<T1, T2> Catch<TException, T1, T2>(this Handler<T1, T2> handler, Func<TException, T1, T2> @catch) where TException : Exception {
+    ExceptionsHelper.ThrowIfNull(@catch, nameof(@catch));
     return new CatchHandler<TException, T1, T2>(handler, @catch);
   }
 
   [Pure]
   public static Handler<T1, T2> Catch<TException, T1, T2>(this Handler<T1, T2> handler, Action<TException, T1> @catch) where TException : Exception {
+    ExceptionsHelper.ThrowIfNull(@catch, nameof(@catch));
     return new CatchHandler<TException, T1, T2>(handler, (exception, arg2) => {
       @catch(exception, arg2);
       return default;
@@ -24,11 +26,13 @@ public static class HandlersExtensions {
 
   [Pure]
   public static Handler<T1, T3> Next<T1, T2, T3>(this Handler<T1, T2> handler, Handler<T2, T3> nextHandler) {
+    ExceptionsHelper.ThrowIfNull(nextHandler, nameof(nextHandler));
     return new CompositeHandler<T1, T2, T3>(handler, nextHandler);
   }
 
   [Pure]
   public static AsyncHandler<T1, T3> Next<T1, T2, T3>(this Handler<T1, T2> handler, AsyncHandler<T2, T3> nextHandler) {
+    ExceptionsHelper.ThrowIfNull(nextHandler, nameof(nextHandler));
     return new AsyncCompositeHandler<T1, T2, T3>(handler.ToAsyncHandler(), nextHandler);
   }
 
@@ -44,6 +48,8 @@ public static class HandlersExtensions {
 
   [Pure]
   public static Handler<K1, K2> Transform<T1, T2, K1, K2>(this Handler<T1, T2> handler, Transformer<K1, T1> incoming, Transformer<T2, K2> outgoing) {
+    ExceptionsHelper.ThrowIfNull(incoming, nameof(incoming));
+    ExceptionsHelper.ThrowIfNull(outgoing, nameof(outgoing));
     return new TransformHandler<K1, T1, T2, K2>(incoming, handler, outgoing);
   }
 
@@ -74,21 +80,25 @@ public static class HandlersExtensions {
 
   [Pure]
   public static Handler<T1, T2> Do<T1, T2>(this Handler<T1, T2> handler, Action<T2> action) {
+    ExceptionsHelper.ThrowIfNull(action, nameof(action));
     return handler.Next(new TransitiveHandler<T2>(action));
   }
 
   [Pure]
   public static AsyncHandler<T1, T2> Do<T1, T2>(this Handler<T1, T2> handler, AsyncAction<T2> action) {
+    ExceptionsHelper.ThrowIfNull(action, nameof(action));
     return handler.Next(new AsyncTransitiveHandler<T2>(action));
   }
 
   [Pure]
   public static AsyncHandler<T1, T2> Delay<T1, T2>(this Handler<T1, T2> handler, Func<T2, TimeSpan> timeDelay) {
+    ExceptionsHelper.ThrowIfNull(timeDelay, nameof(timeDelay));
     return handler.Next(new DelayHandler<T2>(timeDelay));
   }
 
   [Pure]
   public static AsyncHandler<T1, T2> Delay<T1, T2>(this Handler<T1, T2> handler, TimeSpan timeDelay) {
+    ExceptionsHelper.ThrowIfNull(timeDelay, nameof(timeDelay));
     return handler.Delay(delegate {
       return timeDelay;
     });
@@ -96,6 +106,7 @@ public static class HandlersExtensions {
 
   [Pure]
   public static Handler<T1, T2> Metrics<T1, T2>(this Handler<T1, T2> handler, IMetrics<T1, T2> metrics, string tag = null) {
+    ExceptionsHelper.ThrowIfNull(metrics, nameof(metrics));
     return new MetricsHandler<T1, T2>(handler, metrics, tag);
   }
 

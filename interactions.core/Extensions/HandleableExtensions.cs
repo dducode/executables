@@ -6,11 +6,13 @@ public static class HandleableExtensions {
 
   [Pure]
   public static Handleable<T1, T2> Merge<T1, T2>(this Handleable<T1, T2> first, Handleable<T1, T2> second) {
+    ExceptionsHelper.ThrowIfNull(second, nameof(second));
     return new MergedHandleable<T1, T2>(first, second);
   }
 
   [Pure]
   public static AsyncHandleable<T1, T2> Merge<T1, T2>(this AsyncHandleable<T1, T2> first, AsyncHandleable<T1, T2> second) {
+    ExceptionsHelper.ThrowIfNull(second, nameof(second));
     return new AsyncMergedHandleable<T1, T2>(first, second);
   }
 

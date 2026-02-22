@@ -29,6 +29,7 @@ public sealed class CommandContext : IDisposable, IUndoRedo {
 
   public ICommand<TInput> CreateCommand<TInput, TChange>(ReversibleHandler<TInput, TChange> handler) {
     ThrowIfDisposed();
+    ExceptionsHelper.ThrowIfNull(handler, nameof(handler));
     var command = new ContextualCommand<TInput, TChange>(this);
     _disposableBag.Add(command.Handle(handler));
     return command;

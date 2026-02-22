@@ -7,8 +7,9 @@ namespace Interactions.Extensions;
 public static partial class ValidationExtensions {
 
   [Pure]
-  public static Handler<T1, T2> Validate<T1, T2>(
-    this Handler<T1, T2> handler, Validator<T1> inputValidator, Validator<T2> outputValidator) {
+  public static Handler<T1, T2> Validate<T1, T2>(this Handler<T1, T2> handler, Validator<T1> inputValidator, Validator<T2> outputValidator) {
+    ExceptionsHelper.ThrowIfNull(inputValidator, nameof(inputValidator));
+    ExceptionsHelper.ThrowIfNull(outputValidator, nameof(outputValidator));
     return new ValidateHandler<T1, T2>(inputValidator, handler, outputValidator);
   }
 

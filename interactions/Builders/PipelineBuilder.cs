@@ -13,11 +13,13 @@ public class PipelineBuilder<T1, T2, T3, T4> {
   }
 
   public PipelineBuilder<T1, T5, T6, T4> Use<T5, T6>(Pipeline<T2, T5, T6, T3> pipeline) {
+    ExceptionsHelper.ThrowIfNull(pipeline, nameof(pipeline));
     return new RecursivePipelineBuilder<T1, T2, T5, T6, T3, T4>(this, new PipelineBuilder<T2, T5, T6, T3>(pipeline));
   }
 
   [Pure]
   public virtual Handler<T1, T4> End(Handler<T2, T3> handler) {
+    ExceptionsHelper.ThrowIfNull(handler, nameof(handler));
     return new PipelineHandler<T1, T2, T3, T4>(_pipeline, handler);
   }
 

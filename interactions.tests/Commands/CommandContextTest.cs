@@ -2,6 +2,7 @@ using System.Text;
 using AutoFixture;
 using Interactions.Commands;
 using Interactions.Core.Commands;
+using Interactions.Extensions;
 using JetBrains.Annotations;
 using Xunit.Abstractions;
 
@@ -17,20 +18,20 @@ public class CommandContextTest(ITestOutputHelper testOutputHelper) {
 
     var context = new CommandContext();
 
-    ICommand<int> numCommand = context.CreateCommand(ReversibleHandler.FromMethod<int>(
+    ICommand<int> numCommand = context.CreateCommand<int>(
       num => objects.Add(num),
       num => objects.Remove(num)
-    ));
+    );
 
-    ICommand<string> stringCommand = context.CreateCommand(ReversibleHandler.FromMethod<string>(
+    ICommand<string> stringCommand = context.CreateCommand<string>(
       s => objects.Add(s),
       s => objects.Remove(s)
-    ));
+    );
 
-    ICommand<bool> boolCommand = context.CreateCommand(ReversibleHandler.FromMethod<bool>(
+    ICommand<bool> boolCommand = context.CreateCommand<bool>(
       b => objects.Add(b),
       b => objects.Remove(b)
-    ));
+    );
 
     var builder = new StringBuilder();
 

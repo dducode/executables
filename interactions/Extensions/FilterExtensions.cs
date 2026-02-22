@@ -1,4 +1,5 @@
 using System.Diagnostics.Contracts;
+using Interactions.Core;
 using Interactions.Transformation.Filtering;
 using Interactions.Validation;
 
@@ -33,6 +34,7 @@ public static class FilterExtensions {
 
   [Pure]
   public static Filter<T> Compose<T>(this Filter<T> first, Filter<T> second) {
+    ExceptionsHelper.ThrowIfNull(second, nameof(second));
     return new CompositeFilter<T>(first, second);
   }
 

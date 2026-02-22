@@ -13,11 +13,13 @@ public class AsyncPipelineBuilder<T1, T2, T3, T4> {
   }
 
   public AsyncPipelineBuilder<T1, T5, T6, T4> Use<T5, T6>(AsyncPipeline<T2, T5, T6, T3> pipeline) {
+    ExceptionsHelper.ThrowIfNull(pipeline, nameof(pipeline));
     return new AsyncRecursivePipelineBuilder<T1, T2, T3, T4, T5, T6>(this, new AsyncPipelineBuilder<T2, T5, T6, T3>(pipeline));
   }
 
   [Pure]
   public virtual AsyncHandler<T1, T4> End(AsyncHandler<T2, T3> handler) {
+    ExceptionsHelper.ThrowIfNull(handler, nameof(handler));
     return new AsyncPipelineHandler<T1, T2, T3, T4>(_pipeline, handler);
   }
 
