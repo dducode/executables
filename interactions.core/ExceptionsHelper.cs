@@ -1,20 +1,31 @@
+using System.Runtime.CompilerServices;
+
 namespace Interactions.Core;
 
-public static class ExceptionsHelper {
+internal static class ExceptionsHelper {
 
-  public static void ThrowIfNull(object obj, string paramName) {
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  internal static void ThrowIfNull(object obj, string paramName) {
     if (obj == null)
       throw new ArgumentNullException(paramName);
   }
 
-  public static void ThrowIfNullOrEmpty(string value, string paramName) {
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  internal static void ThrowIfNullOrEmpty(string value, string paramName) {
     if (string.IsNullOrEmpty(value))
       throw new ArgumentException(paramName);
   }
 
-  public static void ThrowIfEmpty<T>(ICollection<T> collection, string paramName) {
-    if (collection.Count == 0)
-      throw new ArgumentException(paramName);
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  internal static void ThrowIfLessOrEqualZero(int value, string paramName) {
+    if (value <= 0)
+      throw new ArgumentOutOfRangeException(paramName);
+  }
+
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  internal static void ThrowIfLessOrEqualZero(TimeSpan value, string paramName) {
+    if (value <= TimeSpan.Zero)
+      throw new ArgumentOutOfRangeException(paramName);
   }
 
 }

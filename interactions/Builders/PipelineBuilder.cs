@@ -13,10 +13,10 @@ namespace Interactions.Builders;
 /// <typeparam name="T4">Output type of the final composed handler.</typeparam>
 public class PipelineBuilder<T1, T2, T3, T4> {
 
-  private readonly Pipeline<T1, T2, T3, T4> _pipeline;
+  private readonly Middleware<T1, T2, T3, T4> _middleware;
 
-  internal PipelineBuilder(Pipeline<T1, T2, T3, T4> pipeline) {
-    _pipeline = pipeline;
+  internal PipelineBuilder(Middleware<T1, T2, T3, T4> middleware) {
+    _middleware = middleware;
   }
 
   /// <summary>
@@ -24,11 +24,11 @@ public class PipelineBuilder<T1, T2, T3, T4> {
   /// </summary>
   /// <typeparam name="T5">Input type expected by the appended downstream segment.</typeparam>
   /// <typeparam name="T6">Output type produced by the appended downstream segment.</typeparam>
-  /// <param name="pipeline">Pipeline step appended after current step.</param>
+  /// <param name="middleware">Pipeline step appended after current step.</param>
   /// <returns>New builder with updated downstream input and output types.</returns>
-  public PipelineBuilder<T1, T5, T6, T4> Use<T5, T6>(Pipeline<T2, T5, T6, T3> pipeline) {
-    ExceptionsHelper.ThrowIfNull(pipeline, nameof(pipeline));
-    return new RecursivePipelineBuilder<T1, T2, T5, T6, T3, T4>(this, new PipelineBuilder<T2, T5, T6, T3>(pipeline));
+  public PipelineBuilder<T1, T5, T6, T4> Use<T5, T6>(Middleware<T2, T5, T6, T3> middleware) {
+    ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
+    return new RecursivePipelineBuilder<T1, T2, T5, T6, T3, T4>(this, new PipelineBuilder<T2, T5, T6, T3>(middleware));
   }
 
   /// <summary>
@@ -39,7 +39,7 @@ public class PipelineBuilder<T1, T2, T3, T4> {
   [Pure]
   public virtual Handler<T1, T4> End(Handler<T2, T3> handler) {
     ExceptionsHelper.ThrowIfNull(handler, nameof(handler));
-    return new PipelineHandler<T1, T2, T3, T4>(_pipeline, handler);
+    return new MiddlewareHandler<T1, T2, T3, T4>(_middleware, handler);
   }
 
 }

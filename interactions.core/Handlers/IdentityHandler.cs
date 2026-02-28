@@ -2,12 +2,8 @@ namespace Interactions.Core.Handlers;
 
 internal sealed class IdentityHandler<T> : Handler<T, T> {
 
-  internal static IdentityHandler<T> Instance { get; } = new();
-
-  private IdentityHandler() {
-  }
-
   public override T Handle(T input) {
+    ThrowIfDisposed(nameof(IdentityHandler<T>));
     return input;
   }
 

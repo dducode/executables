@@ -45,10 +45,6 @@ public readonly struct Result<T> {
     return new Result<T>(value);
   }
 
-  public static implicit operator Result<T>(Exception exception) {
-    return new Result<T>(exception ?? throw new ArgumentNullException(nameof(exception)));
-  }
-
   public static Result<T> FromResult(T value) {
     return new Result<T>(value);
   }

@@ -3,11 +3,14 @@ using Interactions.Core;
 
 namespace Interactions.Analytics;
 
+[Obsolete]
 internal sealed class MetricsHandler<T1, T2>(Handler<T1, T2> inner, IMetrics<T1, T2> metrics, string tag) : Handler<T1, T2> {
 
   private readonly Stopwatch _sw = new();
 
   public override T2 Handle(T1 input) {
+    ThrowIfDisposed(nameof(MetricsHandler<T1, T2>));
+
     _sw.Restart();
     metrics.Call(tag, input);
 
@@ -24,6 +27,10 @@ internal sealed class MetricsHandler<T1, T2>(Handler<T1, T2> inner, IMetrics<T1,
       _sw.Stop();
       metrics.Latency(tag, _sw.Elapsed);
     }
+  }
+
+  protected override void DisposeCore() {
+    inner.Dispose();
   }
 
 }

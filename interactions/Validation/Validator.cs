@@ -19,7 +19,7 @@ public static class Validator {
   [Pure] public static Validator<int> ZeroNotEqual { get; } = NotEqual(0);
 
   [Pure]
-  public static Validator<string> NotEmptyString => NotNull<string>().And(StringLength(MoreThan(0)))
+  public static Validator<string> NotEmptyString { get; } = NotNull<string>().And(StringLength(MoreThan(0)))
     .OverrideMessage("String cannot be null or empty");
 
   [Pure]

@@ -63,7 +63,9 @@ public sealed class ReversibleCommand<TInput, TChange> : ICommand<TInput>, IUndo
     return _handlerNode = new HandlerNode(this, handler);
   }
 
-  private void Clear() {
+  private void RemoveNode(HandlerNode node) {
+    if (_handlerNode != node)
+      return;
     _handlerNode = null;
     ClearHistory();
   }
@@ -83,8 +85,8 @@ public sealed class ReversibleCommand<TInput, TChange> : ICommand<TInput>, IUndo
     }
 
     public void Dispose() {
+      parent.RemoveNode(this);
       handler.Dispose();
-      parent.Clear();
     }
 
   }

@@ -3,11 +3,6 @@ using Interactions.Core;
 
 namespace Interactions.Pipelines;
 
-/// <summary>
-/// Entry point for building asynchronous pipelines that return a value.
-/// </summary>
-/// <typeparam name="T1">Input type of the final composed async handler.</typeparam>
-/// <typeparam name="T4">Output type of the final composed async handler.</typeparam>
 public static partial class Pipeline<T1, T4> {
 
   /// <summary>
@@ -15,103 +10,220 @@ public static partial class Pipeline<T1, T4> {
   /// </summary>
   /// <typeparam name="T2">Input type expected by the downstream async function.</typeparam>
   /// <typeparam name="T3">Output type returned by the downstream async function.</typeparam>
-  /// <param name="pipeline">Async middleware function that can invoke downstream function.</param>
+  /// <param name="middleware">Async middleware function that can invoke downstream function.</param>
   /// <returns>Builder for appending next middleware steps and terminal async handler.</returns>
-  public static AsyncPipelineBuilder<T1, T2, T3, T4> Use<T2, T3>(AsyncFunc<T1, AsyncFunc<T2, T3>, T4> pipeline) {
-    ExceptionsHelper.ThrowIfNull(pipeline, nameof(pipeline));
-    return new AsyncPipelineBuilder<T1, T2, T3, T4>(new AsyncAnonymousPipeline<T1, T2, T3, T4>((input, handler, token) =>
-      pipeline(input, handler.Handle, token)
+  public static AsyncPipelineBuilder<T1, T2, T3, T4> Use<T2, T3>(AsyncFunc<T1, AsyncFunc<T2, T3>, T4> middleware) {
+    ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
+    return new AsyncPipelineBuilder<T1, T2, T3, T4>(new AsyncAnonymousMiddleware<T1, T2, T3, T4>((input, handler, token) =>
+      middleware(input, handler.Handle, token)
     ));
+  }
+
+  /// <summary>
+  /// Starts an async pipeline from a step that receives downstream parameterless async function.
+  /// </summary>
+  /// <typeparam name="T2">Output type returned by the downstream parameterless async function.</typeparam>
+  /// <param name="middleware">Async middleware function that can invoke downstream parameterless async function.</param>
+  /// <returns>Builder with downstream input fixed to <see cref="Unit" />.</returns>
+  public static AsyncPipelineBuilder<T1, Unit, T2, T4> Use<T2>(AsyncFunc<T1, AsyncFunc<T2>, T4> middleware) {
+    ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
+    return new AsyncPipelineBuilder<T1, Unit, T2, T4>(new AsyncAnonymousMiddleware<T1, Unit, T2, T4>((input, handler, token) => {
+      return middleware(input, t => handler.Handle(default, t), token);
+    }));
   }
 
   /// <summary>
   /// Starts an async pipeline from a step that forwards via typed async action.
   /// </summary>
   /// <typeparam name="T2">Input type accepted by the downstream async action.</typeparam>
-  /// <param name="pipeline">Async middleware function that calls downstream action.</param>
+  /// <param name="middleware">Async middleware function that calls downstream action.</param>
   /// <returns>Builder whose downstream output type is <see cref="Unit" />.</returns>
-  public static AsyncPipelineBuilder<T1, T2, Unit, T4> Use<T2>(AsyncFunc<T1, AsyncAction<T2>, T4> pipeline) {
-    ExceptionsHelper.ThrowIfNull(pipeline, nameof(pipeline));
-    return new AsyncPipelineBuilder<T1, T2, Unit, T4>(new AsyncAnonymousPipeline<T1, T2, Unit, T4>((input, handler, token) => {
-      return pipeline(input, async (i, t) => await handler.Handle(i, t), token);
+  public static AsyncPipelineBuilder<T1, T2, Unit, T4> Use<T2>(AsyncFunc<T1, AsyncAction<T2>, T4> middleware) {
+    ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
+    return new AsyncPipelineBuilder<T1, T2, Unit, T4>(new AsyncAnonymousMiddleware<T1, T2, Unit, T4>((input, handler, token) => {
+      return middleware(input, async (i, t) => await handler.Handle(i, t), token);
     }));
   }
 
   /// <summary>
   /// Starts an async pipeline from a step that forwards via parameterless async action.
   /// </summary>
-  /// <param name="pipeline">Async middleware function that calls downstream action.</param>
+  /// <param name="middleware">Async middleware function that calls downstream action.</param>
   /// <returns>Builder whose downstream input and output types are <see cref="Unit" />.</returns>
-  public static AsyncPipelineBuilder<T1, Unit, Unit, T4> Use(AsyncFunc<T1, AsyncAction, T4> pipeline) {
-    ExceptionsHelper.ThrowIfNull(pipeline, nameof(pipeline));
-    return new AsyncPipelineBuilder<T1, Unit, Unit, T4>(new AsyncAnonymousPipeline<T1, Unit, Unit, T4>((input, handler, token) => {
-      return pipeline(input, async t => await handler.Handle(default, t), token);
+  public static AsyncPipelineBuilder<T1, Unit, Unit, T4> Use(AsyncFunc<T1, AsyncAction, T4> middleware) {
+    ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
+    return new AsyncPipelineBuilder<T1, Unit, Unit, T4>(new AsyncAnonymousMiddleware<T1, Unit, Unit, T4>((input, handler, token) => {
+      return middleware(input, async t => await handler.Handle(default, t), token);
     }));
   }
 
 }
 
-/// <summary>
-/// Entry point for building asynchronous pipelines that return <see cref="Unit" />.
-/// </summary>
-/// <typeparam name="T">Input type of the final composed async handler.</typeparam>
 public static partial class Pipeline<T> {
+
+  /// <summary>
+  /// Starts a parameterless async pipeline that returns value and can invoke downstream typed async function.
+  /// </summary>
+  /// <typeparam name="T1">Input type expected by the downstream async function.</typeparam>
+  /// <typeparam name="T2">Output type returned by the downstream async function.</typeparam>
+  /// <param name="middleware">Async middleware function that can invoke downstream async function.</param>
+  /// <returns>Builder for appending next middleware steps and terminal async handler.</returns>
+  public static AsyncPipelineBuilder<Unit, T1, T2, T> Use<T1, T2>(AsyncFunc<AsyncFunc<T1, T2>, T> middleware) {
+    ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
+    return new AsyncPipelineBuilder<Unit, T1, T2, T>(new AsyncAnonymousMiddleware<Unit, T1, T2, T>((_, handler, token) => middleware(handler.Handle, token)));
+  }
+
+  /// <summary>
+  /// Starts a parameterless async pipeline that returns value and can invoke downstream parameterless async function.
+  /// </summary>
+  /// <typeparam name="T1">Output type returned by the downstream parameterless async function.</typeparam>
+  /// <param name="middleware">Async middleware function that can invoke downstream parameterless async function.</param>
+  /// <returns>Builder with downstream input fixed to <see cref="Unit" />.</returns>
+  public static AsyncPipelineBuilder<Unit, Unit, T1, T> Use<T1>(AsyncFunc<AsyncFunc<T1>, T> middleware) {
+    ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
+    return new AsyncPipelineBuilder<Unit, Unit, T1, T>(new AsyncAnonymousMiddleware<Unit, Unit, T1, T>((_, handler, token) => {
+      return middleware(t => handler.Handle(default, t), token);
+    }));
+  }
+
+  /// <summary>
+  /// Starts a parameterless async pipeline that returns value and can invoke downstream typed async action.
+  /// </summary>
+  /// <typeparam name="T1">Input type accepted by the downstream async action.</typeparam>
+  /// <param name="middleware">Async middleware function that can invoke downstream async action.</param>
+  /// <returns>Builder with downstream output fixed to <see cref="Unit" />.</returns>
+  public static AsyncPipelineBuilder<Unit, T1, Unit, T> Use<T1>(AsyncFunc<AsyncAction<T1>, T> middleware) {
+    ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
+    return new AsyncPipelineBuilder<Unit, T1, Unit, T>(new AsyncAnonymousMiddleware<Unit, T1, Unit, T>((_, handler, token) => {
+      return middleware(async (i, t) => await handler.Handle(i, t), token);
+    }));
+  }
+
+  /// <summary>
+  /// Starts a parameterless async pipeline that returns value and can invoke downstream parameterless async action.
+  /// </summary>
+  /// <param name="middleware">Async middleware function that can invoke downstream parameterless async action.</param>
+  /// <returns>Builder with downstream input/output fixed to <see cref="Unit" />.</returns>
+  public static AsyncPipelineBuilder<Unit, Unit, Unit, T> Use(AsyncFunc<AsyncAction, T> middleware) {
+    ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
+    return new AsyncPipelineBuilder<Unit, Unit, Unit, T>(new AsyncAnonymousMiddleware<Unit, Unit, Unit, T>((_, handler, token) => {
+      return middleware(async t => await handler.Handle(default, t), token);
+    }));
+  }
 
   /// <summary>
   /// Starts an async void pipeline from a step that receives downstream async function.
   /// </summary>
   /// <typeparam name="T1">Input type expected by the downstream async function.</typeparam>
   /// <typeparam name="T2">Output type returned by the downstream async function.</typeparam>
-  /// <param name="pipeline">Async middleware action that can invoke downstream function.</param>
+  /// <param name="middleware">Async middleware action that can invoke downstream function.</param>
   /// <returns>Builder for appending next middleware steps and terminal async handler.</returns>
-  public static AsyncPipelineBuilder<T, T1, T2, Unit> Use<T1, T2>(AsyncAction<T, AsyncFunc<T1, T2>> pipeline) {
-    ExceptionsHelper.ThrowIfNull(pipeline, nameof(pipeline));
-    return new AsyncPipelineBuilder<T, T1, T2, Unit>(new AsyncAnonymousPipeline<T, T1, T2>((input, handler, token) =>
-      pipeline(input, handler.Handle, token)
-    ));
+  public static AsyncPipelineBuilder<T, T1, T2, Unit> Use<T1, T2>(AsyncAction<T, AsyncFunc<T1, T2>> middleware) {
+    ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
+    return new AsyncPipelineBuilder<T, T1, T2, Unit>(new AsyncAnonymousMiddleware<T, T1, T2, Unit>(async (input, handler, token) => {
+      await middleware(input, handler.Handle, token);
+      return default;
+    }));
+  }
+
+  /// <summary>
+  /// Starts an async void pipeline from a step that receives downstream parameterless async function.
+  /// </summary>
+  /// <typeparam name="T1">Output type returned by the downstream parameterless async function.</typeparam>
+  /// <param name="middleware">Async middleware action that can invoke downstream parameterless async function.</param>
+  /// <returns>Builder with downstream input fixed to <see cref="Unit" />.</returns>
+  public static AsyncPipelineBuilder<T, Unit, T1, Unit> Use<T1>(AsyncAction<T, AsyncFunc<T1>> middleware) {
+    ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
+    return new AsyncPipelineBuilder<T, Unit, T1, Unit>(new AsyncAnonymousMiddleware<T, Unit, T1, Unit>(async (input, handler, token) => {
+      await middleware(input, t => handler.Handle(default, t), token);
+      return default;
+    }));
   }
 
   /// <summary>
   /// Starts an async void pipeline from a step that forwards via typed async action.
   /// </summary>
   /// <typeparam name="T1">Input type accepted by the downstream async action.</typeparam>
-  /// <param name="pipeline">Async middleware action that calls downstream action.</param>
+  /// <param name="middleware">Async middleware action that calls downstream action.</param>
   /// <returns>Builder whose downstream output type is <see cref="Unit" />.</returns>
-  public static AsyncPipelineBuilder<T, T1, Unit, Unit> Use<T1>(AsyncAction<T, AsyncAction<T1>> pipeline) {
-    ExceptionsHelper.ThrowIfNull(pipeline, nameof(pipeline));
-    return new AsyncPipelineBuilder<T, T1, Unit, Unit>(new AsyncAnonymousPipeline<T, T1, Unit>((input, handler, token) => {
-      return pipeline(input, async (i, t) => await handler.Handle(i, t), token);
+  public static AsyncPipelineBuilder<T, T1, Unit, Unit> Use<T1>(AsyncAction<T, AsyncAction<T1>> middleware) {
+    ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
+    return new AsyncPipelineBuilder<T, T1, Unit, Unit>(new AsyncAnonymousMiddleware<T, T1, Unit, Unit>(async (input, handler, token) => {
+      await middleware(input, async (i, t) => await handler.Handle(i, t), token);
+      return default;
     }));
   }
 
   /// <summary>
   /// Starts an async void pipeline from a step that forwards via parameterless async action.
   /// </summary>
-  /// <param name="pipeline">Async middleware action that calls downstream action.</param>
+  /// <param name="middleware">Async middleware action that calls downstream action.</param>
   /// <returns>Builder whose downstream input and output types are <see cref="Unit" />.</returns>
-  public static AsyncPipelineBuilder<T, Unit, Unit, Unit> Use(AsyncAction<T, AsyncAction> pipeline) {
-    ExceptionsHelper.ThrowIfNull(pipeline, nameof(pipeline));
-    return new AsyncPipelineBuilder<T, Unit, Unit, Unit>(new AsyncAnonymousPipeline<T, Unit, Unit>((input, handler, token) => {
-      return pipeline(input, async t => await handler.Handle(default, t), token);
+  public static AsyncPipelineBuilder<T, Unit, Unit, Unit> Use(AsyncAction<T, AsyncAction> middleware) {
+    ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
+    return new AsyncPipelineBuilder<T, Unit, Unit, Unit>(new AsyncAnonymousMiddleware<T, Unit, Unit, Unit>(async (input, handler, token) => {
+      await middleware(input, async t => await handler.Handle(default, t), token);
+      return default;
     }));
   }
 
 }
 
-/// <summary>
-/// Entry point for building asynchronous pipelines without input and output values.
-/// </summary>
 public static partial class Pipeline {
+
+  /// <summary>
+  /// Starts a parameterless async void pipeline from a step that receives downstream typed async function.
+  /// </summary>
+  /// <typeparam name="T1">Input type expected by the downstream async function.</typeparam>
+  /// <typeparam name="T2">Output type returned by the downstream async function.</typeparam>
+  /// <param name="middleware">Async middleware action that can invoke downstream async function.</param>
+  /// <returns>Builder for appending next middleware steps and terminal async handler.</returns>
+  public static AsyncPipelineBuilder<Unit, T1, T2, Unit> Use<T1, T2>(AsyncAction<AsyncFunc<T1, T2>> middleware) {
+    ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
+    return new AsyncPipelineBuilder<Unit, T1, T2, Unit>(new AsyncAnonymousMiddleware<Unit, T1, T2, Unit>(async (_, handler, token) => {
+      await middleware(handler.Handle, token);
+      return default;
+    }));
+  }
+
+  /// <summary>
+  /// Starts a parameterless async void pipeline from a step that receives downstream parameterless async function.
+  /// </summary>
+  /// <typeparam name="T">Output type returned by the downstream parameterless async function.</typeparam>
+  /// <param name="middleware">Async middleware action that can invoke downstream parameterless async function.</param>
+  /// <returns>Builder with downstream input fixed to <see cref="Unit" />.</returns>
+  public static AsyncPipelineBuilder<Unit, Unit, T, Unit> Use<T>(AsyncAction<AsyncFunc<T>> middleware) {
+    ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
+    return new AsyncPipelineBuilder<Unit, Unit, T, Unit>(new AsyncAnonymousMiddleware<Unit, Unit, T, Unit>(async (_, handler, token) => {
+      await middleware(t => handler.Handle(default, t), token);
+      return default;
+    }));
+  }
+
+  /// <summary>
+  /// Starts a parameterless async void pipeline from a step that receives downstream typed async action.
+  /// </summary>
+  /// <typeparam name="T">Input type accepted by the downstream async action.</typeparam>
+  /// <param name="middleware">Async middleware action that can invoke downstream async action.</param>
+  /// <returns>Builder with downstream output fixed to <see cref="Unit" />.</returns>
+  public static AsyncPipelineBuilder<Unit, T, Unit, Unit> Use<T>(AsyncAction<AsyncAction<T>> middleware) {
+    ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
+    return new AsyncPipelineBuilder<Unit, T, Unit, Unit>(new AsyncAnonymousMiddleware<Unit, T, Unit, Unit>(async (_, handler, token) => {
+      await middleware(async (i, t) => await handler.Handle(i, t), token);
+      return default;
+    }));
+  }
 
   /// <summary>
   /// Starts a parameterless async pipeline from a step that receives next async action.
   /// </summary>
-  /// <param name="pipeline">Async middleware action that calls downstream action.</param>
+  /// <param name="middleware">Async middleware action that calls downstream action.</param>
   /// <returns>Builder whose all generic types are <see cref="Unit" />.</returns>
-  public static AsyncPipelineBuilder<Unit, Unit, Unit, Unit> Use(AsyncAction<AsyncAction> pipeline) {
-    ExceptionsHelper.ThrowIfNull(pipeline, nameof(pipeline));
-    return new AsyncPipelineBuilder<Unit, Unit, Unit, Unit>(new AsyncAnonymousPipeline<Unit, Unit, Unit>((_, handler, token) => {
-      return pipeline(async t => await handler.Handle(default, t), token);
+  public static AsyncPipelineBuilder<Unit, Unit, Unit, Unit> Use(AsyncAction<AsyncAction> middleware) {
+    ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
+    return new AsyncPipelineBuilder<Unit, Unit, Unit, Unit>(new AsyncAnonymousMiddleware<Unit, Unit, Unit, Unit>(async (_, handler, token) => {
+      await middleware(async t => await handler.Handle(default, t), token);
+      return default;
     }));
   }
 

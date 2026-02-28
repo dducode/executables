@@ -24,7 +24,8 @@ public sealed class CommandContext : IDisposable, IUndoRedo {
 
     _clearedElements = clearedElements;
     _history = new History<IUndoRedo>(historyMaxSize);
-    _disposableBag = new DisposableBag { _history };
+    _disposableBag = new DisposableBag();
+    _disposableBag.Add(_history);
   }
 
   public ICommand<TInput> CreateCommand<TInput, TChange>(ReversibleHandler<TInput, TChange> handler) {

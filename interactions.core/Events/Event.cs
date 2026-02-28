@@ -1,3 +1,5 @@
+using System.Runtime.ExceptionServices;
+
 namespace Interactions.Core.Events;
 
 public sealed class Event<T> : Handleable<T, Unit> {
@@ -6,8 +8,11 @@ public sealed class Event<T> : Handleable<T, Unit> {
 
   public void Publish(T input) {
     using ListPool<Subscriber>.ListHandle subscribers = ListPool<Subscriber>.Get();
-    lock (_subscribers)
+    lock (_subscribers) {
+      if (_subscribers.Count == 0)
+        return;
       subscribers.AddRange(_subscribers);
+    }
 
     using ListPool<Exception>.ListHandle exceptions = ListPool<Exception>.Get();
 
@@ -20,11 +25,17 @@ public sealed class Event<T> : Handleable<T, Unit> {
       }
     }
 
-    if (exceptions.Count > 0)
-      throw new AggregateException(exceptions);
+    switch (exceptions.Count) {
+      case > 1:
+        throw new AggregateException(exceptions);
+      case 1:
+        ExceptionDispatchInfo.Capture(exceptions.Single()).Throw();
+        break;
+    }
   }
 
   public override IDisposable Handle(Handler<T, Unit> handler) {
+    ExceptionsHelper.ThrowIfNull(handler, nameof(handler));
     var subscriber = new Subscriber(this, handler);
     lock (_subscribers)
       _subscribers.Add(subscriber);

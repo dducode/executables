@@ -43,7 +43,7 @@ public static class HandlersExtensions {
 
   [Pure]
   public static AsyncHandler<T1, T3> Next<T1, T2, T3>(this Handler<T1, T2> handler, AsyncFunc<T2, T3> nextHandler) {
-    return handler.Next(Handler.FromMethod(nextHandler));
+    return handler.Next(Handler.FromAsyncMethod(nextHandler));
   }
 
   [Pure]
@@ -79,32 +79,33 @@ public static class HandlersExtensions {
   }
 
   [Pure]
+  [Obsolete("Use Tap() instead")]
   public static Handler<T1, T2> Do<T1, T2>(this Handler<T1, T2> handler, Action<T2> action) {
     ExceptionsHelper.ThrowIfNull(action, nameof(action));
     return handler.Next(new TransitiveHandler<T2>(action));
   }
 
   [Pure]
+  [Obsolete("Use Tap() instead")]
   public static AsyncHandler<T1, T2> Do<T1, T2>(this Handler<T1, T2> handler, AsyncAction<T2> action) {
     ExceptionsHelper.ThrowIfNull(action, nameof(action));
     return handler.Next(new AsyncTransitiveHandler<T2>(action));
   }
 
   [Pure]
-  public static AsyncHandler<T1, T2> Delay<T1, T2>(this Handler<T1, T2> handler, Func<T2, TimeSpan> timeDelay) {
-    ExceptionsHelper.ThrowIfNull(timeDelay, nameof(timeDelay));
-    return handler.Next(new DelayHandler<T2>(timeDelay));
+  public static Handler<T1, T2> Tap<T1, T2>(this Handler<T1, T2> handler, Action<T2> action) {
+    ExceptionsHelper.ThrowIfNull(action, nameof(action));
+    return handler.Next(new TransitiveHandler<T2>(action));
   }
 
   [Pure]
-  public static AsyncHandler<T1, T2> Delay<T1, T2>(this Handler<T1, T2> handler, TimeSpan timeDelay) {
-    ExceptionsHelper.ThrowIfNull(timeDelay, nameof(timeDelay));
-    return handler.Delay(delegate {
-      return timeDelay;
-    });
+  public static AsyncHandler<T1, T2> Tap<T1, T2>(this Handler<T1, T2> handler, AsyncAction<T2> action) {
+    ExceptionsHelper.ThrowIfNull(action, nameof(action));
+    return handler.Next(new AsyncTransitiveHandler<T2>(action));
   }
 
   [Pure]
+  [Obsolete("Use Policy.Metrics() instead", true)]
   public static Handler<T1, T2> Metrics<T1, T2>(this Handler<T1, T2> handler, IMetrics<T1, T2> metrics, string tag = null) {
     ExceptionsHelper.ThrowIfNull(metrics, nameof(metrics));
     return new MetricsHandler<T1, T2>(handler, metrics, tag);

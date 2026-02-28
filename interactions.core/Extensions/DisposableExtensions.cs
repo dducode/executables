@@ -6,6 +6,7 @@ public static class DisposableExtensions {
 
   [Pure]
   public static IDisposable Compose(this IDisposable first, IDisposable second) {
+    ExceptionsHelper.ThrowIfNull(second, nameof(second));
     return new CompositeDisposable(first, second);
   }
 

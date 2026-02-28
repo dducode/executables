@@ -8,8 +8,8 @@ using Xunit.Abstractions;
 
 namespace Interactions.Tests.Handlers;
 
-[TestSubject(typeof(PipelineHandler<,,,>))]
-public class PipelineHandlerTest(ITestOutputHelper testOutputHelper) {
+[TestSubject(typeof(MiddlewareHandler<,,,>))]
+public class MiddlewareHandlerTest(ITestOutputHelper testOutputHelper) {
 
   [Fact]
   public void NestedInvocationTest() {
@@ -63,15 +63,7 @@ public class PipelineHandlerTest(ITestOutputHelper testOutputHelper) {
         long result = next.Invoke(seconds);
         return TimeSpan.FromSeconds(result);
       })
-      .Use((double seconds, Action<double> log) => {
-        var result = (long)(seconds + addedSeconds);
-        log(result);
-        return result;
-      })
-      .Use((double seconds, Action<TimeSpan> log) => {
-        log(TimeSpan.FromSeconds(seconds));
-      })
-      .End(result => testOutputHelper.WriteLine($"Result: {result}"))
+      .End(seconds => (long)(seconds + addedSeconds))
     );
 
     Assert.Equal(expected, query.Send(input));

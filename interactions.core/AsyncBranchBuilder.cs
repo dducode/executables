@@ -3,7 +3,7 @@ using Interactions.Core.Handlers;
 
 namespace Interactions.Core;
 
-public class AsyncBranchBuilder<T1, T2> {
+public sealed class AsyncBranchBuilder<T1, T2> {
 
   private readonly List<(Func<bool> condition, AsyncHandler<T1, T2> handler)> _nodes = [];
 

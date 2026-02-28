@@ -9,7 +9,7 @@ namespace Interactions.Pipelines;
 /// <typeparam name="T2">Input type expected by the downstream handler.</typeparam>
 /// <typeparam name="T3">Output type returned by the downstream handler.</typeparam>
 /// <typeparam name="T4">Output type returned by the current step.</typeparam>
-public abstract class AsyncPipeline<T1, T2, T3, T4> {
+public abstract class AsyncMiddleware<T1, T2, T3, T4> {
 
   /// <summary>
   /// Processes the current input and optionally delegates to <paramref name="next" />.
@@ -21,3 +21,9 @@ public abstract class AsyncPipeline<T1, T2, T3, T4> {
   public abstract ValueTask<T4> Invoke(T1 input, AsyncHandler<T2, T3> next, CancellationToken token = default);
 
 }
+
+/// <summary>
+/// Use <see cref="AsyncMiddleware{T1,T2,T3,T4}"/> instead
+/// </summary>
+[Obsolete("Use AsyncMiddleware<T1, T2, T3, T4> instead. This alias will be removed in a future version.", false)]
+public abstract class AsyncPipeline<T1, T2, T3, T4> : AsyncMiddleware<T1, T2, T3, T4>;

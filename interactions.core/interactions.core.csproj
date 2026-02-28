@@ -10,8 +10,8 @@
         <PackageId>com.dducode.interactions-core</PackageId>
         <RepositoryUrl>https://github.com/dducode/com.dducode.interactions.git</RepositoryUrl>
         <LangVersion>13.0</LangVersion>
-        <Version>1.1.0</Version>
-        <PackageReleaseNotes>changed handler accessibility</PackageReleaseNotes>
+        <Version>1.2.0</Version>
+        <PackageReleaseNotes>added new handlers: lazy, dynamic, automatically disposed; bugs fixed</PackageReleaseNotes>
 
     </PropertyGroup>
 
@@ -19,6 +19,9 @@
         <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.6.3"/>
         <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
             <_Parameter1>interactions.core.tests</_Parameter1>
+        </AssemblyAttribute>
+        <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+            <_Parameter1>interactions</_Parameter1>
         </AssemblyAttribute>
     </ItemGroup>
 

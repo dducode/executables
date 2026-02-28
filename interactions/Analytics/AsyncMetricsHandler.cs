@@ -3,11 +3,14 @@ using Interactions.Core;
 
 namespace Interactions.Analytics;
 
+[Obsolete]
 internal sealed class AsyncMetricsHandler<T1, T2>(AsyncHandler<T1, T2> inner, IMetrics<T1, T2> metrics, string tag) : AsyncHandler<T1, T2> {
 
   private readonly Stopwatch _sw = new();
 
   public override async ValueTask<T2> Handle(T1 input, CancellationToken token = default) {
+    ThrowIfDisposed(nameof(AsyncMetricsHandler<T1, T2>));
+
     _sw.Restart();
     metrics.Call(tag, input);
 
@@ -24,6 +27,10 @@ internal sealed class AsyncMetricsHandler<T1, T2>(AsyncHandler<T1, T2> inner, IM
       _sw.Stop();
       metrics.Latency(tag, _sw.Elapsed);
     }
+  }
+
+  protected override void DisposeCore() {
+    inner.Dispose();
   }
 
 }

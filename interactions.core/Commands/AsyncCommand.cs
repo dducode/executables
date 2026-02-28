@@ -1,8 +1,15 @@
 namespace Interactions.Core.Commands;
 
-public class AsyncCommand<T> : AsyncHandleable<T, Unit> {
+public interface IAsyncCommand<in T> {
+
+  ValueTask<bool> Execute(T input, CancellationToken token = default);
+
+}
+
+public class AsyncCommand<T> : AsyncHandleable<T, Unit>, IAsyncCommand<T> {
 
   private HandlerNode _handlerNode;
+  private readonly object _lock = new();
 
   public virtual ValueTask<bool> Execute(T input, CancellationToken token = default) {
     HandlerNode node = Volatile.Read(ref _handlerNode);
@@ -10,14 +17,17 @@ public class AsyncCommand<T> : AsyncHandleable<T, Unit> {
   }
 
   public override IDisposable Handle(AsyncHandler<T, Unit> handler) {
-    var node = new HandlerNode(this, handler);
-    if (Interlocked.CompareExchange(ref _handlerNode, node, null) != null)
-      throw new InvalidOperationException("Already has handler");
-    return node;
+    ExceptionsHelper.ThrowIfNull(handler, nameof(handler));
+
+    lock (_lock) {
+      if (_handlerNode != null)
+        throw new InvalidOperationException("Already has handler");
+      return _handlerNode = new HandlerNode(this, handler);
+    }
   }
 
-  protected virtual void Clear() {
-    Interlocked.Exchange(ref _handlerNode, null);
+  private void RemoveNode(HandlerNode node) {
+    Interlocked.CompareExchange(ref _handlerNode, null, node);
   }
 
   private class HandlerNode(AsyncCommand<T> parent, AsyncHandler<T, Unit> handler) : IDisposable {
@@ -33,8 +43,8 @@ public class AsyncCommand<T> : AsyncHandleable<T, Unit> {
     }
 
     public void Dispose() {
+      parent.RemoveNode(this);
       handler.Dispose();
-      parent.Clear();
     }
 
   }
