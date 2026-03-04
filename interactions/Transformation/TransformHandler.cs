@@ -7,8 +7,7 @@ internal sealed class TransformHandler<T1, T2, T3, T4>(
   Handler<T2, T3> inner,
   Transformer<T3, T4> outputTransformer) : Handler<T1, T4> {
 
-  public override T4 Handle(T1 input) {
-    ThrowIfDisposed(nameof(TransformHandler<T1, T2, T3, T4>));
+  protected override T4 HandleCore(T1 input) {
     return outputTransformer.Transform(inner.Handle(inputTransformer.Transform(input)));
   }
 
@@ -23,8 +22,7 @@ internal sealed class AsyncTransformHandler<T1, T2, T3, T4>(
   AsyncHandler<T2, T3> inner,
   Transformer<T3, T4> outputTransformer) : AsyncHandler<T1, T4> {
 
-  public override async ValueTask<T4> Handle(T1 input, CancellationToken token = default) {
-    ThrowIfDisposed(nameof(AsyncTransformHandler<T1, T2, T3, T4>));
+  protected override async ValueTask<T4> HandleCore(T1 input, CancellationToken token = default) {
     return outputTransformer.Transform(await inner.Handle(inputTransformer.Transform(input), token));
   }
 

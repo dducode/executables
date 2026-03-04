@@ -1,5 +1,3 @@
-using System.Runtime.CompilerServices;
-
 namespace Interactions.Core;
 
 public abstract partial class AsyncHandler<T1, T2> : IDisposable {
@@ -8,7 +6,14 @@ public abstract partial class AsyncHandler<T1, T2> : IDisposable {
 
   private int _disposed;
 
-  public abstract ValueTask<T2> Handle(T1 input, CancellationToken token = default);
+  public ValueTask<T2> Handle(T1 input, CancellationToken token = default) {
+    if (Disposed)
+      throw new HandlerDisposedException(GetType().Name);
+    token.ThrowIfCancellationRequested();
+    return HandleCore(input, token);
+  }
+
+  protected abstract ValueTask<T2> HandleCore(T1 input, CancellationToken token = default);
 
   public void Dispose() {
     if (Interlocked.Exchange(ref _disposed, 1) != 0)
@@ -17,11 +22,5 @@ public abstract partial class AsyncHandler<T1, T2> : IDisposable {
   }
 
   protected virtual void DisposeCore() { }
-
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  protected void ThrowIfDisposed(string objectName) {
-    if (Disposed)
-      throw new HandlerDisposedException(objectName);
-  }
 
 }

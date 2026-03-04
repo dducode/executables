@@ -8,9 +8,7 @@ internal sealed class ValidateHandler<T1, T2>(
   Handler<T1, T2> inner,
   Validator<T2> outputValidator) : Handler<T1, T2> {
 
-  public override T2 Handle(T1 input) {
-    ThrowIfDisposed(nameof(ValidateHandler<T1, T2>));
-
+  protected override T2 HandleCore(T1 input) {
     if (!inputValidator.IsValid(input))
       throw new InvalidInputException(inputValidator.ErrorMessage);
     T2 output = inner.Handle(input);
@@ -32,9 +30,7 @@ internal sealed class AsyncValidateHandler<T1, T2>(
   AsyncHandler<T1, T2> inner,
   Validator<T2> outputValidator) : AsyncHandler<T1, T2> {
 
-  public override async ValueTask<T2> Handle(T1 input, CancellationToken token = default) {
-    ThrowIfDisposed(nameof(AsyncValidateHandler<T1, T2>));
-
+  protected override async ValueTask<T2> HandleCore(T1 input, CancellationToken token = default) {
     if (!inputValidator.IsValid(input))
       throw new InvalidInputException(inputValidator.ErrorMessage);
     T2 output = await inner.Handle(input, token);

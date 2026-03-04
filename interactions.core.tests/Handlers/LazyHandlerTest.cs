@@ -1,0 +1,34 @@
+using Interactions.Core.Handlers;
+using Interactions.Core.Tests.Utils;
+using JetBrains.Annotations;
+
+namespace Interactions.Core.Tests.Handlers;
+
+[TestSubject(typeof(LazyHandler<,>))]
+public class LazyHandlerTest {
+
+  [Theory]
+  [InlineData("10", 10)]
+  [InlineData("1E-10", 1e-10f)]
+  [InlineData("True", true)]
+  public void SimpleHandle<T>(string expected, T value) {
+    Handler<T, string> handler = Handler.Lazy(Resolver.FromMethod(TestHandler.ToStringHandler<T>));
+    Assert.Equal(expected, handler.Handle(value));
+  }
+
+  [Fact]
+  public void ProvideNullHandler() {
+    Handler<int, string> handler = Handler.Lazy(Resolver.FromMethod(Handler<int, string> () => null));
+    Assert.Throws<InvalidOperationException>(() => handler.Handle(10));
+  }
+
+  [Fact]
+  public void DisposeInnerHandler() {
+    Handler<Unit, Unit> inner = Handler.Identity();
+    Handler<Unit, Unit> handler = Handler.Lazy(Resolver.FromMethod(() => inner));
+    handler.Handle(default);
+    handler.Dispose();
+    Assert.Throws<HandlerDisposedException>(() => inner.Handle(default));
+  }
+
+}

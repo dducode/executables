@@ -12,6 +12,8 @@ public class AsyncCommand<T> : AsyncHandleable<T, Unit>, IAsyncCommand<T> {
   private readonly object _lock = new();
 
   public virtual ValueTask<bool> Execute(T input, CancellationToken token = default) {
+    if (token.IsCancellationRequested)
+      return new ValueTask<bool>(false);
     HandlerNode node = Volatile.Read(ref _handlerNode);
     return node?.ExecuteCommand(input, token) ?? new ValueTask<bool>(false);
   }
@@ -44,7 +46,6 @@ public class AsyncCommand<T> : AsyncHandleable<T, Unit>, IAsyncCommand<T> {
 
     public void Dispose() {
       parent.RemoveNode(this);
-      handler.Dispose();
     }
 
   }

@@ -18,9 +18,15 @@ public abstract class AsyncHandleable<T1, T2> {
 public static class Handleable {
 
   [Pure]
-  public static Handleable<T1, T2> Create<T1, T2>(Handling<T1, T2> handling) {
+  public static Handleable<T1, T2> Create<T1, T2>(Func<Handler<T1, T2>, IDisposable> handling) {
     ExceptionsHelper.ThrowIfNull(handling, nameof(handling));
     return new AnonymousHandleable<T1, T2>(handling);
+  }
+
+  [Pure]
+  public static AsyncHandleable<T1, T2> Create<T1, T2>(Func<AsyncHandler<T1, T2>, IDisposable> handling) {
+    ExceptionsHelper.ThrowIfNull(handling, nameof(handling));
+    return new AsyncAnonymousHandleable<T1, T2>(handling);
   }
 
   [Pure]
@@ -30,14 +36,7 @@ public static class Handleable {
 
     return Create((Handler<T1, T2> handler) => {
       add(handler.Handle);
-      return Disposable.Create(() => {
-        try {
-          remove(handler.Handle);
-        }
-        finally {
-          handler.Dispose();
-        }
-      });
+      return Disposable.Create(() => remove(handler.Handle));
     });
   }
 
@@ -49,14 +48,7 @@ public static class Handleable {
     return Create((Handler<T, Unit> handler) => {
       var action = new Action<T>(i => handler.Handle(i));
       add(action);
-      return Disposable.Create(() => {
-        try {
-          remove(action);
-        }
-        finally {
-          handler.Dispose();
-        }
-      });
+      return Disposable.Create(() => remove(action));
     });
   }
 
@@ -68,14 +60,7 @@ public static class Handleable {
     return Create((Handler<Unit, Unit> handler) => {
       var action = new Action(() => handler.Handle(default));
       add(action);
-      return Disposable.Create(() => {
-        try {
-          remove(action);
-        }
-        finally {
-          handler.Dispose();
-        }
-      });
+      return Disposable.Create(() => remove(action));
     });
   }
 

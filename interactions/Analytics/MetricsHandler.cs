@@ -8,9 +8,7 @@ internal sealed class MetricsHandler<T1, T2>(Handler<T1, T2> inner, IMetrics<T1,
 
   private readonly Stopwatch _sw = new();
 
-  public override T2 Handle(T1 input) {
-    ThrowIfDisposed(nameof(MetricsHandler<T1, T2>));
-
+  protected override T2 HandleCore(T1 input) {
     _sw.Restart();
     metrics.Call(tag, input);
 

@@ -17,7 +17,13 @@ public sealed class DisposeHandle : IDisposable {
   public void Dispose() {
     if (Interlocked.Exchange(ref _disposed, 1) != 0)
       return;
-    _disposable.Dispose();
+
+    try {
+      _disposable?.Dispose();
+    }
+    finally {
+      _disposable = null;
+    }
   }
 
 }

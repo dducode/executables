@@ -2,8 +2,7 @@ namespace Interactions.Core.Handlers;
 
 internal sealed class AsyncAnonymousHandler<T1, T2>(AsyncFunc<T1, T2> func) : AsyncHandler<T1, T2> {
 
-  public override ValueTask<T2> Handle(T1 input, CancellationToken token = default) {
-    ThrowIfDisposed(nameof(AsyncAnonymousHandler<T1, T2>));
+  protected override ValueTask<T2> HandleCore(T1 input, CancellationToken token = default) {
     return func(input, token);
   }
 

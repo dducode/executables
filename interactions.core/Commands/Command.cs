@@ -38,7 +38,6 @@ public class Command<T> : Handleable<T, Unit>, ICommand<T> {
 
     public void Dispose() {
       parent.RemoveNode(this);
-      handler.Dispose();
     }
 
   }

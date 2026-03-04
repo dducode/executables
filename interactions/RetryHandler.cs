@@ -7,7 +7,7 @@ internal sealed class RetryHandler<T1, T2, TException>(
   AsyncHandler<T1, T2> inner,
   AsyncFunc<int, TException, bool> shouldRetry) : AsyncHandler<T1, T2> where TException : Exception {
 
-  public override async ValueTask<T2> Handle(T1 input, CancellationToken token = default) {
+  protected override async ValueTask<T2> HandleCore(T1 input, CancellationToken token = default) {
     var attempt = 0;
 
     do {

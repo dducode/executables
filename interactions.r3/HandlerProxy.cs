@@ -6,8 +6,7 @@ namespace Interactions.R3;
 
 internal sealed class HandlerProxy<T>(Observer<T> inner) : Handler<T, Unit> {
 
-  public override Unit Handle(T input) {
-    ThrowIfDisposed(nameof(HandlerProxy<T>));
+  protected override Unit HandleCore(T input) {
     inner.OnNext(input);
     return default;
   }

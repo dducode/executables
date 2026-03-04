@@ -4,12 +4,12 @@
         <TargetFramework>net9.0</TargetFramework>
         <RootNamespace>Interactions.Core.Tests</RootNamespace>
         <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
         <IsPackable>false</IsPackable>
         <AssemblyName>interactions.core.tests</AssemblyName>
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="AutoFixture" Version="5.0.0-preview0012" />
         <PackageReference Include="coverlet.collector" Version="6.0.2"/>
         <PackageReference Include="JetBrains.Annotations" Version="2025.2.2" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0"/>

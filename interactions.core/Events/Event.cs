@@ -2,16 +2,22 @@ using System.Runtime.ExceptionServices;
 
 namespace Interactions.Core.Events;
 
-public sealed class Event<T> : Handleable<T, Unit> {
+public interface IEvent<in T> {
 
-  private readonly List<Subscriber> _subscribers = [];
+  void Publish(T input);
+
+}
+
+public class Event<T> : Handleable<T, Unit>, IEvent<T> {
+
+  private readonly Dictionary<Handler<T, Unit>, Subscriber> _handlers = new();
 
   public void Publish(T input) {
     using ListPool<Subscriber>.ListHandle subscribers = ListPool<Subscriber>.Get();
-    lock (_subscribers) {
-      if (_subscribers.Count == 0)
+    lock (_handlers) {
+      if (_handlers.Count == 0)
         return;
-      subscribers.AddRange(_subscribers);
+      subscribers.AddRange(_handlers.Values);
     }
 
     using ListPool<Exception>.ListHandle exceptions = ListPool<Exception>.Get();
@@ -36,26 +42,36 @@ public sealed class Event<T> : Handleable<T, Unit> {
 
   public override IDisposable Handle(Handler<T, Unit> handler) {
     ExceptionsHelper.ThrowIfNull(handler, nameof(handler));
-    var subscriber = new Subscriber(this, handler);
-    lock (_subscribers)
-      _subscribers.Add(subscriber);
+    Subscriber subscriber;
+
+    lock (_handlers) {
+      if (_handlers.ContainsKey(handler))
+        throw new InvalidOperationException($"Already contains {handler}");
+      subscriber = new Subscriber(this, handler);
+      _handlers.Add(handler, subscriber);
+    }
+
     return subscriber;
   }
 
-  private void RemoveSubscriber(Subscriber subscriber) {
-    lock (_subscribers)
-      _subscribers.Remove(subscriber);
+  private void RemoveHandler(Handler<T, Unit> handler) {
+    lock (_handlers)
+      _handlers.Remove(handler);
   }
 
   private class Subscriber(Event<T> parent, Handler<T, Unit> handler) : IDisposable {
+
+    private int _disposed;
 
     public void Receive(T input) {
       handler.Handle(input);
     }
 
     public void Dispose() {
-      parent.RemoveSubscriber(this);
-      handler.Dispose();
+      if (Interlocked.Exchange(ref _disposed, 1) != 0)
+        return;
+
+      parent.RemoveHandler(handler);
     }
 
   }

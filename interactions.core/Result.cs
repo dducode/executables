@@ -18,8 +18,8 @@ public readonly struct Result<T> {
 
   public Exception Exception => _isValid ? _exception : throw new InvalidOperationException(ErrorMessage);
 
-  public bool IsSuccess => _isValid && _isSuccess;
-  public bool IsFailure => _isValid && !_isSuccess;
+  public bool IsSuccess => _isValid ? _isSuccess : throw new InvalidOperationException(ErrorMessage);
+  public bool IsFailure => !IsSuccess;
   public bool IsValid => _isValid;
 
   private readonly bool _isSuccess;

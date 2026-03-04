@@ -1,5 +1,6 @@
 using Interactions.Core.Extensions;
 using Interactions.Core.Queries;
+using Interactions.Core.Tests.Utils;
 using JetBrains.Annotations;
 
 namespace Interactions.Core.Tests.Queries;
@@ -7,16 +8,47 @@ namespace Interactions.Core.Tests.Queries;
 [TestSubject(typeof(AsyncQuery<,>))]
 public class AsyncQueryTest {
 
-  [Fact]
-  public async Task Test() {
-    var query = new AsyncQuery<int, string>();
-    Assert.False((await query.TrySend(0)).IsSuccess);
-    query.Handle(i => i.ToString());
+  [Theory]
+  [InlineData("10", 10)]
+  [InlineData("1E-10", 1e-10f)]
+  [InlineData("True", true)]
+  private async Task GetStringRepresentation<T>(string expected, T value) {
+    var query = new AsyncQuery<T, string>();
+    query.Handle(TestHandler.ToStringHandler<T>().ToAsyncHandler());
+    Assert.Equal(expected, await query.Send(value));
+  }
 
-    if ((await query.TrySend(42)).TryGetValue(out string value))
-      Assert.Equal("42", value);
-    else
-      Assert.Fail();
+  [Fact]
+  private async Task Cancel() {
+    var cts = new CancellationTokenSource();
+    var query = new AsyncQuery<Unit, Unit>();
+    query.Handle(Handler.Identity().ToAsyncHandler());
+    await cts.CancelAsync();
+    await Assert.ThrowsAsync<OperationCanceledException>(async () => await query.Send(default, cts.Token));
+  }
+
+  [Fact]
+  public async Task SendWithoutHandler() {
+    var query = new AsyncQuery<Unit, Unit>();
+    await Assert.ThrowsAsync<MissingHandlerException>(async () => await query.Send(default));
+    IDisposable handle = query.Handle(Handler.Identity().ToAsyncHandler());
+    await query.Send(default);
+    handle.Dispose();
+    await Assert.ThrowsAsync<MissingHandlerException>(async () => await query.Send(default));
+  }
+
+  [Fact]
+  public void PassNullHandler() {
+    var query = new AsyncQuery<Unit, Unit>();
+    Assert.Throws<ArgumentNullException>(() => query.Handle(null));
+  }
+
+  [Fact]
+  public void AddHandlerWhenOtherExists() {
+    var query = new AsyncQuery<Unit, Unit>();
+    using (query.Handle(Handler.Identity().ToAsyncHandler()))
+      Assert.Throws<InvalidOperationException>(() => query.Handle(Handler.Identity().ToAsyncHandler()));
+    query.Handle(Handler.Identity().ToAsyncHandler());
   }
 
 }

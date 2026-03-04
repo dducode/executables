@@ -5,9 +5,15 @@ namespace Interactions.Core;
 internal static class ExceptionsHelper {
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  internal static void ThrowIfNull(object obj, string paramName) {
+  internal static void ThrowIfNull<T>(T obj, string paramName) where T : class {
     if (obj == null)
       throw new ArgumentNullException(paramName);
+  }
+
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  internal static void ThrowIfNullReference<T>(T @this) where T : class {
+    if (@this == null)
+      throw new NullReferenceException();
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]

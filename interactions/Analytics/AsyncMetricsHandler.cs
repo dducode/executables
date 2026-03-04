@@ -8,9 +8,7 @@ internal sealed class AsyncMetricsHandler<T1, T2>(AsyncHandler<T1, T2> inner, IM
 
   private readonly Stopwatch _sw = new();
 
-  public override async ValueTask<T2> Handle(T1 input, CancellationToken token = default) {
-    ThrowIfDisposed(nameof(AsyncMetricsHandler<T1, T2>));
-
+  protected override async ValueTask<T2> HandleCore(T1 input, CancellationToken token = default) {
     _sw.Restart();
     metrics.Call(tag, input);
 

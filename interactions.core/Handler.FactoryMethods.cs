@@ -96,16 +96,6 @@ public static class Handler {
   }
 
   /// <summary>
-  /// Creates a handler from a function.
-  /// </summary>
-  /// <typeparam name="T">Input and output type.</typeparam>
-  /// <param name="func">Function used for handling.</param>
-  [Pure]
-  public static Handler<T, T> FromMethod<T>(Func<T, T> func) {
-    return FromMethod<T, T>(func);
-  }
-
-  /// <summary>
   /// Creates a handler from a parameterless function.
   /// </summary>
   /// <typeparam name="T">Output type.</typeparam>
@@ -152,12 +142,6 @@ public static class Handler {
 
   [Pure]
   [Obsolete("Use FromAsyncMethod instead", true)]
-  public static AsyncHandler<T, T> FromMethod<T>(AsyncFunc<T, T> func) {
-    return FromMethod<T, T>(func);
-  }
-
-  [Pure]
-  [Obsolete("Use FromAsyncMethod instead", true)]
   public static AsyncHandler<Unit, T> FromMethod<T>(AsyncFunc<T> action) {
     ExceptionsHelper.ThrowIfNull(action, nameof(action));
     return FromMethod<Unit, T>((_, token) => action(token));
@@ -193,16 +177,6 @@ public static class Handler {
   public static AsyncHandler<T1, T2> FromAsyncMethod<T1, T2>(AsyncFunc<T1, T2> func) {
     ExceptionsHelper.ThrowIfNull(func, nameof(func));
     return new AsyncAnonymousHandler<T1, T2>(func);
-  }
-
-  /// <summary>
-  /// Creates an async handler from an async function.
-  /// </summary>
-  /// <typeparam name="T">Input and output type.</typeparam>
-  /// <param name="func">Async function used for handling.</param>
-  [Pure]
-  public static AsyncHandler<T, T> FromAsyncMethod<T>(AsyncFunc<T, T> func) {
-    return FromAsyncMethod<T, T>(func);
   }
 
   /// <summary>

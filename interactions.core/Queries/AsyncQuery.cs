@@ -15,6 +15,7 @@ public class AsyncQuery<T1, T2> : AsyncHandleable<T1, T2>, IAsyncQuery<T1, T2> {
     HandlerNode node = Volatile.Read(ref _handlerNode);
     if (node == null)
       throw new MissingHandlerException("Cannot handle query");
+    token.ThrowIfCancellationRequested();
     return node.HandleRequest(input, token);
   }
 
@@ -40,7 +41,6 @@ public class AsyncQuery<T1, T2> : AsyncHandleable<T1, T2>, IAsyncQuery<T1, T2> {
 
     public void Dispose() {
       parent.RemoveNode(this);
-      handler.Dispose();
     }
 
   }

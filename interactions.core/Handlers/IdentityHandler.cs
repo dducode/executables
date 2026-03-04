@@ -2,8 +2,7 @@ namespace Interactions.Core.Handlers;
 
 internal sealed class IdentityHandler<T> : Handler<T, T> {
 
-  public override T Handle(T input) {
-    ThrowIfDisposed(nameof(IdentityHandler<T>));
+  protected override T HandleCore(T input) {
     return input;
   }
 

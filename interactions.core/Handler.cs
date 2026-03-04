@@ -1,5 +1,3 @@
-using System.Runtime.CompilerServices;
-
 namespace Interactions.Core;
 
 public abstract partial class Handler<T1, T2> : IDisposable {
@@ -8,7 +6,13 @@ public abstract partial class Handler<T1, T2> : IDisposable {
 
   private int _disposed;
 
-  public abstract T2 Handle(T1 input);
+  public T2 Handle(T1 input) {
+    if (Disposed)
+      throw new HandlerDisposedException(GetType().Name);
+    return HandleCore(input);
+  }
+
+  protected abstract T2 HandleCore(T1 input);
 
   public void Dispose() {
     if (Interlocked.Exchange(ref _disposed, 1) != 0)
@@ -17,11 +21,5 @@ public abstract partial class Handler<T1, T2> : IDisposable {
   }
 
   protected virtual void DisposeCore() { }
-
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  protected void ThrowIfDisposed(string objectName) {
-    if (Disposed)
-      throw new HandlerDisposedException(objectName);
-  }
 
 }

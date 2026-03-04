@@ -40,7 +40,6 @@ public class Query<T1, T2> : Handleable<T1, T2>, IQuery<T1, T2> {
 
     public void Dispose() {
       parent.RemoveNode(this);
-      handler.Dispose();
     }
 
   }
