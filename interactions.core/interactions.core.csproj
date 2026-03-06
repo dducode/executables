@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <PackageId>com.dducode.interactions-core</PackageId>
-        <Version>1.2.0</Version>
+        <Version>2.0.0</Version>
         <Authors>dducode</Authors>
         <Company>dducode</Company>
         <Product>interactions-package</Product>

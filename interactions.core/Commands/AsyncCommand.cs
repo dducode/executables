@@ -1,10 +1,6 @@
 namespace Interactions.Core.Commands;
 
-public interface IAsyncCommand<in T> {
-
-  ValueTask<bool> Execute(T input, CancellationToken token = default);
-
-}
+public interface IAsyncCommand<in T> : IAsyncExecutable<T, bool>;
 
 public class AsyncCommand<T> : AsyncHandleable<T, Unit>, IAsyncCommand<T> {
 

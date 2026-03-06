@@ -1,10 +1,6 @@
 namespace Interactions.Core.Commands;
 
-public interface ICommand<in T> {
-
-  bool Execute(T input);
-
-}
+public interface ICommand<in T> : IExecutable<T, bool>;
 
 public class Command<T> : Handleable<T, Unit>, ICommand<T> {
 
