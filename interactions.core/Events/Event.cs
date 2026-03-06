@@ -1,8 +1,7 @@
 namespace Interactions.Core.Events;
 
-public interface IEvent<T> {
+public interface IEvent<T> : IExecutable<T, Unit> {
 
-  void Publish(T input);
   IDisposable Subscribe(ISubscriber<T> subscriber);
 
 }
@@ -14,13 +13,13 @@ public class Event<T> : Handleable<Publishing<T>, Unit>, IEvent<T> {
 
   private HandlerNode _handlerNode;
 
-  public void Publish(T input) {
+  public Unit Execute(T input) {
     List<ISubscriber<T>> subscribers = Pool<List<ISubscriber<T>>>.Get();
     using var handle = new ListHandle<ISubscriber<T>>(subscribers);
 
     lock (_lock) {
       if (_subscribers.Count == 0)
-        return;
+        return default;
       subscribers.AddRange(_subscribers);
     }
 
@@ -28,6 +27,7 @@ public class Event<T> : Handleable<Publishing<T>, Unit>, IEvent<T> {
     if (node == null)
       throw new MissingHandlerException("Cannot handle event");
     node.Publish(input, subscribers);
+    return default;
   }
 
   public IDisposable Subscribe(ISubscriber<T> subscriber) {

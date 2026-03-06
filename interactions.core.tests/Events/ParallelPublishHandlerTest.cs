@@ -22,7 +22,7 @@ public class ParallelPublishHandlerTest(ITestOutputHelper output) {
       e.Subscribe(subscriber);
     e.Handle(EventPublisher.Parallel());
 
-    e.Publish();
+    e.Execute();
     Assert.All(subscribers, subscriber => Assert.True(subscriber.Received));
   }
 
@@ -39,7 +39,7 @@ public class ParallelPublishHandlerTest(ITestOutputHelper output) {
       e.Subscribe(subscriber);
     e.Handle(EventPublisher.Parallel());
 
-    Assert.Throws<InvalidOperationException>(() => e.Publish());
+    Assert.Throws<InvalidOperationException>(() => e.Execute());
     Assert.All(subscribers, subscriber => Assert.True(subscriber.Received));
   }
 
@@ -58,7 +58,7 @@ public class ParallelPublishHandlerTest(ITestOutputHelper output) {
       e.Subscribe(subscriber);
     e.Handle(EventPublisher.Parallel());
 
-    Assert.Throws<AggregateException>(() => e.Publish());
+    Assert.Throws<AggregateException>(() => e.Execute());
     Assert.All(subscribers, subscriber => Assert.True(subscriber.Received));
   }
 

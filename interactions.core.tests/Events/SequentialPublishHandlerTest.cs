@@ -24,7 +24,7 @@ public class SequentialPublishHandlerTest(ITestOutputHelper output) {
       e.Subscribe(subscriber);
     e.Handle(EventPublisher.Sequential(order));
 
-    e.Publish();
+    e.Execute();
     Assert.All(subscribers, subscriber => Assert.True(subscriber.Received));
   }
 
@@ -41,7 +41,7 @@ public class SequentialPublishHandlerTest(ITestOutputHelper output) {
       e.Subscribe(subscriber);
     e.Handle(EventPublisher.Sequential());
 
-    Assert.Throws<InvalidOperationException>(() => e.Publish());
+    Assert.Throws<InvalidOperationException>(() => e.Execute());
     Assert.All(subscribers, subscriber => Assert.True(subscriber.Received));
   }
 
@@ -60,7 +60,7 @@ public class SequentialPublishHandlerTest(ITestOutputHelper output) {
       e.Subscribe(subscriber);
     e.Handle(EventPublisher.Sequential());
 
-    Assert.Throws<AggregateException>(() => e.Publish());
+    Assert.Throws<AggregateException>(() => e.Execute());
     Assert.All(subscribers, subscriber => Assert.True(subscriber.Received));
   }
 

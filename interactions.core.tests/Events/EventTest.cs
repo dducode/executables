@@ -10,14 +10,14 @@ public class EventTest {
 
   [Fact]
   public void PublishWithoutSubscribers() {
-    new Event<Unit>().Publish();
+    new Event<Unit>().Execute();
   }
 
   [Fact]
   public void PublishWithOnceSubscriberAndWithoutHandler() {
     var e = new Event<Unit>();
     e.Subscribe(() => { });
-    Assert.Throws<MissingHandlerException>(() => e.Publish());
+    Assert.Throws<MissingHandlerException>(() => e.Execute());
   }
 
   [Fact]
@@ -44,7 +44,7 @@ public class EventTest {
     e.Handle(EventPublisher.Sequential());
 
     disposableBag.Dispose();
-    e.Publish();
+    e.Execute();
     Assert.All(subscribers, subscriber => Assert.False(subscriber.Received));
   }
 
@@ -66,7 +66,7 @@ public class EventTest {
 
     IEnumerable<Task> publishTasks = Enumerable.Repeat(Task.Run(async () => {
       while (!cts.Token.IsCancellationRequested) {
-        e.Publish();
+        e.Execute();
         await Task.Delay(1);
       }
     }), 10);

@@ -4,10 +4,6 @@ namespace Interactions.Core.Extensions;
 
 public static class EventExtensions {
 
-  public static void Publish(this IEvent<Unit> e) {
-    e.Publish(default);
-  }
-
   public static IDisposable Subscribe<T>(this IEvent<T> e, Action<T> action) {
     return e.Subscribe(Subscriber.FromMethod(action));
   }
