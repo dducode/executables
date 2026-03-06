@@ -14,22 +14,22 @@ public class DynamicHandlerTest {
       return Handler.FromMethod<int, int>(num => num * multiplier);
     }));
 
-    Assert.Equal(10, handler.Handle(10));
-    Assert.Equal(20, handler.Handle(10));
-    Assert.Equal(30, handler.Handle(10));
+    Assert.Equal(10, handler.Execute(10));
+    Assert.Equal(20, handler.Execute(10));
+    Assert.Equal(30, handler.Execute(10));
   }
 
   [Fact]
   public void ProvideNullHandler() {
     Handler<Unit, Unit> handler = Handler.Dynamic(Provider.FromMethod(Handler<Unit, Unit> () => null));
-    Assert.Throws<InvalidOperationException>(() => handler.Handle(default));
+    Assert.Throws<InvalidOperationException>(() => handler.Execute(default));
   }
 
   [Fact]
   public void InnerHandlerNotDispose() {
     Handler<Unit, Unit> inner = Handler.Identity();
     Handler<Unit, Unit> handler = Handler.Dynamic(Provider.FromMethod(() => inner));
-    handler.Handle(default);
+    handler.Execute(default);
     Assert.False(inner.Disposed);
   }
 

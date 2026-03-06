@@ -23,7 +23,7 @@ public static partial class PipelineBuilderExtensions {
     this AsyncPipelineBuilder<T1, T2, T5, T6> builder,
     AsyncFunc<T2, AsyncFunc<T3, T4>, T5> middleware) {
     ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
-    return builder.Use(new AsyncAnonymousMiddleware<T2, T3, T4, T5>((input, handler, token) => middleware(input, handler.Handle, token)));
+    return builder.Use(new AsyncAnonymousMiddleware<T2, T3, T4, T5>((input, handler, token) => middleware(input, handler.Execute, token)));
   }
 
   /// <summary>
@@ -42,7 +42,7 @@ public static partial class PipelineBuilderExtensions {
     AsyncFunc<T2, AsyncFunc<T3>, T4> middleware) {
     ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
     return builder.Use(new AsyncAnonymousMiddleware<T2, Unit, T3, T4>((input, handler, token) => {
-      return middleware(input, t => handler.Handle(default, t), token);
+      return middleware(input, t => handler.Execute(default, t), token);
     }));
   }
 
@@ -62,7 +62,7 @@ public static partial class PipelineBuilderExtensions {
     AsyncFunc<T2, AsyncAction<T3>, T4> middleware) {
     ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
     return builder.Use(new AsyncAnonymousMiddleware<T2, T3, Unit, T4>((input, handler, token) => {
-      return middleware(input, async (i, t) => await handler.Handle(i, t), token);
+      return middleware(input, async (i, t) => await handler.Execute(i, t), token);
     }));
   }
 
@@ -81,7 +81,7 @@ public static partial class PipelineBuilderExtensions {
     AsyncFunc<T2, AsyncAction, T3> middleware) {
     ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
     return builder.Use(new AsyncAnonymousMiddleware<T2, Unit, Unit, T3>((input, handler, token) => {
-      return middleware(input, async t => await handler.Handle(default, t), token);
+      return middleware(input, async t => await handler.Execute(default, t), token);
     }));
   }
 
@@ -100,7 +100,7 @@ public static partial class PipelineBuilderExtensions {
     this AsyncPipelineBuilder<T1, Unit, T2, T5> builder,
     AsyncFunc<AsyncFunc<T3, T4>, T2> middleware) {
     ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
-    return builder.Use(new AsyncAnonymousMiddleware<Unit, T3, T4, T2>((_, handler, token) => middleware(handler.Handle, token)));
+    return builder.Use(new AsyncAnonymousMiddleware<Unit, T3, T4, T2>((_, handler, token) => middleware(handler.Execute, token)));
   }
 
   /// <summary>
@@ -118,7 +118,7 @@ public static partial class PipelineBuilderExtensions {
     AsyncFunc<AsyncFunc<T3>, T2> middleware) {
     ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
     return builder.Use(new AsyncAnonymousMiddleware<Unit, Unit, T3, T2>((_, handler, token) => {
-      return middleware(t => handler.Handle(default, t), token);
+      return middleware(t => handler.Execute(default, t), token);
     }));
   }
 
@@ -137,7 +137,7 @@ public static partial class PipelineBuilderExtensions {
     AsyncFunc<AsyncAction<T3>, T2> middleware) {
     ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
     return builder.Use(new AsyncAnonymousMiddleware<Unit, T3, Unit, T2>((_, handler, token) => {
-      return middleware(async (i, t) => await handler.Handle(i, t), token);
+      return middleware(async (i, t) => await handler.Execute(i, t), token);
     }));
   }
 
@@ -155,7 +155,7 @@ public static partial class PipelineBuilderExtensions {
     AsyncFunc<AsyncAction, T2> middleware) {
     ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
     return builder.Use(new AsyncAnonymousMiddleware<Unit, Unit, Unit, T2>((_, handler, token) => {
-      return middleware(async t => await handler.Handle(default, t), token);
+      return middleware(async t => await handler.Execute(default, t), token);
     }));
   }
 
@@ -175,7 +175,7 @@ public static partial class PipelineBuilderExtensions {
     AsyncAction<T2, AsyncFunc<T3, T4>> middleware) {
     ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
     return builder.Use(new AsyncAnonymousMiddleware<T2, T3, T4, Unit>(async (input, handler, token) => {
-      await middleware(input, handler.Handle, token);
+      await middleware(input, handler.Execute, token);
       return default;
     }));
   }
@@ -195,7 +195,7 @@ public static partial class PipelineBuilderExtensions {
     AsyncAction<T2, AsyncFunc<T3>> middleware) {
     ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
     return builder.Use(new AsyncAnonymousMiddleware<T2, Unit, T3, Unit>(async (input, handler, token) => {
-      await middleware(input, t => handler.Handle(default, t), token);
+      await middleware(input, t => handler.Execute(default, t), token);
       return default;
     }));
   }
@@ -215,7 +215,7 @@ public static partial class PipelineBuilderExtensions {
     AsyncAction<T2, AsyncAction<T3>> middleware) {
     ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
     return builder.Use(new AsyncAnonymousMiddleware<T2, T3, Unit, Unit>(async (input, handler, token) => {
-      await middleware(input, async (i, t) => await handler.Handle(i, t), token);
+      await middleware(input, async (i, t) => await handler.Execute(i, t), token);
       return default;
     }));
   }
@@ -234,7 +234,7 @@ public static partial class PipelineBuilderExtensions {
     AsyncAction<T2, AsyncAction> middleware) {
     ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
     return builder.Use(new AsyncAnonymousMiddleware<T2, Unit, Unit, Unit>(async (input, handler, token) => {
-      await middleware(input, async t => await handler.Handle(default, t), token);
+      await middleware(input, async t => await handler.Execute(default, t), token);
       return default;
     }));
   }
@@ -254,7 +254,7 @@ public static partial class PipelineBuilderExtensions {
     AsyncAction<AsyncFunc<T2, T3>> middleware) {
     ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
     return builder.Use(new AsyncAnonymousMiddleware<Unit, T2, T3, Unit>(async (_, handler, token) => {
-      await middleware(handler.Handle, token);
+      await middleware(handler.Execute, token);
       return default;
     }));
   }
@@ -273,7 +273,7 @@ public static partial class PipelineBuilderExtensions {
     AsyncAction<AsyncFunc<T2>> middleware) {
     ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
     return builder.Use(new AsyncAnonymousMiddleware<Unit, Unit, T2, Unit>(async (_, handler, token) => {
-      await middleware(t => handler.Handle(default, t), token);
+      await middleware(t => handler.Execute(default, t), token);
       return default;
     }));
   }
@@ -292,7 +292,7 @@ public static partial class PipelineBuilderExtensions {
     AsyncAction<AsyncAction<T2>> middleware) {
     ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
     return builder.Use(new AsyncAnonymousMiddleware<Unit, T2, Unit, Unit>(async (_, handler, token) => {
-      await middleware(async (i, t) => await handler.Handle(i, t), token);
+      await middleware(async (i, t) => await handler.Execute(i, t), token);
       return default;
     }));
   }
@@ -310,7 +310,7 @@ public static partial class PipelineBuilderExtensions {
     AsyncAction<AsyncAction> middleware) {
     ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
     return builder.Use(new AsyncAnonymousMiddleware<Unit, Unit, Unit, Unit>(async (_, handler, token) => {
-      await middleware(async t => await handler.Handle(default, t), token);
+      await middleware(async t => await handler.Execute(default, t), token);
       return default;
     }));
   }

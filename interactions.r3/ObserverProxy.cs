@@ -7,7 +7,7 @@ namespace Interactions.R3;
 internal sealed class ObserverProxy<T>(Handler<T, Unit> inner) : Observer<T> {
 
   protected override void OnNextCore(T value) {
-    inner.Handle(value);
+    inner.Execute(value);
   }
 
   protected override void OnErrorResumeCore(Exception error) {

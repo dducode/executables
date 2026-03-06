@@ -18,7 +18,7 @@ public class AsyncBranchBuilderTest {
       .ElseIf(() => state == 2, _ => ValueTask.FromResult(2))
       .Else(_ => ValueTask.FromResult(-1));
 
-    Assert.Equal(expected, await handler.Handle(default));
+    Assert.Equal(expected, await handler.Execute(default));
   }
 
   [Theory]
@@ -36,7 +36,7 @@ public class AsyncBranchBuilderTest {
         .Else(_ => ValueTask.FromResult(3))
       );
 
-    Assert.Equal(expected, await handler.Handle(default));
+    Assert.Equal(expected, await handler.Execute(default));
   }
 
   [Fact]

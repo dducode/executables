@@ -18,7 +18,7 @@ public class BranchBuilderTest {
       .ElseIf(() => state == 2, () => 2)
       .Else(() => -1);
 
-    Assert.Equal(expected, handler.Handle(default));
+    Assert.Equal(expected, handler.Execute(default));
   }
 
   [Theory]
@@ -36,7 +36,7 @@ public class BranchBuilderTest {
         .Else(() => 3)
       );
 
-    Assert.Equal(expected, handler.Handle(default));
+    Assert.Equal(expected, handler.Execute(default));
   }
 
   [Fact]

@@ -5,9 +5,9 @@ namespace Interactions.Policies;
 
 internal sealed class FallbackPolicy<T1, T2, TException>(IFallbackHandler<T1, TException, T2> handler) : Policy<T1, T2> where TException : Exception {
 
-  public override T2 Execute(T1 input, Func<T1, T2> invocation) {
+  public override T2 Execute(T1 input, IExecutable<T1, T2> executable) {
     try {
-      return invocation(input);
+      return executable.Execute(input);
     }
     catch (TException e) {
       return handler.Fallback(input, e);
@@ -18,11 +18,11 @@ internal sealed class FallbackPolicy<T1, T2, TException>(IFallbackHandler<T1, TE
 
 internal sealed class AsyncFallbackPolicy<T1, T2, TException>(IFallbackHandler<T1, TException, T2> handler) : AsyncPolicy<T1, T2> where TException : Exception {
 
-  public override async ValueTask<T2> Execute(T1 input, AsyncFunc<T1, T2> invocation, CancellationToken token) {
+  public override async ValueTask<T2> Execute(T1 input, IAsyncExecutable<T1, T2> executable, CancellationToken token) {
     token.ThrowIfCancellationRequested();
 
     try {
-      return await invocation(input, token);
+      return await executable.Execute(input, token);
     }
     catch (TException e) {
       return handler.Fallback(input, e);

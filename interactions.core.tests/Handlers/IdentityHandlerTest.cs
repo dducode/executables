@@ -12,7 +12,7 @@ public class IdentityHandlerTest {
   [InlineData(true, true)]
   public void ReturnIdentityValue<T>(T expected, T actual) {
     Handler<T, T> handler = Handler.Identity<T>();
-    Assert.Equal(expected, handler.Handle(actual));
+    Assert.Equal(expected, handler.Execute(actual));
   }
 
 }

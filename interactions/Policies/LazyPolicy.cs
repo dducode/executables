@@ -6,8 +6,8 @@ internal sealed class LazyPolicy<T1, T2>(IResolver<Policy<T1, T2>> resolver) : P
 
   private readonly Core.Lazy<Policy<T1, T2>> _inner = new(resolver);
 
-  public override T2 Execute(T1 input, Func<T1, T2> invocation) {
-    return _inner.Value.Execute(input, invocation);
+  public override T2 Execute(T1 input, IExecutable<T1, T2> executable) {
+    return _inner.Value.Execute(input, executable);
   }
 
 }
@@ -16,8 +16,8 @@ internal sealed class AsyncLazyPolicy<T1, T2>(IResolver<AsyncPolicy<T1, T2>> res
 
   private readonly Core.Lazy<AsyncPolicy<T1, T2>> _inner = new(resolver);
 
-  public override ValueTask<T2> Execute(T1 input, AsyncFunc<T1, T2> invocation, CancellationToken token) {
-    return _inner.Value.Execute(input, invocation, token);
+  public override ValueTask<T2> Execute(T1 input, IAsyncExecutable<T1, T2> executable, CancellationToken token) {
+    return _inner.Value.Execute(input, executable, token);
   }
 
 }

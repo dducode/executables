@@ -73,7 +73,7 @@ public sealed class ReversibleCommand<TInput, TChange> : ICommand<TInput>, IUndo
   private class HandlerNode(ReversibleCommand<TInput, TChange> parent, ReversibleHandler<TInput, TChange> handler) : IDisposable {
 
     public TChange ExecuteCommand(TInput input) {
-      return handler.Handle(input);
+      return handler.Execute(input);
     }
 
     public void Undo(TChange state) {

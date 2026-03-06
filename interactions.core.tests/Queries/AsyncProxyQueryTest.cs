@@ -4,18 +4,18 @@ using JetBrains.Annotations;
 
 namespace Interactions.Core.Tests.Queries;
 
-[TestSubject(typeof(AsyncProxyQuery<,>))]
-public class AsyncProxyQueryTest {
+[TestSubject(typeof(AsyncProxyExecutable<,>))]
+public class AsyncProxyExecutableTest {
 
   [Fact]
   public async Task Cancel() {
     var cts = new CancellationTokenSource();
     var inner = new Query<Unit, Unit>();
-    IAsyncQuery<Unit, Unit> query = inner.ToAsyncQuery();
+    IAsyncExecutable<Unit, Unit> query = inner.ToAsyncExecutable();
 
     inner.Handle(Handler.Identity());
     await cts.CancelAsync();
-    await Assert.ThrowsAsync<OperationCanceledException>(async () => await query.Send(default, cts.Token));
+    await Assert.ThrowsAsync<OperationCanceledException>(async () => await query.Execute(default, cts.Token));
   }
 
 }

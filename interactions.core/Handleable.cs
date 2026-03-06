@@ -35,8 +35,8 @@ public static class Handleable {
     ExceptionsHelper.ThrowIfNull(remove, nameof(remove));
 
     return Create((Handler<T1, T2> handler) => {
-      add(handler.Handle);
-      return Disposable.Create(() => remove(handler.Handle));
+      add(handler.Execute);
+      return Disposable.Create(() => remove(handler.Execute));
     });
   }
 
@@ -46,7 +46,7 @@ public static class Handleable {
     ExceptionsHelper.ThrowIfNull(remove, nameof(remove));
 
     return Create((Handler<T, Unit> handler) => {
-      var action = new Action<T>(i => handler.Handle(i));
+      var action = new Action<T>(i => handler.Execute(i));
       add(action);
       return Disposable.Create(() => remove(action));
     });
@@ -58,7 +58,7 @@ public static class Handleable {
     ExceptionsHelper.ThrowIfNull(remove, nameof(remove));
 
     return Create((Handler<Unit, Unit> handler) => {
-      var action = new Action(() => handler.Handle(default));
+      var action = new Action(() => handler.Execute(default));
       add(action);
       return Disposable.Create(() => remove(action));
     });

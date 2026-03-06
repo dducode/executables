@@ -1,4 +1,5 @@
 using Interactions.Core;
+using Interactions.Core.Extensions;
 using Interactions.Policies;
 using JetBrains.Annotations;
 
@@ -11,8 +12,8 @@ public class AsyncPreventReentrancePolicyTest {
   public async Task SequentialExecute() {
     AsyncPolicy<Unit, Unit> policy = AsyncPolicy<Unit, Unit>.PreventReentrance();
 
-    await policy.Execute(default, Wait, CancellationToken.None);
-    await policy.Execute(default, Wait, CancellationToken.None);
+    await policy.Execute(default, Executable.Identity().ToAsyncExecutable(), CancellationToken.None);
+    await policy.Execute(default, Executable.Identity().ToAsyncExecutable(), CancellationToken.None);
   }
 
   [Fact]
@@ -21,15 +22,15 @@ public class AsyncPreventReentrancePolicyTest {
     var cts = new CancellationTokenSource();
 
     await cts.CancelAsync();
-    await Assert.ThrowsAsync<OperationCanceledException>(async () => await policy.Execute(default, Wait, cts.Token));
+    await Assert.ThrowsAsync<OperationCanceledException>(async () => await policy.Execute(default, Executable.Identity().ToAsyncExecutable(), cts.Token));
   }
 
   [Fact]
   public async Task MultiplyExecute() {
     AsyncPolicy<Unit, Unit> policy = AsyncPolicy<Unit, Unit>.PreventReentrance();
 
-    ValueTask<Unit> first = policy.Execute(default, Wait, CancellationToken.None);
-    ValueTask<Unit> second = policy.Execute(default, Wait, CancellationToken.None);
+    ValueTask<Unit> first = policy.Execute(default, Executable.Identity().ToAsyncExecutable(), CancellationToken.None);
+    ValueTask<Unit> second = policy.Execute(default, Executable.Identity().ToAsyncExecutable(), CancellationToken.None);
     await Task.WhenAll(first.AsTask(), second.AsTask());
   }
 
@@ -37,10 +38,9 @@ public class AsyncPreventReentrancePolicyTest {
   public async Task NestedExecution() {
     AsyncPolicy<Unit, Unit> policy = AsyncPolicy<Unit, Unit>.PreventReentrance();
 
-    await policy.Execute(default, async (input, token) => {
-      await Assert.ThrowsAsync<ReentranceException>(async () => await policy.Execute(input, Wait, token));
-      return default;
-    }, CancellationToken.None);
+    await policy.Execute(default, Executable.CreateAsync(async (Unit input, CancellationToken token) => {
+      await Assert.ThrowsAsync<ReentranceException>(async () => await policy.Execute(input, Executable.Identity().ToAsyncExecutable(), token));
+    }), CancellationToken.None);
   }
 
   [Fact]
@@ -48,8 +48,8 @@ public class AsyncPreventReentrancePolicyTest {
     AsyncPolicy<Unit, Unit> policy = AsyncPolicy<Unit, Unit>.PreventReentrance();
 
     await Parallel.ForAsync(0, 10, async (_, token) => {
-      await policy.Execute(default, Wait, token);
-      await policy.Execute(default, Wait, token);
+      await policy.Execute(default, Executable.Identity().ToAsyncExecutable(), token);
+      await policy.Execute(default, Executable.Identity().ToAsyncExecutable(), token);
     });
   }
 
@@ -58,8 +58,8 @@ public class AsyncPreventReentrancePolicyTest {
     AsyncPolicy<Unit, Unit> policy = AsyncPolicy<Unit, Unit>.PreventReentrance();
 
     await Parallel.ForAsync(0, 10, async (_, token) => {
-      ValueTask<Unit> first = policy.Execute(default, Wait, token);
-      ValueTask<Unit> second = policy.Execute(default, Wait, token);
+      ValueTask<Unit> first = policy.Execute(default, Executable.Identity().ToAsyncExecutable(), token);
+      ValueTask<Unit> second = policy.Execute(default, Executable.Identity().ToAsyncExecutable(), token);
       await Task.WhenAll(first.AsTask(), second.AsTask());
     });
   }
@@ -69,10 +69,9 @@ public class AsyncPreventReentrancePolicyTest {
     AsyncPolicy<Unit, Unit> policy = AsyncPolicy<Unit, Unit>.PreventReentrance();
 
     await Parallel.ForAsync(0, 10, async (_, token) => {
-      await policy.Execute(default, async (input, t) => {
-        await Assert.ThrowsAsync<ReentranceException>(async () => await policy.Execute(input, Wait, t));
-        return default;
-      }, token);
+      await policy.Execute(default, Executable.CreateAsync(async (Unit input, CancellationToken t) => {
+        await Assert.ThrowsAsync<ReentranceException>(async () => await policy.Execute(input, Executable.Identity().ToAsyncExecutable(), t));
+      }), token);
     });
   }
 
@@ -80,17 +79,11 @@ public class AsyncPreventReentrancePolicyTest {
   public async Task NestedParallelExecute() {
     AsyncPolicy<Unit, Unit> policy = AsyncPolicy<Unit, Unit>.PreventReentrance();
 
-    await policy.Execute(default, async (_, token) => {
+    await policy.Execute(default, Executable.CreateAsync(async (Unit _, CancellationToken token) => {
       await Parallel.ForAsync(0, 10, token, async (_, t) => {
-        await Assert.ThrowsAsync<ReentranceException>(async () => await policy.Execute(default, Wait, t));
+        await Assert.ThrowsAsync<ReentranceException>(async () => await policy.Execute(default, Executable.Identity().ToAsyncExecutable(), t));
       });
-      return default;
-    }, CancellationToken.None);
-  }
-
-  private async ValueTask<Unit> Wait(Unit input, CancellationToken cancellationToken = default) {
-    await Task.Yield();
-    return default;
+    }), CancellationToken.None);
   }
 
 }

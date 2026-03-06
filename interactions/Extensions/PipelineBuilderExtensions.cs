@@ -23,7 +23,7 @@ public static partial class PipelineBuilderExtensions {
     this PipelineBuilder<T1, T2, T5, T6> builder,
     Func<T2, Func<T3, T4>, T5> middleware) {
     ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
-    return builder.Use(new AnonymousMiddleware<T2, T3, T4, T5>((input, handler) => middleware(input, handler.Handle)));
+    return builder.Use(new AnonymousMiddleware<T2, T3, T4, T5>((input, handler) => middleware(input, handler.Execute)));
   }
 
   /// <summary>
@@ -42,7 +42,7 @@ public static partial class PipelineBuilderExtensions {
     Func<T2, Func<T3>, T4> middleware) {
     ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
     return builder.Use(new AnonymousMiddleware<T2, Unit, T3, T4>((input, handler) => {
-      return middleware(input, () => handler.Handle(default));
+      return middleware(input, () => handler.Execute(default));
     }));
   }
 
@@ -62,7 +62,7 @@ public static partial class PipelineBuilderExtensions {
     Func<T2, Action<T3>, T4> middleware) {
     ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
     return builder.Use(new AnonymousMiddleware<T2, T3, Unit, T4>((input, handler) => {
-      return middleware(input, i => handler.Handle(i));
+      return middleware(input, i => handler.Execute(i));
     }));
   }
 
@@ -81,7 +81,7 @@ public static partial class PipelineBuilderExtensions {
     Func<T2, Action, T3> middleware) {
     ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
     return builder.Use(new AnonymousMiddleware<T2, Unit, Unit, T3>((input, handler) => {
-      return middleware(input, () => handler.Handle(default));
+      return middleware(input, () => handler.Execute(default));
     }));
   }
 
@@ -100,7 +100,7 @@ public static partial class PipelineBuilderExtensions {
     this PipelineBuilder<T1, Unit, T2, T5> builder,
     Func<Func<T3, T4>, T2> middleware) {
     ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
-    return builder.Use(new AnonymousMiddleware<Unit, T3, T4, T2>((_, handler) => middleware(handler.Handle)));
+    return builder.Use(new AnonymousMiddleware<Unit, T3, T4, T2>((_, handler) => middleware(handler.Execute)));
   }
 
   /// <summary>
@@ -117,7 +117,7 @@ public static partial class PipelineBuilderExtensions {
     this PipelineBuilder<T1, Unit, T2, T4> builder,
     Func<Func<T3>, T2> middleware) {
     ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
-    return builder.Use(new AnonymousMiddleware<Unit, Unit, T3, T2>((_, handler) => middleware(() => handler.Handle(default))));
+    return builder.Use(new AnonymousMiddleware<Unit, Unit, T3, T2>((_, handler) => middleware(() => handler.Execute(default))));
   }
 
   /// <summary>
@@ -134,7 +134,7 @@ public static partial class PipelineBuilderExtensions {
     this PipelineBuilder<T1, Unit, T2, T4> builder,
     Func<Action<T3>, T2> middleware) {
     ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
-    return builder.Use(new AnonymousMiddleware<Unit, T3, Unit, T2>((_, handler) => middleware(i => handler.Handle(i))));
+    return builder.Use(new AnonymousMiddleware<Unit, T3, Unit, T2>((_, handler) => middleware(i => handler.Execute(i))));
   }
 
   /// <summary>
@@ -150,7 +150,7 @@ public static partial class PipelineBuilderExtensions {
     this PipelineBuilder<T1, Unit, T2, T3> builder,
     Func<Action, T2> middleware) {
     ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
-    return builder.Use(new AnonymousMiddleware<Unit, Unit, Unit, T2>((_, handler) => middleware(() => handler.Handle(default))));
+    return builder.Use(new AnonymousMiddleware<Unit, Unit, Unit, T2>((_, handler) => middleware(() => handler.Execute(default))));
   }
 
   /// <summary>
@@ -169,7 +169,7 @@ public static partial class PipelineBuilderExtensions {
     Action<T2, Func<T3, T4>> middleware) {
     ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
     return builder.Use(new AnonymousMiddleware<T2, T3, T4, Unit>((input, handler) => {
-      middleware(input, handler.Handle);
+      middleware(input, handler.Execute);
       return default;
     }));
   }
@@ -189,7 +189,7 @@ public static partial class PipelineBuilderExtensions {
     Action<T2, Func<T3>> middleware) {
     ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
     return builder.Use(new AnonymousMiddleware<T2, Unit, T3, Unit>((input, handler) => {
-      middleware(input, () => handler.Handle(default));
+      middleware(input, () => handler.Execute(default));
       return default;
     }));
   }
@@ -209,7 +209,7 @@ public static partial class PipelineBuilderExtensions {
     Action<T2, Action<T3>> middleware) {
     ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
     return builder.Use(new AnonymousMiddleware<T2, T3, Unit, Unit>((input, handler) => {
-      middleware(input, i => handler.Handle(i));
+      middleware(input, i => handler.Execute(i));
       return default;
     }));
   }
@@ -228,7 +228,7 @@ public static partial class PipelineBuilderExtensions {
     Action<T2, Action> middleware) {
     ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
     return builder.Use(new AnonymousMiddleware<T2, Unit, Unit, Unit>((input, handler) => {
-      middleware(input, () => handler.Handle(default));
+      middleware(input, () => handler.Execute(default));
       return default;
     }));
   }
@@ -248,7 +248,7 @@ public static partial class PipelineBuilderExtensions {
     Action<Func<T2, T3>> middleware) {
     ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
     return builder.Use(new AnonymousMiddleware<Unit, T2, T3, Unit>((_, handler) => {
-      middleware(handler.Handle);
+      middleware(handler.Execute);
       return default;
     }));
   }
@@ -267,7 +267,7 @@ public static partial class PipelineBuilderExtensions {
     Action<Func<T2>> middleware) {
     ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
     return builder.Use(new AnonymousMiddleware<Unit, Unit, T2, Unit>((_, handler) => {
-      middleware(() => handler.Handle(default));
+      middleware(() => handler.Execute(default));
       return default;
     }));
   }
@@ -286,7 +286,7 @@ public static partial class PipelineBuilderExtensions {
     Action<Action<T2>> middleware) {
     ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
     return builder.Use(new AnonymousMiddleware<Unit, T2, Unit, Unit>((_, handler) => {
-      middleware(i => handler.Handle(i));
+      middleware(i => handler.Execute(i));
       return default;
     }));
   }
@@ -304,7 +304,7 @@ public static partial class PipelineBuilderExtensions {
     Action<Action> middleware) {
     ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
     return builder.Use(new AnonymousMiddleware<Unit, Unit, Unit, Unit>((_, handler) => {
-      middleware(() => handler.Handle(default));
+      middleware(() => handler.Execute(default));
       return default;
     }));
   }

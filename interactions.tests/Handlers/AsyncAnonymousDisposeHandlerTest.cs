@@ -12,7 +12,7 @@ public class AsyncAnonymousDisposeHandlerTest {
   [Fact]
   public async Task InvokeInnerHandler() {
     AsyncHandler<Unit, bool> handler = Handler.FromAsyncMethod(_ => new ValueTask<bool>(true)).OnDispose(() => { });
-    Assert.True(await handler.Handle(default));
+    Assert.True(await handler.Execute(default));
   }
 
   [Fact]

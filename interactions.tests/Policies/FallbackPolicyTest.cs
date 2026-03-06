@@ -11,19 +11,19 @@ public class FallbackPolicyTest {
   [Fact]
   public void RegularExecution() {
     Policy<Unit, Unit> policy = Policy<Unit, Unit>.Fallback<InvalidOperationException>(FallbackHandler);
-    policy.Execute(default, _ => default);
+    policy.Execute(default, Executable.Identity());
   }
 
   [Fact]
   public void ReturnFallbackOnException() {
     Policy<int, int> policy = Policy<int, int>.Fallback<InvalidOperationException>(FallbackHandler);
-    Assert.Equal(10, policy.Execute(10, _ => throw new InvalidOperationException()));
+    Assert.Equal(10, policy.Execute(10, Executable.Create<int, int>(_ => throw new InvalidOperationException())));
   }
 
   [Fact]
   public void ThrowExceptionFromFallbackHandler() {
     Policy<Unit, Unit> policy = Policy<Unit, Unit>.Fallback<InvalidOperationException>(RethrowHandler);
-    Assert.Throws<InvalidOperationException>(() => policy.Execute(default, _ => throw new InvalidOperationException()));
+    Assert.Throws<InvalidOperationException>(() => policy.Execute(default, Executable.Create<Unit, Unit>(_ => throw new InvalidOperationException())));
   }
 
   private Unit FallbackHandler<TEx>(Unit input, TEx ex) where TEx : Exception {

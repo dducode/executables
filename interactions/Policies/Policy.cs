@@ -13,9 +13,9 @@ public abstract partial class Policy<T1, T2> {
   /// Executes the policy around provided invocation.
   /// </summary>
   /// <param name="input">Input passed to policy and invocation.</param>
-  /// <param name="invocation">Wrapped operation that produces a result.</param>
+  /// <param name="executable">Wrapped operation that produces a result.</param>
   /// <returns>Operation result after policy logic is applied.</returns>
-  public abstract T2 Execute(T1 input, Func<T1, T2> invocation);
+  public abstract T2 Execute(T1 input, IExecutable<T1, T2> executable);
 
 }
 
@@ -30,9 +30,9 @@ public abstract partial class AsyncPolicy<T1, T2> {
   /// Executes the policy around provided asynchronous invocation.
   /// </summary>
   /// <param name="input">Input passed to policy and invocation.</param>
-  /// <param name="invocation">Wrapped asynchronous operation.</param>
+  /// <param name="executable">Wrapped asynchronous operation.</param>
   /// <param name="token">Cancellation token used by policy and invocation.</param>
   /// <returns>A task that resolves to the invocation result after policy logic is applied.</returns>
-  public abstract ValueTask<T2> Execute(T1 input, AsyncFunc<T1, T2> invocation, CancellationToken token);
+  public abstract ValueTask<T2> Execute(T1 input, IAsyncExecutable<T1, T2> executable, CancellationToken token);
 
 }

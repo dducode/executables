@@ -5,11 +5,11 @@ namespace Interactions.Validation;
 
 internal sealed class ValidationPolicy<T1, T2>(Validator<T1> inputValidator, Validator<T2> outputValidator) : Policy<T1, T2> {
 
-  public override T2 Execute(T1 input, Func<T1, T2> invocation) {
+  public override T2 Execute(T1 input, IExecutable<T1, T2> executable) {
     if (!inputValidator.IsValid(input))
       throw new InvalidInputException(inputValidator.ErrorMessage);
 
-    T2 output = invocation.Invoke(input);
+    T2 output = executable.Execute(input);
 
     if (!outputValidator.IsValid(output))
       throw new InvalidOutputException(outputValidator.ErrorMessage);
@@ -20,11 +20,11 @@ internal sealed class ValidationPolicy<T1, T2>(Validator<T1> inputValidator, Val
 
 internal sealed class AsyncValidationPolicy<T1, T2>(Validator<T1> inputValidator, Validator<T2> outputValidator) : AsyncPolicy<T1, T2> {
 
-  public override async ValueTask<T2> Execute(T1 input, AsyncFunc<T1, T2> invocation, CancellationToken token) {
+  public override async ValueTask<T2> Execute(T1 input, IAsyncExecutable<T1, T2> executable, CancellationToken token) {
     if (!inputValidator.IsValid(input))
       throw new InvalidInputException(inputValidator.ErrorMessage);
 
-    T2 output = await invocation.Invoke(input, token);
+    T2 output = await executable.Execute(input, token);
 
     if (!outputValidator.IsValid(output))
       throw new InvalidOutputException(outputValidator.ErrorMessage);

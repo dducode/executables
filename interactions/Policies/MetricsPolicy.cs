@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using Interactions.Analytics;
+using Interactions.Core;
 
 namespace Interactions.Policies;
 
@@ -8,7 +9,7 @@ internal sealed class MetricsPolicy<T1, T2>(IMetrics<T1, T2> metrics, string tag
 
   private readonly ConcurrentStack<Stopwatch> _stopwatches = new();
 
-  public override T2 Execute(T1 input, Func<T1, T2> invocation) {
+  public override T2 Execute(T1 input, IExecutable<T1, T2> executable) {
     if (!_stopwatches.TryPop(out Stopwatch sw))
       sw = new Stopwatch();
 
@@ -18,7 +19,7 @@ internal sealed class MetricsPolicy<T1, T2>(IMetrics<T1, T2> metrics, string tag
 
       try {
         sw.Restart();
-        result = invocation.Invoke(input);
+        result = executable.Execute(input);
         sw.Stop();
       }
       catch (Exception e) {

@@ -1,17 +1,11 @@
 namespace Interactions.Core.Queries;
 
-public interface IQuery<in T1, out T2> {
-
-  T2 Send(T1 input);
-
-}
-
-public class Query<T1, T2> : Handleable<T1, T2>, IQuery<T1, T2> {
+public class Query<T1, T2> : Handleable<T1, T2>, IExecutable<T1, T2> {
 
   private HandlerNode _handlerNode;
   private readonly object _lock = new();
 
-  public virtual T2 Send(T1 input) {
+  public virtual T2 Execute(T1 input) {
     HandlerNode node = Volatile.Read(ref _handlerNode);
     if (node == null)
       throw new MissingHandlerException("Cannot handle query");
@@ -35,7 +29,7 @@ public class Query<T1, T2> : Handleable<T1, T2>, IQuery<T1, T2> {
   private class HandlerNode(Query<T1, T2> parent, Handler<T1, T2> handler) : IDisposable {
 
     public T2 HandleRequest(T1 request) {
-      return handler.Handle(request);
+      return handler.Execute(request);
     }
 
     public void Dispose() {

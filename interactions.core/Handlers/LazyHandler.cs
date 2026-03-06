@@ -4,8 +4,8 @@ internal sealed class LazyHandler<T1, T2>(IResolver<Handler<T1, T2>> resolver) :
 
   private readonly Lazy<Handler<T1, T2>> _inner = new(resolver);
 
-  protected override T2 HandleCore(T1 input) {
-    return _inner.Value.Handle(input);
+  protected override T2 ExecuteCore(T1 input) {
+    return _inner.Value.Execute(input);
   }
 
   protected override void DisposeCore() {

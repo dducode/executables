@@ -37,8 +37,8 @@ public class CompositeHandlerTest {
       .Next(data => data.money)
     );
 
-    Assert.Equal(firstPlayerMoney, query.Send(0));
-    Assert.Equal(secondPlayerMoney, query.Send(1));
+    Assert.Equal(firstPlayerMoney, query.Execute(0));
+    Assert.Equal(secondPlayerMoney, query.Execute(1));
   }
 
 }

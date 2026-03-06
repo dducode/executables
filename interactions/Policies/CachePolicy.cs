@@ -6,12 +6,12 @@ internal sealed class CachePolicy<T1, T2>(ICacheStorage<T1, T2> storage) : Polic
 
   private readonly object _lock = new();
 
-  public override T2 Execute(T1 input, Func<T1, T2> invocation) {
+  public override T2 Execute(T1 input, IExecutable<T1, T2> executable) {
     lock (_lock)
       if (storage.TryGetValue(input, out T2 cached))
         return cached;
 
-    T2 output = invocation.Invoke(input);
+    T2 output = executable.Execute(input);
     lock (_lock)
       storage.Add(input, output);
     return output;
@@ -23,12 +23,12 @@ internal sealed class AsyncCachePolicy<T1, T2>(ICacheStorage<T1, T2> storage) : 
 
   private readonly object _lock = new();
 
-  public override async ValueTask<T2> Execute(T1 input, AsyncFunc<T1, T2> invocation, CancellationToken token) {
+  public override async ValueTask<T2> Execute(T1 input, IAsyncExecutable<T1, T2> executable, CancellationToken token) {
     lock (_lock)
       if (storage.TryGetValue(input, out T2 cached))
         return cached;
 
-    T2 output = await invocation.Invoke(input, token);
+    T2 output = await executable.Execute(input, token);
     lock (_lock)
       storage.Add(input, output);
     return output;

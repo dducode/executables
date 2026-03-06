@@ -17,8 +17,8 @@ public class AsyncAutoDisposeHandlerTest {
     AsyncHandler<string, int> inner = TestHandler.IntParseHandler().ToAsyncHandler();
     handle.Register(query.Handle(inner.DisposeOnException<ArgumentNullException>(handle)));
 
-    await Assert.ThrowsAsync<ArgumentNullException>(async () => await query.Send(null));
-    await Assert.ThrowsAsync<MissingHandlerException>(async () => await query.Send(null));
+    await Assert.ThrowsAsync<ArgumentNullException>(async () => await query.Execute(null));
+    await Assert.ThrowsAsync<MissingHandlerException>(async () => await query.Execute(null));
   }
 
 }

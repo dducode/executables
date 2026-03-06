@@ -79,7 +79,7 @@ public class Event<T> : Handleable<Publishing<T>, Unit>, IEvent<T> {
     private int _disposed;
 
     public void Publish(T arg, List<ISubscriber<T>> subscribers) {
-      handler.Handle(new Publishing<T>(arg, subscribers));
+      handler.Execute(new Publishing<T>(arg, subscribers));
     }
 
     public void Dispose() {

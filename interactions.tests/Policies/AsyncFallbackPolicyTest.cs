@@ -1,5 +1,6 @@
 using System.Runtime.ExceptionServices;
 using Interactions.Core;
+using Interactions.Core.Extensions;
 using Interactions.Policies;
 using JetBrains.Annotations;
 
@@ -11,7 +12,7 @@ public class AsyncFallbackPolicyTest {
   [Fact]
   public async Task RegularExecution() {
     AsyncPolicy<Unit, Unit> policy = AsyncPolicy<Unit, Unit>.Fallback<InvalidOperationException>(FallbackHandler);
-    await policy.Execute(default, Wait, CancellationToken.None);
+    await policy.Execute(default, Executable.Identity().ToAsyncExecutable(), CancellationToken.None);
   }
 
   [Fact]
@@ -20,19 +21,19 @@ public class AsyncFallbackPolicyTest {
     AsyncPolicy<Unit, Unit> policy = AsyncPolicy<Unit, Unit>.Fallback<InvalidOperationException>(FallbackHandler);
 
     await cts.CancelAsync();
-    await Assert.ThrowsAsync<OperationCanceledException>(async () => await policy.Execute(default, Wait, cts.Token));
+    await Assert.ThrowsAsync<OperationCanceledException>(async () => await policy.Execute(default, Executable.Identity().ToAsyncExecutable(), cts.Token));
   }
 
   [Fact]
   public async Task ReturnFallbackOnException() {
     AsyncPolicy<int, int> policy = AsyncPolicy<int, int>.Fallback<InvalidOperationException>(FallbackHandler);
-    Assert.Equal(10, await policy.Execute(10, FailWait, CancellationToken.None));
+    Assert.Equal(10, await policy.Execute(10, FailWait<int, int>(), CancellationToken.None));
   }
 
   [Fact]
   public async Task ThrowExceptionFromFallbackHandler() {
     AsyncPolicy<Unit, Unit> policy = AsyncPolicy<Unit, Unit>.Fallback<InvalidOperationException>(RethrowHandler);
-    await Assert.ThrowsAsync<InvalidOperationException>(async () => await policy.Execute(default, FailWait, CancellationToken.None));
+    await Assert.ThrowsAsync<InvalidOperationException>(async () => await policy.Execute(default, FailWait<Unit, Unit>(), CancellationToken.None));
   }
 
   private Unit FallbackHandler<TEx>(Unit input, TEx ex) where TEx : Exception {
@@ -48,13 +49,8 @@ public class AsyncFallbackPolicyTest {
     return default;
   }
 
-  private async ValueTask<Unit> Wait(Unit input, CancellationToken token) {
-    await Task.Yield();
-    return default;
-  }
-
-  private ValueTask<T> FailWait<T>(T input, CancellationToken token) {
-    throw new InvalidOperationException();
+  private IAsyncExecutable<T1, T2> FailWait<T1, T2>() {
+    return Executable.CreateAsync<T1, T2>((_, _) => throw new InvalidOperationException());
   }
 
 }

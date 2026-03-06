@@ -44,7 +44,7 @@ public class MiddlewareHandlerTest(ITestOutputHelper testOutputHelper) {
       })
     );
 
-    query.Send();
+    query.Execute();
   }
 
   [Theory]
@@ -66,7 +66,7 @@ public class MiddlewareHandlerTest(ITestOutputHelper testOutputHelper) {
       .End(seconds => (long)(seconds + addedSeconds))
     );
 
-    Assert.Equal(expected, query.Send(input));
+    Assert.Equal(expected, query.Execute(input));
   }
 
 }

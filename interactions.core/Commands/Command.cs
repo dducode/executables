@@ -32,7 +32,7 @@ public class Command<T> : Handleable<T, Unit>, ICommand<T> {
   private class HandlerNode(Command<T> parent, Handler<T, Unit> handler) : IDisposable {
 
     public bool ExecuteCommand(T input) {
-      handler.Handle(input);
+      handler.Execute(input);
       return true;
     }
 

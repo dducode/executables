@@ -20,7 +20,7 @@ internal sealed class ContextualCommand<TInput, TChange> : ICommand<TInput>, IUn
     ThrowIfDisposed();
 
     Debug.Assert(_handler != null);
-    _history.Write(_handler.Handle(input));
+    _history.Write(_handler.Execute(input));
     _context.Push(this);
     return true;
   }

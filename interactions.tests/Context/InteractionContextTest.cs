@@ -28,9 +28,9 @@ public class InteractionContextTest(ITestOutputHelper output) {
     }, guard);
 
     if (isDebug || userIsAdmin)
-      policy.Execute(default, _ => default, InitContext);
+      policy.Execute(default, Executable.Identity(), InitContext);
     else
-      Assert.Throws<AccessDeniedException>(() => policy.Execute(default, _ => default, InitContext));
+      Assert.Throws<AccessDeniedException>(() => policy.Execute(default, Executable.Identity(), InitContext));
     return;
 
     void InitContext(InteractionContext context) {

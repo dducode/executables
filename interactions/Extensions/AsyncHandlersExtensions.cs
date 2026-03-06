@@ -1,5 +1,4 @@
 using System.Diagnostics.Contracts;
-using Interactions.Analytics;
 using Interactions.Core;
 using Interactions.Core.Extensions;
 using Interactions.Handlers;
@@ -8,45 +7,6 @@ using Interactions.Transformation;
 namespace Interactions.Extensions;
 
 public static class AsyncHandlersExtensions {
-
-  [Pure]
-  [Obsolete("Use AsyncPolicy.Fallback() instead", true)]
-  public static AsyncHandler<T1, T2> Catch<TException, T1, T2>(this AsyncHandler<T1, T2> handler, AsyncFunc<TException, T1, T2> func)
-    where TException : Exception {
-    ExceptionsHelper.ThrowIfNull(func, nameof(func));
-    return new AsyncCatchHandler<TException, T1, T2>(handler, func);
-  }
-
-  [Pure]
-  [Obsolete("Use AsyncPolicy.Fallback() instead", true)]
-  public static AsyncHandler<T1, Unit> Catch<TException, T1>(this AsyncHandler<T1, Unit> handler, AsyncAction<TException, T1> action)
-    where TException : Exception {
-    return handler.Catch<TException, T1, Unit>(async (exception, i, token) => {
-      await action(exception, i, token);
-      return default;
-    });
-  }
-
-  [Pure]
-  [Obsolete("Use AsyncPolicy.Fallback() instead", true)]
-  public static AsyncHandler<T1, T2> Catch<TException, T1, T2>(this AsyncHandler<T1, T2> handler, Func<TException, T1, T2> func)
-    where TException : Exception {
-    return handler.Catch<TException, T1, T2>((exception, input, token) => {
-      token.ThrowIfCancellationRequested();
-      return new ValueTask<T2>(func(exception, input));
-    });
-  }
-
-  [Pure]
-  [Obsolete("Use AsyncPolicy.Fallback() instead", true)]
-  public static AsyncHandler<T1, Unit> Catch<TException, T1>(this AsyncHandler<T1, Unit> handler, Action<TException, T1> action)
-    where TException : Exception {
-    return handler.Catch<TException, T1, Unit>((exception, input, token) => {
-      token.ThrowIfCancellationRequested();
-      action(exception, input);
-      return new ValueTask<Unit>();
-    });
-  }
 
   [Pure]
   public static AsyncHandler<T1, T3> Next<T1, T2, T3>(this AsyncHandler<T1, T2> handler, AsyncHandler<T2, T3> nextHandler) {
@@ -70,15 +30,6 @@ public static class AsyncHandlersExtensions {
   [Pure]
   public static AsyncHandler<T1, T3> Next<T1, T2, T3>(this AsyncHandler<T1, T2> handler, Func<T2, T3> nextHandler) {
     return handler.Next(Handler.FromMethod(nextHandler));
-  }
-
-  [Pure]
-  [Obsolete("Use Policy.Retry() instead", true)]
-  public static AsyncHandler<T1, T2> Retry<T1, T2, TException>(this AsyncHandler<T1, T2> handler, AsyncFunc<int, TException, bool> rule)
-    where TException : Exception {
-    ExceptionsHelper.ThrowIfNullReference(handler);
-    ExceptionsHelper.ThrowIfNull(rule, nameof(rule));
-    return new RetryHandler<T1, T2, TException>(handler, rule);
   }
 
   [Pure]
@@ -141,13 +92,6 @@ public static class AsyncHandlersExtensions {
   public static AsyncHandler<T1, T2> Tap<T1, T2>(this AsyncHandler<T1, T2> handler, Action<T2> action) {
     ExceptionsHelper.ThrowIfNull(action, nameof(action));
     return handler.Next(new TransitiveHandler<T2>(action));
-  }
-
-  [Pure]
-  [Obsolete("Use AsyncPolicy.Metrics() instead", true)]
-  public static AsyncHandler<T1, T2> Metrics<T1, T2>(this AsyncHandler<T1, T2> handler, IMetrics<T1, T2> metrics, string tag = null) {
-    ExceptionsHelper.ThrowIfNull(metrics, nameof(metrics));
-    return new AsyncMetricsHandler<T1, T2>(handler, metrics, tag);
   }
 
   [Pure]

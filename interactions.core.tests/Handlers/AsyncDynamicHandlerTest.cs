@@ -15,22 +15,22 @@ public class AsyncDynamicHandlerTest {
       return Handler.FromAsyncMethod((int num, CancellationToken _) => new ValueTask<int>(num * multiplier));
     }));
 
-    Assert.Equal(10, await handler.Handle(10));
-    Assert.Equal(20, await handler.Handle(10));
-    Assert.Equal(30, await handler.Handle(10));
+    Assert.Equal(10, await handler.Execute(10));
+    Assert.Equal(20, await handler.Execute(10));
+    Assert.Equal(30, await handler.Execute(10));
   }
 
   [Fact]
   public async Task ProvideNullHandler() {
     AsyncHandler<Unit, Unit> handler = Handler.Dynamic(Provider.FromMethod(AsyncHandler<Unit, Unit> () => null));
-    await Assert.ThrowsAsync<InvalidOperationException>(async () => await handler.Handle(default));
+    await Assert.ThrowsAsync<InvalidOperationException>(async () => await handler.Execute(default));
   }
 
   [Fact]
   public async Task InnerHandlerNotDispose() {
     AsyncHandler<Unit, Unit> inner = Handler.Identity().ToAsyncHandler();
     AsyncHandler<Unit, Unit> handler = Handler.Dynamic(Provider.FromMethod(() => inner));
-    await handler.Handle(default);
+    await handler.Execute(default);
     Assert.False(inner.Disposed);
   }
 

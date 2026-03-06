@@ -36,7 +36,7 @@ public class AsyncCommand<T> : AsyncHandleable<T, Unit>, IAsyncCommand<T> {
 
     public async ValueTask<bool> ExecuteCommand(T input, CancellationToken token) {
       try {
-        await handler.Handle(input, token);
+        await handler.Execute(input, token);
         return true;
       }
       catch (OperationCanceledException) {

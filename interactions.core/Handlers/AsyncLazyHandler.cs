@@ -4,8 +4,8 @@ internal sealed class AsyncLazyHandler<T1, T2>(IResolver<AsyncHandler<T1, T2>> r
 
   private readonly Lazy<AsyncHandler<T1, T2>> _inner = new(resolver);
 
-  protected override ValueTask<T2> HandleCore(T1 input, CancellationToken token = default) {
-    return _inner.Value.Handle(input, token);
+  protected override ValueTask<T2> ExecuteCore(T1 input, CancellationToken token = default) {
+    return _inner.Value.Execute(input, token);
   }
 
   protected override void DisposeCore() {

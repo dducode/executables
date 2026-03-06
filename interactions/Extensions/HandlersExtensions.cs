@@ -1,5 +1,4 @@
 using System.Diagnostics.Contracts;
-using Interactions.Analytics;
 using Interactions.Core;
 using Interactions.Core.Extensions;
 using Interactions.Handlers;
@@ -8,23 +7,6 @@ using Interactions.Transformation;
 namespace Interactions.Extensions;
 
 public static class HandlersExtensions {
-
-  [Pure]
-  [Obsolete("Use Policy.Fallback() instead", true)]
-  public static Handler<T1, T2> Catch<TException, T1, T2>(this Handler<T1, T2> handler, Func<TException, T1, T2> @catch) where TException : Exception {
-    ExceptionsHelper.ThrowIfNull(@catch, nameof(@catch));
-    return new CatchHandler<TException, T1, T2>(handler, @catch);
-  }
-
-  [Pure]
-  [Obsolete("Use Policy.Fallback() instead", true)]
-  public static Handler<T1, T2> Catch<TException, T1, T2>(this Handler<T1, T2> handler, Action<TException, T1> @catch) where TException : Exception {
-    ExceptionsHelper.ThrowIfNull(@catch, nameof(@catch));
-    return new CatchHandler<TException, T1, T2>(handler, (exception, arg2) => {
-      @catch(exception, arg2);
-      return default;
-    });
-  }
 
   [Pure]
   public static Handler<T1, T3> Next<T1, T2, T3>(this Handler<T1, T2> handler, Handler<T2, T3> nextHandler) {
@@ -107,13 +89,6 @@ public static class HandlersExtensions {
   public static AsyncHandler<T1, T2> Tap<T1, T2>(this Handler<T1, T2> handler, AsyncAction<T2> action) {
     ExceptionsHelper.ThrowIfNull(action, nameof(action));
     return handler.Next(new AsyncTransitiveHandler<T2>(action));
-  }
-
-  [Pure]
-  [Obsolete("Use Policy.Metrics() instead", true)]
-  public static Handler<T1, T2> Metrics<T1, T2>(this Handler<T1, T2> handler, IMetrics<T1, T2> metrics, string tag = null) {
-    ExceptionsHelper.ThrowIfNull(metrics, nameof(metrics));
-    return new MetricsHandler<T1, T2>(handler, metrics, tag);
   }
 
   [Pure]

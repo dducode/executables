@@ -11,7 +11,7 @@ public class AnonymousDisposeHandlerTest {
   [Fact]
   public void InvokeInnerHandler() {
     Handler<Unit, bool> handler = Handler.FromMethod(() => true).OnDispose(() => { });
-    Assert.True(handler.Handle(default));
+    Assert.True(handler.Execute(default));
   }
 
   [Fact]

@@ -1,3 +1,4 @@
+using Interactions.Core;
 using Interactions.Policies;
 using Interactions.Validation;
 using JetBrains.Annotations;
@@ -12,9 +13,9 @@ public class DynamicPolicyTest {
     var validate = false;
     Policy<int, int> policy = Policy<int, int>.Optional(() => validate, Policy<int, int>.ValidateInput(Validator.MoreThan(0)));
 
-    Assert.Equal(1, policy.Execute(-1, num => num * -1));
+    Assert.Equal(1, policy.Execute(-1, Executable.Create((int num) => num * -1)));
     validate = true;
-    Assert.Throws<InvalidInputException>(() => policy.Execute(-1, num => num));
+    Assert.Throws<InvalidInputException>(() => policy.Execute(-1, Executable.Create((int num) => num)));
   }
 
 }

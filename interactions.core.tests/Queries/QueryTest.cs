@@ -14,17 +14,17 @@ public class QueryTest {
   public void GetStringRepresentation<T>(string expected, T value) {
     var query = new Query<T, string>();
     using IDisposable handle = query.Handle(TestHandler.ToStringHandler<T>());
-    Assert.Equal(expected, query.Send(value));
+    Assert.Equal(expected, query.Execute(value));
   }
 
   [Fact]
   public void SendWithoutHandler() {
     var query = new Query<Unit, Unit>();
-    Assert.Throws<MissingHandlerException>(() => query.Send(default));
+    Assert.Throws<MissingHandlerException>(() => query.Execute(default));
     IDisposable handle = query.Handle(Handler.Identity());
-    query.Send(default);
+    query.Execute(default);
     handle.Dispose();
-    Assert.Throws<MissingHandlerException>(() => query.Send(default));
+    Assert.Throws<MissingHandlerException>(() => query.Execute(default));
   }
 
   [Fact]
