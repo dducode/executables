@@ -19,7 +19,7 @@ public static partial class InteractionsExtensions {
     IAsyncExecutable<T1, T2> executable,
     Action<InteractionContext> init,
     CancellationToken token = default) {
-    return InvokeWithContext(input, Executable.CreateAsync<T1, T2>((i, t) => policy.Execute(i, executable, t)), init, token);
+    return InvokeWithContext(input, AsyncExecutable.Create<T1, T2>((i, t) => policy.Execute(i, executable, t)), init, token);
   }
 
   private static async ValueTask<T2> InvokeWithContext<T1, T2>(

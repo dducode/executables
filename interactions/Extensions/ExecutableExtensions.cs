@@ -38,7 +38,7 @@ public static class ExecutableExtensions {
 
   [Pure]
   public static IAsyncExecutable<T1, T3> Next<T1, T2, T3>(this IExecutable<T1, T2> executable, AsyncFunc<T2, T3> next) {
-    return executable.ToAsyncExecutable().Next(Executable.CreateAsync(next));
+    return executable.ToAsyncExecutable().Next(AsyncExecutable.Create(next));
   }
 
   [Pure]
@@ -48,7 +48,7 @@ public static class ExecutableExtensions {
 
   [Pure]
   public static IAsyncExecutable<T1, T3> Next<T1, T2, T3>(this IAsyncExecutable<T1, T2> executable, AsyncFunc<T2, T3> next) {
-    return executable.Next(Executable.CreateAsync(next));
+    return executable.Next(AsyncExecutable.Create(next));
   }
 
   [Pure]

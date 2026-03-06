@@ -50,7 +50,7 @@ public class AsyncFallbackPolicyTest {
   }
 
   private IAsyncExecutable<T1, T2> FailWait<T1, T2>() {
-    return Executable.CreateAsync<T1, T2>((_, _) => throw new InvalidOperationException());
+    return AsyncExecutable.Create<T1, T2>((_, _) => throw new InvalidOperationException());
   }
 
 }

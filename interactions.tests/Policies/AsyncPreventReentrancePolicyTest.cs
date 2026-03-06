@@ -38,7 +38,7 @@ public class AsyncPreventReentrancePolicyTest {
   public async Task NestedExecution() {
     AsyncPolicy<Unit, Unit> policy = AsyncPolicy<Unit, Unit>.PreventReentrance();
 
-    await policy.Execute(default, Executable.CreateAsync(async (Unit input, CancellationToken token) => {
+    await policy.Execute(default, AsyncExecutable.Create(async (Unit input, CancellationToken token) => {
       await Assert.ThrowsAsync<ReentranceException>(async () => await policy.Execute(input, Executable.Identity().ToAsyncExecutable(), token));
     }), CancellationToken.None);
   }
@@ -69,7 +69,7 @@ public class AsyncPreventReentrancePolicyTest {
     AsyncPolicy<Unit, Unit> policy = AsyncPolicy<Unit, Unit>.PreventReentrance();
 
     await Parallel.ForAsync(0, 10, async (_, token) => {
-      await policy.Execute(default, Executable.CreateAsync(async (Unit input, CancellationToken t) => {
+      await policy.Execute(default, AsyncExecutable.Create(async (Unit input, CancellationToken t) => {
         await Assert.ThrowsAsync<ReentranceException>(async () => await policy.Execute(input, Executable.Identity().ToAsyncExecutable(), t));
       }), token);
     });
@@ -79,7 +79,7 @@ public class AsyncPreventReentrancePolicyTest {
   public async Task NestedParallelExecute() {
     AsyncPolicy<Unit, Unit> policy = AsyncPolicy<Unit, Unit>.PreventReentrance();
 
-    await policy.Execute(default, Executable.CreateAsync(async (Unit _, CancellationToken token) => {
+    await policy.Execute(default, AsyncExecutable.Create(async (Unit _, CancellationToken token) => {
       await Parallel.ForAsync(0, 10, token, async (_, t) => {
         await Assert.ThrowsAsync<ReentranceException>(async () => await policy.Execute(default, Executable.Identity().ToAsyncExecutable(), t));
       });
