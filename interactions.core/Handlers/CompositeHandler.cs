@@ -1,7 +1,6 @@
-using Interactions.Core;
 using Interactions.Core.Extensions;
 
-namespace Interactions.Handlers;
+namespace Interactions.Core.Handlers;
 
 internal sealed class CompositeHandler<T1, T2, T3>(Handler<T1, T2> first, Handler<T2, T3> second) : Handler<T1, T3> {
 

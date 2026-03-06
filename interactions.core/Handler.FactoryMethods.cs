@@ -31,6 +31,7 @@ public static class Handler {
     return new IdentityHandler<T>();
   }
 
+  [Pure]
   public static Handler<Unit, Unit> Identity() {
     return Identity<Unit>();
   }

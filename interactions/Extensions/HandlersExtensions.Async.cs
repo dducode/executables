@@ -1,36 +1,12 @@
 using System.Diagnostics.Contracts;
 using Interactions.Core;
-using Interactions.Core.Extensions;
+using Interactions.Core.Handlers;
 using Interactions.Handlers;
 using Interactions.Transformation;
 
 namespace Interactions.Extensions;
 
 public static partial class HandlersExtensions {
-
-  [Pure]
-  public static AsyncHandler<T1, T3> Next<T1, T2, T3>(this AsyncHandler<T1, T2> handler, AsyncHandler<T2, T3> nextHandler) {
-    ExceptionsHelper.ThrowIfNullReference(handler);
-    ExceptionsHelper.ThrowIfNull(nextHandler, nameof(nextHandler));
-    return new AsyncCompositeHandler<T1, T2, T3>(handler, nextHandler);
-  }
-
-  [Pure]
-  public static AsyncHandler<T1, T3> Next<T1, T2, T3>(this AsyncHandler<T1, T2> handler, Handler<T2, T3> nextHandler) {
-    ExceptionsHelper.ThrowIfNullReference(handler);
-    ExceptionsHelper.ThrowIfNull(nextHandler, nameof(nextHandler));
-    return new AsyncCompositeHandler<T1, T2, T3>(handler, nextHandler.ToAsyncHandler());
-  }
-
-  [Pure]
-  public static AsyncHandler<T1, T3> Next<T1, T2, T3>(this AsyncHandler<T1, T2> handler, AsyncFunc<T2, T3> nextHandler) {
-    return handler.Next(AsyncHandler.FromMethod(nextHandler));
-  }
-
-  [Pure]
-  public static AsyncHandler<T1, T3> Next<T1, T2, T3>(this AsyncHandler<T1, T2> handler, Func<T2, T3> nextHandler) {
-    return handler.Next(Handler.FromMethod(nextHandler));
-  }
 
   [Pure]
   public static AsyncHandler<T1, T4> Transform<T1, T2, T3, T4>(

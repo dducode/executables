@@ -1,11 +1,10 @@
 using AutoFixture;
-using Interactions.Core;
+using Interactions.Core.Handlers;
 using Interactions.Core.Queries;
-using Interactions.Extensions;
-using Interactions.Handlers;
+using Interactions.Core.Extensions;
 using JetBrains.Annotations;
 
-namespace Interactions.Tests.Handlers;
+namespace Interactions.Core.Tests.Handlers;
 
 [TestSubject(typeof(CompositeHandler<,,>))]
 public class CompositeHandlerTest {

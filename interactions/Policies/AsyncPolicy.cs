@@ -1,3 +1,5 @@
+using Interactions.Core;
+
 namespace Interactions.Policies;
 
 /// <summary>

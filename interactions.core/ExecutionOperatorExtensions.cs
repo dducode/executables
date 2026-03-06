@@ -1,6 +1,4 @@
-using Interactions.Core;
-
-namespace Interactions;
+namespace Interactions.Core;
 
 public static class ExecutionOperatorExtensions {
 

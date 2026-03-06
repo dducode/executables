@@ -1,6 +1,4 @@
-using Interactions.Core;
-
-namespace Interactions;
+namespace Interactions.Core;
 
 internal sealed class CompositeExecutable<T1, T2, T3>(IExecutable<T1, T2> first, IExecutable<T2, T3> second) : IExecutable<T1, T3> {
 
