@@ -9,7 +9,7 @@ internal sealed class MetricsPolicy<T1, T2>(IMetrics<T1, T2> metrics, string tag
 
   private readonly ConcurrentStack<Stopwatch> _stopwatches = new();
 
-  public override T2 Execute(T1 input, IExecutable<T1, T2> executable) {
+  public override T2 Invoke(T1 input, IExecutable<T1, T2> executable) {
     if (!_stopwatches.TryPop(out Stopwatch sw))
       sw = new Stopwatch();
 

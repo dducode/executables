@@ -12,7 +12,7 @@ public class AsyncDynamicHandlerTest {
     var multiplier = 0;
     AsyncHandler<int, int> handler = Handler.Dynamic(Provider.FromMethod(() => {
       multiplier++;
-      return Handler.FromAsyncMethod((int num, CancellationToken _) => new ValueTask<int>(num * multiplier));
+      return AsyncHandler.FromMethod((int num, CancellationToken _) => new ValueTask<int>(num * multiplier));
     }));
 
     Assert.Equal(10, await handler.Execute(10));

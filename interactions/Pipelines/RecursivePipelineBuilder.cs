@@ -1,6 +1,6 @@
 using Interactions.Core;
 
-namespace Interactions.Builders;
+namespace Interactions.Pipelines;
 
 internal sealed class RecursivePipelineBuilder<T1, T2, T3, T4, T5, T6>(
   PipelineBuilder<T1, T2, T5, T6> first,
@@ -9,6 +9,11 @@ internal sealed class RecursivePipelineBuilder<T1, T2, T3, T4, T5, T6>(
   public override Handler<T1, T6> End(Handler<T3, T4> handler) {
     ExceptionsHelper.ThrowIfNull(handler, nameof(handler));
     return first.End(second.End(handler));
+  }
+
+  public override IExecutable<T1, T6> End(IExecutable<T3, T4> executable) {
+    ExceptionsHelper.ThrowIfNull(executable, nameof(executable));
+    return first.End(second.End(executable));
   }
 
 }

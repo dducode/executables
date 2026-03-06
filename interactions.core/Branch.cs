@@ -15,7 +15,7 @@ public static class Branch<T1, T2> {
   }
 
   public static AsyncBranchBuilder<T1, T2> If(Func<bool> condition, AsyncFunc<T1, T2> func) {
-    return If(condition, Handler.FromAsyncMethod(func));
+    return If(condition, AsyncHandler.FromMethod(func));
   }
 
 }
@@ -43,7 +43,7 @@ public static class Branch<T> {
   }
 
   public static AsyncBranchBuilder<T, Unit> If(Func<bool> condition, AsyncAction<T> action) {
-    return If(condition, Handler.FromAsyncMethod(action));
+    return If(condition, AsyncHandler.FromMethod(action));
   }
 
   public static AsyncBranchBuilder<Unit, T> If(Func<bool> condition, AsyncHandler<Unit, T> handler) {
@@ -51,7 +51,7 @@ public static class Branch<T> {
   }
 
   public static AsyncBranchBuilder<Unit, T> If(Func<bool> condition, AsyncFunc<T> action) {
-    return If(condition, Handler.FromAsyncMethod(action));
+    return If(condition, AsyncHandler.FromMethod(action));
   }
 
 }
@@ -71,7 +71,7 @@ public static class Branch {
   }
 
   public static AsyncBranchBuilder<Unit, Unit> If(Func<bool> condition, AsyncAction action) {
-    return If(condition, Handler.FromAsyncMethod(action));
+    return If(condition, AsyncHandler.FromMethod(action));
   }
 
 }

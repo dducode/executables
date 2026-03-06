@@ -1,7 +1,6 @@
 using Interactions.Core;
 using Interactions.Core.Extensions;
 using Interactions.Core.Queries;
-using Interactions.Extensions;
 using Interactions.Pipelines;
 using JetBrains.Annotations;
 using Xunit.Abstractions;
@@ -37,11 +36,11 @@ public class MiddlewareHandlerTest(ITestOutputHelper testOutputHelper) {
         testOutputHelper.WriteLine("End second");
         secondEnd = true;
       })
-      .End(() => {
+      .End(Handler.FromMethod(() => {
         Assert.True(secondStarted);
         testOutputHelper.WriteLine("Finish");
         thirdEnd = true;
-      })
+      }))
     );
 
     query.Execute();
@@ -63,7 +62,7 @@ public class MiddlewareHandlerTest(ITestOutputHelper testOutputHelper) {
         long result = next.Invoke(seconds);
         return TimeSpan.FromSeconds(result);
       })
-      .End(seconds => (long)(seconds + addedSeconds))
+      .End(Handler.FromMethod((double seconds) => (long)(seconds + addedSeconds)))
     );
 
     Assert.Equal(expected, query.Execute(input));

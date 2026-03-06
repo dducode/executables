@@ -8,7 +8,7 @@ internal sealed class IdentityPolicy<T1, T2> : Policy<T1, T2> {
 
   private IdentityPolicy() { }
 
-  public override T2 Execute(T1 input, IExecutable<T1, T2> executable) {
+  public override T2 Invoke(T1 input, IExecutable<T1, T2> executable) {
     return executable.Execute(input);
   }
 
@@ -20,7 +20,7 @@ internal sealed class AsyncIdentityPolicy<T1, T2> : AsyncPolicy<T1, T2> {
 
   private AsyncIdentityPolicy() { }
 
-  public override ValueTask<T2> Execute(T1 input, IAsyncExecutable<T1, T2> executable, CancellationToken token) {
+  public override ValueTask<T2> Invoke(T1 input, IAsyncExecutable<T1, T2> executable, CancellationToken token = default) {
     return executable.Execute(input, token);
   }
 

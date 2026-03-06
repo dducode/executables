@@ -1,5 +1,4 @@
 using Interactions.Core;
-using Interactions.Policies;
 
 namespace Interactions;
 
@@ -13,13 +12,13 @@ public static partial class InteractionsExtensions {
     return InvokeWithContext(input, executable, init, token);
   }
 
-  public static ValueTask<T2> Execute<T1, T2>(
-    this AsyncPolicy<T1, T2> policy,
+  public static ValueTask<T4> Invoke<T1, T2, T3, T4>(
+    this AsyncExecutionOperator<T1, T2, T3, T4> executionOperator,
     T1 input,
-    IAsyncExecutable<T1, T2> executable,
+    IAsyncExecutable<T2, T3> executable,
     Action<InteractionContext> init,
     CancellationToken token = default) {
-    return InvokeWithContext(input, AsyncExecutable.Create<T1, T2>((i, t) => policy.Execute(i, executable, t)), init, token);
+    return InvokeWithContext(input, executionOperator.AsExecutable(executable), init, token);
   }
 
   private static async ValueTask<T2> InvokeWithContext<T1, T2>(

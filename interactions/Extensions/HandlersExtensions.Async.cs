@@ -24,7 +24,7 @@ public static partial class HandlersExtensions {
 
   [Pure]
   public static AsyncHandler<T1, T3> Next<T1, T2, T3>(this AsyncHandler<T1, T2> handler, AsyncFunc<T2, T3> nextHandler) {
-    return handler.Next(Handler.FromAsyncMethod(nextHandler));
+    return handler.Next(AsyncHandler.FromMethod(nextHandler));
   }
 
   [Pure]

@@ -1,4 +1,3 @@
-using Interactions.Builders;
 using Interactions.Core;
 
 namespace Interactions.Pipelines;
@@ -6,22 +5,22 @@ namespace Interactions.Pipelines;
 /// <summary>
 /// Entry point for building pipelines that return a value.
 /// </summary>
-/// <typeparam name="T1">Input type of the final composed handler.</typeparam>
-/// <typeparam name="T4">Output type of the final composed handler.</typeparam>
+/// <typeparam name="T1">Input type of the final composed executable.</typeparam>
+/// <typeparam name="T4">Output type of the final composed executable.</typeparam>
 /// <remarks>
 /// For overloads of <c>Use</c> method, it is recommended
 /// to explicitly specify lambda parameter types to avoid overload-resolution ambiguity.
 /// <example>
 /// <code>
-/// var handler = Pipeline&lt;string, string&gt;
+/// var executable = Pipeline&lt;string, string&gt;
 ///   .Use((string time, Func&lt;TimeSpan, TimeSpan&gt; next) =&gt; {
 ///     var parsed = TimeSpan.Parse(time);
 ///     return next(parsed).ToString();
 ///   })
-///   .End(parsed =&gt; {
+///   .End(Executable.Create(TimeSpan parsed =&gt; {
 ///     Console.WriteLine(parsed);
 ///     return parsed;
-///   });
+///   }));
 /// </code>
 /// </example>
 /// </remarks>
@@ -33,10 +32,10 @@ public static partial class Pipeline<T1, T4> {
   /// <typeparam name="T2">Input type expected by the downstream function.</typeparam>
   /// <typeparam name="T3">Output type returned by the downstream function.</typeparam>
   /// <param name="middleware">Middleware function that can invoke downstream function.</param>
-  /// <returns>Builder for appending next middleware steps and terminal handler.</returns>
+  /// <returns>Builder for appending next middleware steps and terminal executable.</returns>
   public static PipelineBuilder<T1, T2, T3, T4> Use<T2, T3>(Func<T1, Func<T2, T3>, T4> middleware) {
     ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
-    return new PipelineBuilder<T1, T2, T3, T4>(new AnonymousMiddleware<T1, T2, T3, T4>((input, handler) => middleware(input, handler.Execute)));
+    return new PipelineBuilder<T1, T2, T3, T4>(new AnonymousMiddleware<T1, T2, T3, T4>((input, executable) => middleware(input, executable.Execute)));
   }
 
   /// <summary>
@@ -47,8 +46,8 @@ public static partial class Pipeline<T1, T4> {
   /// <returns>Builder with downstream input fixed to <see cref="Unit" />.</returns>
   public static PipelineBuilder<T1, Unit, T, T4> Use<T>(Func<T1, Func<T>, T4> middleware) {
     ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
-    return new PipelineBuilder<T1, Unit, T, T4>(new AnonymousMiddleware<T1, Unit, T, T4>((input, handler) => {
-      return middleware(input, () => handler.Execute(default));
+    return new PipelineBuilder<T1, Unit, T, T4>(new AnonymousMiddleware<T1, Unit, T, T4>((input, executable) => {
+      return middleware(input, () => executable.Execute(default));
     }));
   }
 
@@ -60,8 +59,8 @@ public static partial class Pipeline<T1, T4> {
   /// <returns>Builder whose downstream output type is <see cref="Unit" />.</returns>
   public static PipelineBuilder<T1, T, Unit, T4> Use<T>(Func<T1, Action<T>, T4> middleware) {
     ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
-    return new PipelineBuilder<T1, T, Unit, T4>(new AnonymousMiddleware<T1, T, Unit, T4>((input, handler) => {
-      return middleware(input, i => handler.Execute(i));
+    return new PipelineBuilder<T1, T, Unit, T4>(new AnonymousMiddleware<T1, T, Unit, T4>((input, executable) => {
+      return middleware(input, i => executable.Execute(i));
     }));
   }
 
@@ -72,8 +71,8 @@ public static partial class Pipeline<T1, T4> {
   /// <returns>Builder whose downstream input and output types are <see cref="Unit" />.</returns>
   public static PipelineBuilder<T1, Unit, Unit, T4> Use(Func<T1, Action, T4> middleware) {
     ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
-    return new PipelineBuilder<T1, Unit, Unit, T4>(new AnonymousMiddleware<T1, Unit, Unit, T4>((input, handler) => {
-      return middleware(input, () => handler.Execute(default));
+    return new PipelineBuilder<T1, Unit, Unit, T4>(new AnonymousMiddleware<T1, Unit, Unit, T4>((input, executable) => {
+      return middleware(input, () => executable.Execute(default));
     }));
   }
 
@@ -82,7 +81,7 @@ public static partial class Pipeline<T1, T4> {
 /// <summary>
 /// Entry point for building pipelines that return <see cref="Unit" />.
 /// </summary>
-/// <typeparam name="T">Input/output type of the final composed handler.</typeparam>
+/// <typeparam name="T">Input/output type of the final composed executable.</typeparam>
 public static partial class Pipeline<T> {
 
   /// <summary>
@@ -91,10 +90,10 @@ public static partial class Pipeline<T> {
   /// <typeparam name="T1">Input type expected by the downstream function.</typeparam>
   /// <typeparam name="T2">Output type returned by the downstream function.</typeparam>
   /// <param name="middleware">Middleware function that can invoke downstream function.</param>
-  /// <returns>Builder for appending next middleware steps and terminal handler.</returns>
+  /// <returns>Builder for appending next middleware steps and terminal executable.</returns>
   public static PipelineBuilder<Unit, T1, T2, T> Use<T1, T2>(Func<Func<T1, T2>, T> middleware) {
     ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
-    return new PipelineBuilder<Unit, T1, T2, T>(new AnonymousMiddleware<Unit, T1, T2, T>((_, handler) => middleware(handler.Execute)));
+    return new PipelineBuilder<Unit, T1, T2, T>(new AnonymousMiddleware<Unit, T1, T2, T>((_, executable) => middleware(executable.Execute)));
   }
 
   /// <summary>
@@ -105,8 +104,8 @@ public static partial class Pipeline<T> {
   /// <returns>Builder with downstream input fixed to <see cref="Unit" />.</returns>
   public static PipelineBuilder<Unit, Unit, T1, T> Use<T1>(Func<Func<T1>, T> middleware) {
     ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
-    return new PipelineBuilder<Unit, Unit, T1, T>(new AnonymousMiddleware<Unit, Unit, T1, T>((_, handler) => {
-      return middleware(() => handler.Execute(default));
+    return new PipelineBuilder<Unit, Unit, T1, T>(new AnonymousMiddleware<Unit, Unit, T1, T>((_, executable) => {
+      return middleware(() => executable.Execute(default));
     }));
   }
 
@@ -118,8 +117,8 @@ public static partial class Pipeline<T> {
   /// <returns>Builder with downstream output fixed to <see cref="Unit" />.</returns>
   public static PipelineBuilder<Unit, T1, Unit, T> Use<T1>(Func<Action<T1>, T> middleware) {
     ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
-    return new PipelineBuilder<Unit, T1, Unit, T>(new AnonymousMiddleware<Unit, T1, Unit, T>((_, handler) => {
-      return middleware(input => handler.Execute(input));
+    return new PipelineBuilder<Unit, T1, Unit, T>(new AnonymousMiddleware<Unit, T1, Unit, T>((_, executable) => {
+      return middleware(input => executable.Execute(input));
     }));
   }
 
@@ -130,8 +129,8 @@ public static partial class Pipeline<T> {
   /// <returns>Builder with downstream input/output fixed to <see cref="Unit" />.</returns>
   public static PipelineBuilder<Unit, Unit, Unit, T> Use(Func<Action, T> middleware) {
     ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
-    return new PipelineBuilder<Unit, Unit, Unit, T>(new AnonymousMiddleware<Unit, Unit, Unit, T>((_, handler) => {
-      return middleware(() => handler.Execute(default));
+    return new PipelineBuilder<Unit, Unit, Unit, T>(new AnonymousMiddleware<Unit, Unit, Unit, T>((_, executable) => {
+      return middleware(() => executable.Execute(default));
     }));
   }
 
@@ -141,11 +140,11 @@ public static partial class Pipeline<T> {
   /// <typeparam name="T1">Input type expected by the downstream function.</typeparam>
   /// <typeparam name="T2">Output type returned by the downstream function.</typeparam>
   /// <param name="middleware">Middleware action that can invoke downstream function.</param>
-  /// <returns>Builder for appending next middleware steps and terminal handler.</returns>
+  /// <returns>Builder for appending next middleware steps and terminal executable.</returns>
   public static PipelineBuilder<T, T1, T2, Unit> Use<T1, T2>(Action<T, Func<T1, T2>> middleware) {
     ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
-    return new PipelineBuilder<T, T1, T2, Unit>(new AnonymousMiddleware<T, T1, T2, Unit>((input, handler) => {
-      middleware(input, handler.Execute);
+    return new PipelineBuilder<T, T1, T2, Unit>(new AnonymousMiddleware<T, T1, T2, Unit>((input, executable) => {
+      middleware(input, executable.Execute);
       return default;
     }));
   }
@@ -158,8 +157,8 @@ public static partial class Pipeline<T> {
   /// <returns>Builder with downstream input fixed to <see cref="Unit" />.</returns>
   public static PipelineBuilder<T, Unit, T1, Unit> Use<T1>(Action<T, Func<T1>> middleware) {
     ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
-    return new PipelineBuilder<T, Unit, T1, Unit>(new AnonymousMiddleware<T, Unit, T1, Unit>((input, handler) => {
-      middleware(input, () => handler.Execute(default));
+    return new PipelineBuilder<T, Unit, T1, Unit>(new AnonymousMiddleware<T, Unit, T1, Unit>((input, executable) => {
+      middleware(input, () => executable.Execute(default));
       return default;
     }));
   }
@@ -172,8 +171,8 @@ public static partial class Pipeline<T> {
   /// <returns>Builder whose downstream output type is <see cref="Unit" />.</returns>
   public static PipelineBuilder<T, T1, Unit, Unit> Use<T1>(Action<T, Action<T1>> middleware) {
     ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
-    return new PipelineBuilder<T, T1, Unit, Unit>(new AnonymousMiddleware<T, T1, Unit, Unit>((input, handler) => {
-      middleware(input, i => handler.Execute(i));
+    return new PipelineBuilder<T, T1, Unit, Unit>(new AnonymousMiddleware<T, T1, Unit, Unit>((input, executable) => {
+      middleware(input, i => executable.Execute(i));
       return default;
     }));
   }
@@ -185,8 +184,8 @@ public static partial class Pipeline<T> {
   /// <returns>Builder whose downstream input and output types are <see cref="Unit" />.</returns>
   public static PipelineBuilder<T, Unit, Unit, Unit> Use(Action<T, Action> middleware) {
     ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
-    return new PipelineBuilder<T, Unit, Unit, Unit>(new AnonymousMiddleware<T, Unit, Unit, Unit>((input, handler) => {
-      middleware(input, () => handler.Execute(default));
+    return new PipelineBuilder<T, Unit, Unit, Unit>(new AnonymousMiddleware<T, Unit, Unit, Unit>((input, executable) => {
+      middleware(input, () => executable.Execute(default));
       return default;
     }));
   }
@@ -204,11 +203,11 @@ public static partial class Pipeline {
   /// <typeparam name="T1">Input type expected by the downstream function.</typeparam>
   /// <typeparam name="T2">Output type returned by the downstream function.</typeparam>
   /// <param name="middleware">Middleware action that can invoke downstream function.</param>
-  /// <returns>Builder for appending next middleware steps and terminal handler.</returns>
+  /// <returns>Builder for appending next middleware steps and terminal executable.</returns>
   public static PipelineBuilder<Unit, T1, T2, Unit> Use<T1, T2>(Action<Func<T1, T2>> middleware) {
     ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
-    return new PipelineBuilder<Unit, T1, T2, Unit>(new AnonymousMiddleware<Unit, T1, T2, Unit>((_, handler) => {
-      middleware(handler.Execute);
+    return new PipelineBuilder<Unit, T1, T2, Unit>(new AnonymousMiddleware<Unit, T1, T2, Unit>((_, executable) => {
+      middleware(executable.Execute);
       return default;
     }));
   }
@@ -221,8 +220,8 @@ public static partial class Pipeline {
   /// <returns>Builder with downstream input fixed to <see cref="Unit" />.</returns>
   public static PipelineBuilder<Unit, Unit, T, Unit> Use<T>(Action<Func<T>> middleware) {
     ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
-    return new PipelineBuilder<Unit, Unit, T, Unit>(new AnonymousMiddleware<Unit, Unit, T, Unit>((_, handler) => {
-      middleware(() => handler.Execute(default));
+    return new PipelineBuilder<Unit, Unit, T, Unit>(new AnonymousMiddleware<Unit, Unit, T, Unit>((_, executable) => {
+      middleware(() => executable.Execute(default));
       return default;
     }));
   }
@@ -235,8 +234,8 @@ public static partial class Pipeline {
   /// <returns>Builder with downstream output fixed to <see cref="Unit" />.</returns>
   public static PipelineBuilder<Unit, T, Unit, Unit> Use<T>(Action<Action<T>> middleware) {
     ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
-    return new PipelineBuilder<Unit, T, Unit, Unit>(new AnonymousMiddleware<Unit, T, Unit, Unit>((_, handler) => {
-      middleware(i => handler.Execute(i));
+    return new PipelineBuilder<Unit, T, Unit, Unit>(new AnonymousMiddleware<Unit, T, Unit, Unit>((_, executable) => {
+      middleware(i => executable.Execute(i));
       return default;
     }));
   }
@@ -248,8 +247,8 @@ public static partial class Pipeline {
   /// <returns>Builder whose all generic types are <see cref="Unit" />.</returns>
   public static PipelineBuilder<Unit, Unit, Unit, Unit> Use(Action<Action> middleware) {
     ExceptionsHelper.ThrowIfNull(middleware, nameof(middleware));
-    return new PipelineBuilder<Unit, Unit, Unit, Unit>(new AnonymousMiddleware<Unit, Unit, Unit, Unit>((_, handler) => {
-      middleware(() => handler.Execute(default));
+    return new PipelineBuilder<Unit, Unit, Unit, Unit>(new AnonymousMiddleware<Unit, Unit, Unit, Unit>((_, executable) => {
+      middleware(() => executable.Execute(default));
       return default;
     }));
   }

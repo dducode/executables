@@ -11,16 +11,16 @@ public class PreventReentrancePolicyTest {
   public void SequentialExecute() {
     Policy<Unit, Unit> policy = Policy<Unit, Unit>.PreventReentrance();
 
-    policy.Execute(default, Executable.Identity());
-    policy.Execute(default, Executable.Identity());
+    policy.Invoke(default, Executable.Identity());
+    policy.Invoke(default, Executable.Identity());
   }
 
   [Fact]
   public void NestedExecution() {
     Policy<Unit, Unit> policy = Policy<Unit, Unit>.PreventReentrance();
 
-    policy.Execute(default, Executable.Create((Unit _) => {
-      Assert.Throws<ReentranceException>(() => policy.Execute(default, Executable.Identity()));
+    policy.Invoke(default, Executable.Create((Unit _) => {
+      Assert.Throws<ReentranceException>(() => policy.Invoke(default, Executable.Identity()));
     }));
   }
 
@@ -29,8 +29,8 @@ public class PreventReentrancePolicyTest {
     Policy<Unit, Unit> policy = Policy<Unit, Unit>.PreventReentrance();
 
     Parallel.For(0, 10, _ => {
-      policy.Execute(default, Executable.Identity());
-      policy.Execute(default, Executable.Identity());
+      policy.Invoke(default, Executable.Identity());
+      policy.Invoke(default, Executable.Identity());
     });
   }
 
@@ -38,8 +38,8 @@ public class PreventReentrancePolicyTest {
   public void ParallelNestedExecution() {
     Policy<Unit, Unit> policy = Policy<Unit, Unit>.PreventReentrance();
 
-    Parallel.For(0, 10, _ => policy.Execute(default, Executable.Create((Unit _) => {
-      Assert.Throws<ReentranceException>(() => policy.Execute(default, Executable.Identity()));
+    Parallel.For(0, 10, _ => policy.Invoke(default, Executable.Create((Unit _) => {
+      Assert.Throws<ReentranceException>(() => policy.Invoke(default, Executable.Identity()));
     })));
   }
 

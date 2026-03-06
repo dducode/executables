@@ -1,8 +1,7 @@
 using System.Diagnostics.Contracts;
 using Interactions.Core;
-using Interactions.Pipelines;
 
-namespace Interactions.Builders;
+namespace Interactions.Pipelines;
 
 /// <summary>
 /// Fluent builder that composes synchronous pipeline middleware steps.
@@ -40,6 +39,12 @@ public class PipelineBuilder<T1, T2, T3, T4> {
   public virtual Handler<T1, T4> End(Handler<T2, T3> handler) {
     ExceptionsHelper.ThrowIfNull(handler, nameof(handler));
     return new MiddlewareHandler<T1, T2, T3, T4>(_middleware, handler);
+  }
+
+  [Pure]
+  public virtual IExecutable<T1, T4> End(IExecutable<T2, T3> executable) {
+    ExceptionsHelper.ThrowIfNull(executable, nameof(executable));
+    return new MiddlewareExecutable<T1, T2, T3, T4>(_middleware, executable);
   }
 
 }

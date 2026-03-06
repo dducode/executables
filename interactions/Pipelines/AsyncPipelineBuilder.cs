@@ -1,8 +1,7 @@
 using System.Diagnostics.Contracts;
 using Interactions.Core;
-using Interactions.Pipelines;
 
-namespace Interactions.Builders;
+namespace Interactions.Pipelines;
 
 /// <summary>
 /// Fluent builder that composes asynchronous pipeline middleware steps.
@@ -40,6 +39,12 @@ public class AsyncPipelineBuilder<T1, T2, T3, T4> {
   public virtual AsyncHandler<T1, T4> End(AsyncHandler<T2, T3> handler) {
     ExceptionsHelper.ThrowIfNull(handler, nameof(handler));
     return new AsyncMiddlewareHandler<T1, T2, T3, T4>(_middleware, handler);
+  }
+
+  [Pure]
+  public virtual IAsyncExecutable<T1, T4> End(IAsyncExecutable<T2, T3> executable) {
+    ExceptionsHelper.ThrowIfNull(executable, nameof(executable));
+    return new AsyncMiddlewareExecutable<T1, T2, T3, T4>(_middleware, executable);
   }
 
 }

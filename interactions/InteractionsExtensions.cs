@@ -1,7 +1,4 @@
 using Interactions.Core;
-using Interactions.Policies;
-using Interactions.Transformation;
-using Interactions.Validation;
 
 namespace Interactions;
 
@@ -11,16 +8,12 @@ public static partial class InteractionsExtensions {
     return InvokeWithContext(input, executable, init);
   }
 
-  public static T2 Execute<T1, T2>(this Policy<T1, T2> policy, T1 input, IExecutable<T1, T2> executable, Action<InteractionContext> init) {
-    return InvokeWithContext(input, Executable.Create((T1 i) => policy.Execute(i, executable)), init);
-  }
-
-  public static bool IsValid<T>(this Validator<T> validator, T input, Action<InteractionContext> init) {
-    return InvokeWithContext(input, Executable.Create<T, bool>(validator.IsValid), init);
-  }
-
-  public static T2 Transform<T1, T2>(this Transformer<T1, T2> transformer, T1 input, Action<InteractionContext> init) {
-    return InvokeWithContext(input, Executable.Create<T1, T2>(transformer.Transform), init);
+  public static T4 Invoke<T1, T2, T3, T4>(
+    this ExecutionOperator<T1, T2, T3, T4> executionOperator,
+    T1 input,
+    IExecutable<T2, T3> executable,
+    Action<InteractionContext> init) {
+    return InvokeWithContext(input, executionOperator.AsExecutable(executable), init);
   }
 
   private static T2 InvokeWithContext<T1, T2>(T1 input, IExecutable<T1, T2> executable, Action<InteractionContext> init) {
