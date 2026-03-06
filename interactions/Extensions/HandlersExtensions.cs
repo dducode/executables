@@ -6,7 +6,7 @@ using Interactions.Transformation;
 
 namespace Interactions.Extensions;
 
-public static class HandlersExtensions {
+public static partial class HandlersExtensions {
 
   [Pure]
   public static Handler<T1, T3> Next<T1, T2, T3>(this Handler<T1, T2> handler, Handler<T2, T3> nextHandler) {

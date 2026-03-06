@@ -9,25 +9,46 @@ public static class ExecutableExtensions {
 
   [Pure]
   public static IExecutable<T1, T3> Next<T1, T2, T3>(this IExecutable<T1, T2> first, IExecutable<T2, T3> second) {
+    ExceptionsHelper.ThrowIfNullReference(first);
     ExceptionsHelper.ThrowIfNull(second, nameof(second));
     return new CompositeExecutable<T1, T2, T3>(first, second);
   }
 
   [Pure]
   public static IAsyncExecutable<T1, T3> Next<T1, T2, T3>(this IAsyncExecutable<T1, T2> first, IAsyncExecutable<T2, T3> second) {
+    ExceptionsHelper.ThrowIfNullReference(first);
     ExceptionsHelper.ThrowIfNull(second, nameof(second));
     return new AsyncCompositeExecutable<T1, T2, T3>(first, second);
   }
 
   [Pure]
   public static IAsyncExecutable<T1, T3> Next<T1, T2, T3>(this IAsyncExecutable<T1, T2> first, IExecutable<T2, T3> second) {
-    ExceptionsHelper.ThrowIfNull(second, nameof(second));
     return first.Next(second.ToAsyncExecutable());
   }
 
   [Pure]
   public static IAsyncExecutable<T1, T3> Next<T1, T2, T3>(this IExecutable<T1, T2> first, IAsyncExecutable<T2, T3> second) {
     return first.ToAsyncExecutable().Next(second);
+  }
+
+  [Pure]
+  public static IExecutable<T1, T3> Next<T1, T2, T3>(this IExecutable<T1, T2> executable, Func<T2, T3> next) {
+    return executable.Next(Executable.Create(next));
+  }
+
+  [Pure]
+  public static IAsyncExecutable<T1, T3> Next<T1, T2, T3>(this IExecutable<T1, T2> executable, AsyncFunc<T2, T3> next) {
+    return executable.ToAsyncExecutable().Next(Executable.CreateAsync(next));
+  }
+
+  [Pure]
+  public static IAsyncExecutable<T1, T3> Next<T1, T2, T3>(this IAsyncExecutable<T1, T2> executable, Func<T2, T3> next) {
+    return executable.Next(Executable.Create(next));
+  }
+
+  [Pure]
+  public static IAsyncExecutable<T1, T3> Next<T1, T2, T3>(this IAsyncExecutable<T1, T2> executable, AsyncFunc<T2, T3> next) {
+    return executable.Next(Executable.CreateAsync(next));
   }
 
   [Pure]
