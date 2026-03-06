@@ -1,16 +1,20 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
+        <PackageId>com.dducode.interactions-core</PackageId>
+        <Version>1.2.0</Version>
+        <Authors>dducode</Authors>
+        <Company>dducode</Company>
+        <Product>interactions-package</Product>
+        <PackageTags>interaction;handlers;command;query;event</PackageTags>
+        <RepositoryUrl>https://github.com/dducode/com.dducode.interactions.git</RepositoryUrl>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+
         <RootNamespace>Interactions.Core</RootNamespace>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>disable</Nullable>
         <TargetFrameworks>net9.0;netstandard2.1;net48</TargetFrameworks>
-        <Authors>dducode</Authors>
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <PackageId>com.dducode.interactions-core</PackageId>
-        <RepositoryUrl>https://github.com/dducode/com.dducode.interactions.git</RepositoryUrl>
         <LangVersion>13.0</LangVersion>
-        <Version>1.2.0</Version>
         <PackageReleaseNotes>added new handlers: lazy, dynamic, automatically disposed; bugs fixed</PackageReleaseNotes>
 
     </PropertyGroup>

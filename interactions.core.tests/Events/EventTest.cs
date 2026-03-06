@@ -14,56 +14,22 @@ public class EventTest {
   }
 
   [Fact]
-  public void SimplePublish() {
+  public void PublishWithOnceSubscriberAndWithoutHandler() {
     var e = new Event<Unit>();
-    var subscribers = new List<EventSubscriber>();
-    for (var i = 0; i < 5; i++)
-      subscribers.Add(new EventSubscriber());
-    foreach (EventSubscriber subscriber in subscribers)
-      e.Handle(subscriber);
-
-    e.Publish();
-    Assert.All(subscribers, subscriber => Assert.True(subscriber.Receive));
+    e.Subscribe(() => { });
+    Assert.Throws<MissingHandlerException>(() => e.Publish());
   }
 
   [Fact]
   public void PassNullSubscriber() {
     var e = new Event<Unit>();
+    Assert.Throws<ArgumentNullException>(() => e.Subscribe(null));
+  }
+
+  [Fact]
+  public void PassNullHandler() {
+    var e = new Event<Unit>();
     Assert.Throws<ArgumentNullException>(() => e.Handle(null));
-  }
-
-  [Fact]
-  public void OneSubscriberThrowsException() {
-    var e = new Event<Unit>();
-    var subscribers = new List<EventSubscriber> {
-      new(),
-      new ThrowingExceptionSubscriber(),
-      new()
-    };
-
-    foreach (EventSubscriber subscriber in subscribers)
-      e.Handle(subscriber);
-
-    Assert.Throws<InvalidOperationException>(() => e.Publish());
-    Assert.All(subscribers, subscriber => Assert.True(subscriber.Receive));
-  }
-
-  [Fact]
-  public void TwoSubscribersThrowsException() {
-    var e = new Event<Unit>();
-    var subscribers = new List<EventSubscriber> {
-      new(),
-      new ThrowingExceptionSubscriber(),
-      new(),
-      new ThrowingExceptionSubscriber(),
-      new()
-    };
-
-    foreach (EventSubscriber subscriber in subscribers)
-      e.Handle(subscriber);
-
-    Assert.Throws<AggregateException>(() => e.Publish());
-    Assert.All(subscribers, subscriber => Assert.True(subscriber.Receive));
   }
 
   [Fact]
@@ -74,26 +40,29 @@ public class EventTest {
       subscribers.Add(new EventSubscriber());
     var disposableBag = new DisposableBag();
     foreach (EventSubscriber subscriber in subscribers)
-      disposableBag.Add(e.Handle(subscriber));
+      disposableBag.Add(e.Subscribe(subscriber));
+    e.Handle(EventPublisher.Sequential());
 
     disposableBag.Dispose();
     e.Publish();
-    Assert.All(subscribers, subscriber => Assert.False(subscriber.Receive));
+    Assert.All(subscribers, subscriber => Assert.False(subscriber.Received));
   }
 
   [Fact]
   public void Resubscription() {
     var e = new Event<Unit>();
-    Handler<Unit, Unit> handler = Handler.Identity();
-    e.Handle(Handler.Identity());
-    e.Handle(handler);
-    Assert.Throws<InvalidOperationException>(() => e.Handle(handler));
+    ISubscriber<Unit> subscriber = Subscriber.FromMethod<Unit>(_ => { });
+    e.Subscribe(() => { });
+    e.Subscribe(subscriber);
+    Assert.Throws<InvalidOperationException>(() => e.Subscribe(subscriber));
   }
 
   [Fact]
   public async Task MultiplySubscriptionPublishingOnThreadPool() {
     var e = new Event<Unit>();
     var cts = new CancellationTokenSource(TimeSpan.FromSeconds(3));
+
+    e.Handle(EventPublisher.Sequential());
 
     IEnumerable<Task> publishTasks = Enumerable.Repeat(Task.Run(async () => {
       while (!cts.Token.IsCancellationRequested) {
@@ -106,7 +75,7 @@ public class EventTest {
       var random = new Random();
 
       while (!cts.Token.IsCancellationRequested) {
-        using IDisposable handle = e.Handle(Handler.Identity());
+        using IDisposable subscription = e.Subscribe(() => { });
         await Task.Delay(random.Next(10, 30));
       }
     }), 10);

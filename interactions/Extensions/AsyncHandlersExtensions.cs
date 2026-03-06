@@ -10,6 +10,7 @@ namespace Interactions.Extensions;
 public static class AsyncHandlersExtensions {
 
   [Pure]
+  [Obsolete("Use AsyncPolicy.Fallback() instead", true)]
   public static AsyncHandler<T1, T2> Catch<TException, T1, T2>(this AsyncHandler<T1, T2> handler, AsyncFunc<TException, T1, T2> func)
     where TException : Exception {
     ExceptionsHelper.ThrowIfNull(func, nameof(func));
@@ -17,6 +18,7 @@ public static class AsyncHandlersExtensions {
   }
 
   [Pure]
+  [Obsolete("Use AsyncPolicy.Fallback() instead", true)]
   public static AsyncHandler<T1, Unit> Catch<TException, T1>(this AsyncHandler<T1, Unit> handler, AsyncAction<TException, T1> action)
     where TException : Exception {
     return handler.Catch<TException, T1, Unit>(async (exception, i, token) => {
@@ -26,6 +28,7 @@ public static class AsyncHandlersExtensions {
   }
 
   [Pure]
+  [Obsolete("Use AsyncPolicy.Fallback() instead", true)]
   public static AsyncHandler<T1, T2> Catch<TException, T1, T2>(this AsyncHandler<T1, T2> handler, Func<TException, T1, T2> func)
     where TException : Exception {
     return handler.Catch<TException, T1, T2>((exception, input, token) => {
@@ -35,6 +38,7 @@ public static class AsyncHandlersExtensions {
   }
 
   [Pure]
+  [Obsolete("Use AsyncPolicy.Fallback() instead", true)]
   public static AsyncHandler<T1, Unit> Catch<TException, T1>(this AsyncHandler<T1, Unit> handler, Action<TException, T1> action)
     where TException : Exception {
     return handler.Catch<TException, T1, Unit>((exception, input, token) => {
@@ -46,12 +50,14 @@ public static class AsyncHandlersExtensions {
 
   [Pure]
   public static AsyncHandler<T1, T3> Next<T1, T2, T3>(this AsyncHandler<T1, T2> handler, AsyncHandler<T2, T3> nextHandler) {
+    ExceptionsHelper.ThrowIfNullReference(handler);
     ExceptionsHelper.ThrowIfNull(nextHandler, nameof(nextHandler));
     return new AsyncCompositeHandler<T1, T2, T3>(handler, nextHandler);
   }
 
   [Pure]
   public static AsyncHandler<T1, T3> Next<T1, T2, T3>(this AsyncHandler<T1, T2> handler, Handler<T2, T3> nextHandler) {
+    ExceptionsHelper.ThrowIfNullReference(handler);
     ExceptionsHelper.ThrowIfNull(nextHandler, nameof(nextHandler));
     return new AsyncCompositeHandler<T1, T2, T3>(handler, nextHandler.ToAsyncHandler());
   }
@@ -70,42 +76,44 @@ public static class AsyncHandlersExtensions {
   [Obsolete("Use Policy.Retry() instead", true)]
   public static AsyncHandler<T1, T2> Retry<T1, T2, TException>(this AsyncHandler<T1, T2> handler, AsyncFunc<int, TException, bool> rule)
     where TException : Exception {
+    ExceptionsHelper.ThrowIfNullReference(handler);
     ExceptionsHelper.ThrowIfNull(rule, nameof(rule));
     return new RetryHandler<T1, T2, TException>(handler, rule);
   }
 
   [Pure]
-  public static AsyncHandler<K1, K2> Transform<T1, T2, K1, K2>(
-    this AsyncHandler<T1, T2> handler,
-    Transformer<K1, T1> incoming,
-    Transformer<T2, K2> outgoing) {
+  public static AsyncHandler<T1, T4> Transform<T1, T2, T3, T4>(
+    this AsyncHandler<T2, T3> handler,
+    Transformer<T1, T2> incoming,
+    Transformer<T3, T4> outgoing) {
+    ExceptionsHelper.ThrowIfNullReference(handler);
     ExceptionsHelper.ThrowIfNull(incoming, nameof(incoming));
     ExceptionsHelper.ThrowIfNull(outgoing, nameof(outgoing));
-    return new AsyncTransformHandler<K1, T1, T2, K2>(incoming, handler, outgoing);
+    return new AsyncTransformHandler<T1, T2, T3, T4>(incoming, handler, outgoing);
   }
 
   [Pure]
-  public static AsyncHandler<K1, K2> Transform<T1, T2, K1, K2>(this AsyncHandler<T1, T2> handler, Func<K1, T1> incoming, Func<T2, K2> outgoing) {
+  public static AsyncHandler<T1, T4> Transform<T1, T2, T3, T4>(this AsyncHandler<T2, T3> handler, Func<T1, T2> incoming, Func<T3, T4> outgoing) {
     return handler.Transform(Transformer.FromMethod(incoming), Transformer.FromMethod(outgoing));
   }
 
   [Pure]
-  public static AsyncHandler<K1, T2> InputTransform<T1, T2, K1>(this AsyncHandler<T1, T2> handler, Transformer<K1, T1> incoming) {
-    return handler.Transform(incoming, Transformer.Identity<T2>());
+  public static AsyncHandler<T1, T3> InputTransform<T1, T2, T3>(this AsyncHandler<T2, T3> handler, Transformer<T1, T2> incoming) {
+    return handler.Transform(incoming, Transformer.Identity<T3>());
   }
 
   [Pure]
-  public static AsyncHandler<T1, K2> OutputTransform<T1, T2, K2>(this AsyncHandler<T1, T2> handler, Transformer<T2, K2> outgoing) {
+  public static AsyncHandler<T1, T3> OutputTransform<T1, T2, T3>(this AsyncHandler<T1, T2> handler, Transformer<T2, T3> outgoing) {
     return handler.Transform(Transformer.Identity<T1>(), outgoing);
   }
 
   [Pure]
-  public static AsyncHandler<K1, T2> InputTransform<T1, T2, K1>(this AsyncHandler<T1, T2> handler, Func<K1, T1> incoming) {
+  public static AsyncHandler<T1, T3> InputTransform<T1, T2, T3>(this AsyncHandler<T2, T3> handler, Func<T1, T2> incoming) {
     return handler.InputTransform(Transformer.FromMethod(incoming));
   }
 
   [Pure]
-  public static AsyncHandler<T1, K2> OutputTransform<T1, T2, K2>(this AsyncHandler<T1, T2> handler, Func<T2, K2> outgoing) {
+  public static AsyncHandler<T1, T3> OutputTransform<T1, T2, T3>(this AsyncHandler<T1, T2> handler, Func<T2, T3> outgoing) {
     return handler.OutputTransform(Transformer.FromMethod(outgoing));
   }
 
@@ -136,10 +144,17 @@ public static class AsyncHandlersExtensions {
   }
 
   [Pure]
-  [Obsolete("Use Policy.Metrics() instead", true)]
+  [Obsolete("Use AsyncPolicy.Metrics() instead", true)]
   public static AsyncHandler<T1, T2> Metrics<T1, T2>(this AsyncHandler<T1, T2> handler, IMetrics<T1, T2> metrics, string tag = null) {
     ExceptionsHelper.ThrowIfNull(metrics, nameof(metrics));
     return new AsyncMetricsHandler<T1, T2>(handler, metrics, tag);
+  }
+
+  [Pure]
+  public static AsyncHandler<T1, T2> OnDispose<T1, T2>(this AsyncHandler<T1, T2> handler, Action dispose) {
+    ExceptionsHelper.ThrowIfNullReference(handler);
+    ExceptionsHelper.ThrowIfNull(dispose, nameof(dispose));
+    return new AsyncAnonymousDisposeHandler<T1, T2>(handler, dispose);
   }
 
 }

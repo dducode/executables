@@ -1,6 +1,7 @@
 using System.Diagnostics.Contracts;
 using Interactions.Analytics;
 using Interactions.Core;
+using Interactions.Fallbacks;
 using Interactions.Guards;
 using Interactions.RetryRules;
 using Interactions.Validation;
@@ -18,29 +19,51 @@ public abstract partial class AsyncPolicy<T1, T2> {
     return AsyncIdentityPolicy<T1, T2>.Instance;
   }
 
+  [Pure]
+  public static AsyncPolicy<T1, T2> Dynamic(IProvider<AsyncPolicy<T1, T2>> provider) {
+    ExceptionsHelper.ThrowIfNull(provider, nameof(provider));
+    return new AsyncDynamicPolicy<T1, T2>(provider);
+  }
+
+  [Pure]
+  public static AsyncPolicy<T1, T2> Dynamic(Func<AsyncPolicy<T1, T2>> provider) {
+    return Dynamic(Provider.FromMethod(provider));
+  }
+
+  [Pure]
+  public static AsyncPolicy<T1, T2> Lazy(IResolver<AsyncPolicy<T1, T2>> resolver) {
+    ExceptionsHelper.ThrowIfNull(resolver, nameof(resolver));
+    return new AsyncLazyPolicy<T1, T2>(resolver);
+  }
+
+  [Pure]
+  public static AsyncPolicy<T1, T2> Lazy(Func<AsyncPolicy<T1, T2>> resolver) {
+    return Lazy(Resolver.FromMethod(resolver));
+  }
+
   /// <summary>
   /// Creates an asynchronous retry policy for specific exception type.
   /// </summary>
-  /// <typeparam name="TException">Exception type that can trigger retries.</typeparam>
+  /// <typeparam name="TEx">Exception type that can trigger retries.</typeparam>
   /// <param name="rule">Rule that decides whether the failed invocation should be retried.</param>
-  /// <returns>Retry policy that handles <typeparamref name="TException"/> failures.</returns>
+  /// <returns>Retry policy that handles <typeparamref name="TEx"/> failures.</returns>
   [Pure]
-  public static AsyncPolicy<T1, T2> Retry<TException>(IRetryRule<TException> rule) where TException : Exception {
+  public static AsyncPolicy<T1, T2> Retry<TEx>(IRetryRule<TEx> rule) where TEx : Exception {
     ExceptionsHelper.ThrowIfNull(rule, nameof(rule));
-    return new RetryPolicy<T1, T2, TException>(rule);
+    return new RetryPolicy<T1, T2, TEx>(rule);
   }
 
   /// <summary>
   /// Creates an asynchronous retry policy from a delegate rule.
   /// </summary>
-  /// <typeparam name="TException">Exception type that can trigger retries.</typeparam>
+  /// <typeparam name="TEx">Exception type that can trigger retries.</typeparam>
   /// <param name="rule">
   /// Delegate that receives current failed-attempt count and exception instance,
   /// and returns <see langword="true"/> to continue retrying.
   /// </param>
-  /// <returns>Retry policy that handles <typeparamref name="TException"/> failures.</returns>
+  /// <returns>Retry policy that handles <typeparamref name="TEx"/> failures.</returns>
   [Pure]
-  public static AsyncPolicy<T1, T2> Retry<TException>(AsyncFunc<int, TException, bool> rule) where TException : Exception {
+  public static AsyncPolicy<T1, T2> Retry<TEx>(AsyncFunc<int, TEx, bool> rule) where TEx : Exception {
     return Retry(RetryRule.FromMethod(rule));
   }
 
@@ -153,6 +176,29 @@ public abstract partial class AsyncPolicy<T1, T2> {
   public static AsyncPolicy<T1, T2> Cache(ICacheStorage<T1, T2> storage) {
     ExceptionsHelper.ThrowIfNull(storage, nameof(storage));
     return new AsyncCachePolicy<T1, T2>(storage);
+  }
+
+  [Pure]
+  public static AsyncPolicy<T1, T2> PreventReentrance() {
+    return new AsyncPreventReentrancePolicy<T1, T2>();
+  }
+
+  [Pure]
+  public static AsyncPolicy<T1, T2> Fallback<TEx>(IFallbackHandler<T1, TEx, T2> fallback) where TEx : Exception {
+    ExceptionsHelper.ThrowIfNull(fallback, nameof(fallback));
+    return new AsyncFallbackPolicy<T1, T2, TEx>(fallback);
+  }
+
+  [Pure]
+  public static AsyncPolicy<T1, T2> Fallback<TEx>(Func<T1, TEx, T2> fallback) where TEx : Exception {
+    return Fallback(FallbackHandler.FromMethod(fallback));
+  }
+
+  [Pure]
+  public static AsyncPolicy<T1, T2> Optional(Func<bool> condition, AsyncPolicy<T1, T2> other) {
+    ExceptionsHelper.ThrowIfNull(condition, nameof(condition));
+    ExceptionsHelper.ThrowIfNull(other, nameof(other));
+    return Dynamic(() => condition() ? other : Identity());
   }
 
 }

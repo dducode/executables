@@ -1,12 +1,12 @@
 using System.Diagnostics.Contracts;
 using Interactions.Analytics;
 using Interactions.Core;
+using Interactions.Fallbacks;
 using Interactions.Guards;
-using Interactions.Policies;
 using Interactions.RetryRules;
 using Interactions.Validation;
 
-namespace Interactions.Extensions;
+namespace Interactions.Policies;
 
 public static partial class PolicyExtensions {
 
@@ -21,8 +21,29 @@ public static partial class PolicyExtensions {
   /// <returns>Composite policy.</returns>
   [Pure]
   public static AsyncPolicy<T1, T2> Compose<T1, T2>(this AsyncPolicy<T1, T2> policy, AsyncPolicy<T1, T2> other) {
+    ExceptionsHelper.ThrowIfNullReference(policy);
     ExceptionsHelper.ThrowIfNull(other, nameof(other));
     return new AsyncCompositePolicy<T1, T2>(policy, other);
+  }
+
+  [Pure]
+  public static AsyncPolicy<T1, T2> Dynamic<T1, T2>(this AsyncPolicy<T1, T2> policy, IProvider<AsyncPolicy<T1, T2>> provider) {
+    return policy.Compose(AsyncPolicy<T1, T2>.Dynamic(provider));
+  }
+
+  [Pure]
+  public static AsyncPolicy<T1, T2> Dynamic<T1, T2>(this AsyncPolicy<T1, T2> policy, Func<AsyncPolicy<T1, T2>> provider) {
+    return policy.Dynamic(Provider.FromMethod(provider));
+  }
+
+  [Pure]
+  public static AsyncPolicy<T1, T2> Lazy<T1, T2>(this AsyncPolicy<T1, T2> policy, IResolver<AsyncPolicy<T1, T2>> resolver) {
+    return policy.Compose(AsyncPolicy<T1, T2>.Lazy(resolver));
+  }
+
+  [Pure]
+  public static AsyncPolicy<T1, T2> Lazy<T1, T2>(this AsyncPolicy<T1, T2> policy, Func<AsyncPolicy<T1, T2>> resolver) {
+    return policy.Lazy(Resolver.FromMethod(resolver));
   }
 
   /// <summary>
@@ -30,13 +51,13 @@ public static partial class PolicyExtensions {
   /// </summary>
   /// <typeparam name="T1">Input value type.</typeparam>
   /// <typeparam name="T2">Result value type.</typeparam>
-  /// <typeparam name="TException">Exception type that can trigger retries.</typeparam>
+  /// <typeparam name="TEx">Exception type that can trigger retries.</typeparam>
   /// <param name="policy">Base policy.</param>
   /// <param name="rule">Rule that decides whether the failed invocation should be retried.</param>
   /// <returns>Composite policy.</returns>
   [Pure]
-  public static AsyncPolicy<T1, T2> Retry<T1, T2, TException>(this AsyncPolicy<T1, T2> policy, IRetryRule<TException> rule)
-    where TException : Exception {
+  public static AsyncPolicy<T1, T2> Retry<T1, T2, TEx>(this AsyncPolicy<T1, T2> policy, IRetryRule<TEx> rule)
+    where TEx : Exception {
     return policy.Compose(AsyncPolicy<T1, T2>.Retry(rule));
   }
 
@@ -191,6 +212,28 @@ public static partial class PolicyExtensions {
   [Pure]
   public static AsyncPolicy<T1, T2> Cache<T1, T2>(this AsyncPolicy<T1, T2> policy, ICacheStorage<T1, T2> storage) {
     return policy.Compose(AsyncPolicy<T1, T2>.Cache(storage));
+  }
+
+  [Pure]
+  public static AsyncPolicy<T1, T2> PreventReentrance<T1, T2>(this AsyncPolicy<T1, T2> policy) {
+    return policy.Compose(AsyncPolicy<T1, T2>.PreventReentrance());
+  }
+
+  [Pure]
+  public static AsyncPolicy<T1, T2> Fallback<T1, T2, TException>(this AsyncPolicy<T1, T2> policy, IFallbackHandler<T1, TException, T2> fallback)
+    where TException : Exception {
+    return policy.Compose(AsyncPolicy<T1, T2>.Fallback(fallback));
+  }
+
+  [Pure]
+  public static AsyncPolicy<T1, T2> Fallback<T1, T2, TException>(this AsyncPolicy<T1, T2> policy, Func<T1, TException, T2> fallback)
+    where TException : Exception {
+    return policy.Fallback(FallbackHandler.FromMethod(fallback));
+  }
+
+  [Pure]
+  public static AsyncPolicy<T1, T2> Optional<T1, T2>(this AsyncPolicy<T1, T2> policy, Func<bool> condition, AsyncPolicy<T1, T2> other) {
+    return policy.Compose(AsyncPolicy<T1, T2>.Optional(condition, other));
   }
 
 }

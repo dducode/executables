@@ -1,12 +1,12 @@
 namespace Interactions.RetryRules;
 
-internal sealed class IdentityRule<TException> : IRetryRule<TException> where TException : Exception {
+internal sealed class IdentityRule<TEx> : IRetryRule<TEx> where TEx : Exception {
 
-  internal static IdentityRule<TException> Instance { get; } = new();
+  internal static IdentityRule<TEx> Instance { get; } = new();
 
   private IdentityRule() { }
 
-  public ValueTask<bool> ShouldRetry(int attemptsCount, TException exception, CancellationToken token) {
+  public ValueTask<bool> ShouldRetry(int attemptsCount, TEx exception, CancellationToken token) {
     return new ValueTask<bool>(false);
   }
 

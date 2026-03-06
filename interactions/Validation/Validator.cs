@@ -28,6 +28,28 @@ public static class Validator {
   }
 
   [Pure]
+  public static Validator<T> Dynamic<T>(IProvider<Validator<T>> provider) {
+    ExceptionsHelper.ThrowIfNull(provider, nameof(provider));
+    return new DynamicValidator<T>(provider);
+  }
+
+  [Pure]
+  public static Validator<T> Dynamic<T>(Func<Validator<T>> provider) {
+    return Dynamic(Provider.FromMethod(provider));
+  }
+
+  [Pure]
+  public static Validator<T> Lazy<T>(IResolver<Validator<T>> resolver) {
+    ExceptionsHelper.ThrowIfNull(resolver, nameof(resolver));
+    return new LazyValidator<T>(resolver);
+  }
+
+  [Pure]
+  public static Validator<T> Lazy<T>(Func<Validator<T>> provider) {
+    return Lazy(Resolver.FromMethod(provider));
+  }
+
+  [Pure]
   public static Validator<T> Not<T>(Validator<T> other) {
     ExceptionsHelper.ThrowIfNull(other, nameof(other));
     return new NotValidator<T>(other);
@@ -40,7 +62,7 @@ public static class Validator {
 
   [Pure]
   public static Validator<T> Equal<T>(T expected, IEqualityComparer<T> comparer = null) {
-    return new EqualityValidator<T>(expected, comparer);
+    return new EqualityValidator<T>(expected, comparer ?? EqualityComparer<T>.Default);
   }
 
   [Pure]
@@ -50,12 +72,12 @@ public static class Validator {
 
   [Pure]
   public static Validator<T> MoreThan<T>(T value, IComparer<T> comparer = null) {
-    return new MoreThanValidator<T>(value, comparer);
+    return new MoreThanValidator<T>(value, comparer ?? Comparer<T>.Default);
   }
 
   [Pure]
   public static Validator<T> LessThan<T>(T value, IComparer<T> comparer = null) {
-    return new LessThanValidator<T>(value, comparer);
+    return new LessThanValidator<T>(value, comparer ?? Comparer<T>.Default);
   }
 
   [Pure]

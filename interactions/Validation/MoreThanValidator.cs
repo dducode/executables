@@ -1,13 +1,14 @@
+using System.Runtime.CompilerServices;
+
 namespace Interactions.Validation;
 
-internal sealed class MoreThanValidator<T>(T value, IComparer<T> comparer = null) : Validator<T> {
+internal sealed class MoreThanValidator<T>(T comparand, IComparer<T> comparer) : Validator<T> {
 
-  private readonly IComparer<T> _comparer = comparer ?? Comparer<T>.Default;
+  public override string ErrorMessage { get; } = $"Value must be more than {comparand}";
 
-  public override string ErrorMessage { get; } = $"Value must be more than {value}";
-
-  public override bool IsValid(T value1) {
-    return _comparer.Compare(value1, value) > 0;
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  public override bool IsValid(T value) {
+    return comparer.Compare(value, comparand) > 0;
   }
 
 }

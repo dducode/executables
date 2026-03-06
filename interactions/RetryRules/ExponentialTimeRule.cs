@@ -1,8 +1,9 @@
 namespace Interactions.RetryRules;
 
-internal sealed class ExponentialTimeRule<TException>(TimeSpan startTime, int maxAttempts) : IRetryRule<TException> where TException : Exception {
+// TODO: change naming
+internal sealed class ExponentialTimeRule<TEx>(TimeSpan startTime, int maxAttempts) : IRetryRule<TEx> where TEx : Exception {
 
-  public async ValueTask<bool> ShouldRetry(int attemptsCount, TException exception, CancellationToken token) {
+  public async ValueTask<bool> ShouldRetry(int attemptsCount, TEx exception, CancellationToken token) {
     if (attemptsCount > maxAttempts)
       return false;
 

@@ -2,9 +2,9 @@ using Interactions.Core;
 
 namespace Interactions.RetryRules;
 
-internal sealed class AnonymousRule<TException>(AsyncFunc<int, TException, bool> rule) : IRetryRule<TException> where TException : Exception {
+internal sealed class AnonymousRule<TEx>(AsyncFunc<int, TEx, bool> rule) : IRetryRule<TEx> where TEx : Exception {
 
-  public ValueTask<bool> ShouldRetry(int attemptsCount, TException exception, CancellationToken token) {
+  public ValueTask<bool> ShouldRetry(int attemptsCount, TEx exception, CancellationToken token) {
     return rule(attemptsCount, exception, token);
   }
 

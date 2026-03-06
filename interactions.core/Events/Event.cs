@@ -1,77 +1,92 @@
-using System.Runtime.ExceptionServices;
-
 namespace Interactions.Core.Events;
 
-public interface IEvent<in T> {
+public interface IEvent<T> {
 
   void Publish(T input);
+  IDisposable Subscribe(ISubscriber<T> subscriber);
 
 }
 
-public class Event<T> : Handleable<T, Unit>, IEvent<T> {
+public class Event<T> : Handleable<Publishing<T>, Unit>, IEvent<T> {
 
-  private readonly Dictionary<Handler<T, Unit>, Subscriber> _handlers = new();
+  private readonly List<ISubscriber<T>> _subscribers = [];
+  private readonly object _lock = new();
+
+  private HandlerNode _handlerNode;
 
   public void Publish(T input) {
-    using ListPool<Subscriber>.ListHandle subscribers = ListPool<Subscriber>.Get();
-    lock (_handlers) {
-      if (_handlers.Count == 0)
+    List<ISubscriber<T>> subscribers = Pool<List<ISubscriber<T>>>.Get();
+    using var handle = new ListHandle<ISubscriber<T>>(subscribers);
+
+    lock (_lock) {
+      if (_subscribers.Count == 0)
         return;
-      subscribers.AddRange(_handlers.Values);
+      subscribers.AddRange(_subscribers);
     }
 
-    using ListPool<Exception>.ListHandle exceptions = ListPool<Exception>.Get();
-
-    foreach (Subscriber subscriber in subscribers) {
-      try {
-        subscriber.Receive(input);
-      }
-      catch (Exception e) {
-        exceptions.Add(e);
-      }
-    }
-
-    switch (exceptions.Count) {
-      case > 1:
-        throw new AggregateException(exceptions);
-      case 1:
-        ExceptionDispatchInfo.Capture(exceptions.Single()).Throw();
-        break;
-    }
+    HandlerNode node = Volatile.Read(ref _handlerNode);
+    if (node == null)
+      throw new MissingHandlerException("Cannot handle event");
+    node.Publish(input, subscribers);
   }
 
-  public override IDisposable Handle(Handler<T, Unit> handler) {
+  public IDisposable Subscribe(ISubscriber<T> subscriber) {
+    ExceptionsHelper.ThrowIfNull(subscriber, nameof(subscriber));
+
+    lock (_lock) {
+      if (_subscribers.Contains(subscriber))
+        throw new InvalidOperationException($"Already contains {subscriber}");
+      _subscribers.Add(subscriber);
+    }
+
+    return new SubscriberNode(this, subscriber);
+  }
+
+  public override IDisposable Handle(Handler<Publishing<T>, Unit> handler) {
     ExceptionsHelper.ThrowIfNull(handler, nameof(handler));
-    Subscriber subscriber;
 
-    lock (_handlers) {
-      if (_handlers.ContainsKey(handler))
-        throw new InvalidOperationException($"Already contains {handler}");
-      subscriber = new Subscriber(this, handler);
-      _handlers.Add(handler, subscriber);
+    lock (_lock) {
+      if (_handlerNode != null)
+        throw new InvalidOperationException("Already has handler");
+      return _handlerNode = new HandlerNode(this, handler);
     }
-
-    return subscriber;
   }
 
-  private void RemoveHandler(Handler<T, Unit> handler) {
-    lock (_handlers)
-      _handlers.Remove(handler);
+  private void RemoveSubscriber(ISubscriber<T> subscriber) {
+    lock (_lock)
+      _subscribers.Remove(subscriber);
   }
 
-  private class Subscriber(Event<T> parent, Handler<T, Unit> handler) : IDisposable {
+  private void RemoveHandler(HandlerNode node) {
+    Interlocked.CompareExchange(ref _handlerNode, null, node);
+  }
+
+  private class SubscriberNode(Event<T> parent, ISubscriber<T> subscriber) : IDisposable {
 
     private int _disposed;
 
-    public void Receive(T input) {
-      handler.Handle(input);
+    public void Dispose() {
+      if (Interlocked.Exchange(ref _disposed, 1) != 0)
+        return;
+
+      parent.RemoveSubscriber(subscriber);
+    }
+
+  }
+
+  private class HandlerNode(Event<T> parent, Handler<Publishing<T>, Unit> handler) : IDisposable {
+
+    private int _disposed;
+
+    public void Publish(T arg, List<ISubscriber<T>> subscribers) {
+      handler.Handle(new Publishing<T>(arg, subscribers));
     }
 
     public void Dispose() {
       if (Interlocked.Exchange(ref _disposed, 1) != 0)
         return;
 
-      parent.RemoveHandler(handler);
+      parent.RemoveHandler(this);
     }
 
   }

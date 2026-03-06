@@ -35,7 +35,7 @@ public static class QueriesExtensions {
     }
   }
 
-  public static async ValueTask<Result<T2>> TrySend<T1, T2>(this IAsyncQuery<T1, T2> query, CancellationToken token = default) {
+  public static async ValueTask<Result<T>> TrySend<T>(this IAsyncQuery<Unit, T> query, CancellationToken token = default) {
     return await query.TrySend(default, token);
   }
 

@@ -1,11 +1,11 @@
 using System.Diagnostics.Contracts;
 using Interactions.Analytics;
 using Interactions.Core;
+using Interactions.Fallbacks;
 using Interactions.Guards;
-using Interactions.Policies;
 using Interactions.Validation;
 
-namespace Interactions.Extensions;
+namespace Interactions.Policies;
 
 public static partial class PolicyExtensions {
 
@@ -20,8 +20,29 @@ public static partial class PolicyExtensions {
   /// <returns>Composite policy.</returns>
   [Pure]
   public static Policy<T1, T2> Compose<T1, T2>(this Policy<T1, T2> policy, Policy<T1, T2> other) {
+    ExceptionsHelper.ThrowIfNullReference(policy);
     ExceptionsHelper.ThrowIfNull(other, nameof(other));
     return new CompositePolicy<T1, T2>(policy, other);
+  }
+
+  [Pure]
+  public static Policy<T1, T2> Dynamic<T1, T2>(this Policy<T1, T2> policy, IProvider<Policy<T1, T2>> provider) {
+    return policy.Compose(Policy<T1, T2>.Dynamic(provider));
+  }
+
+  [Pure]
+  public static Policy<T1, T2> Dynamic<T1, T2>(this Policy<T1, T2> policy, Func<Policy<T1, T2>> provider) {
+    return policy.Dynamic(Provider.FromMethod(provider));
+  }
+
+  [Pure]
+  public static Policy<T1, T2> Lazy<T1, T2>(this Policy<T1, T2> policy, IResolver<Policy<T1, T2>> resolver) {
+    return policy.Compose(Policy<T1, T2>.Lazy(resolver));
+  }
+
+  [Pure]
+  public static Policy<T1, T2> Lazy<T1, T2>(this Policy<T1, T2> policy, Func<Policy<T1, T2>> resolver) {
+    return policy.Lazy(Resolver.FromMethod(resolver));
   }
 
   /// <summary>
@@ -144,6 +165,32 @@ public static partial class PolicyExtensions {
   [Pure]
   public static Policy<T1, T2> Cache<T1, T2>(this Policy<T1, T2> policy, ICacheStorage<T1, T2> storage) {
     return policy.Compose(Policy<T1, T2>.Cache(storage));
+  }
+
+  [Pure]
+  public static Policy<T1, T2> PreventReentrance<T1, T2>(this Policy<T1, T2> policy) {
+    return policy.Compose(Policy<T1, T2>.PreventReentrance());
+  }
+
+  [Pure]
+  public static Policy<T1, T2> Fallback<T1, TException, T2>(this Policy<T1, T2> policy, IFallbackHandler<T1, TException, T2> fallback)
+    where TException : Exception {
+    return policy.Compose(Policy<T1, T2>.Fallback(fallback));
+  }
+
+  [Pure]
+  public static Policy<T1, T2> Fallback<T1, TException, T2>(this Policy<T1, T2> policy, Func<T1, TException, T2> fallback) where TException : Exception {
+    return policy.Fallback(FallbackHandler.FromMethod(fallback));
+  }
+
+  [Pure]
+  public static Policy<T1, T2> Optional<T1, T2>(this Policy<T1, T2> policy, Func<bool> condition, Policy<T1, T2> other) {
+    return policy.Compose(Policy<T1, T2>.Optional(condition, other));
+  }
+
+  [Pure]
+  public static Policy<T, Unit> OnThreadPool<T>(this Policy<T, Unit> policy) {
+    return policy.Compose(Policy<T>.OnThreadPool());
   }
 
 }

@@ -1,13 +1,14 @@
+using System.Runtime.CompilerServices;
+
 namespace Interactions.Validation;
 
-internal sealed class LessThanValidator<T>(T compared, IComparer<T> comparer = null) : Validator<T> {
+internal sealed class LessThanValidator<T>(T comparand, IComparer<T> comparer) : Validator<T> {
 
-  private readonly IComparer<T> _comparer = comparer ?? Comparer<T>.Default;
+  public override string ErrorMessage { get; } = $"Value must be less than {comparand}";
 
-  public override string ErrorMessage { get; } = $"Value must be less than {compared}";
-
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public override bool IsValid(T value) {
-    return _comparer.Compare(value, compared) < 0;
+    return comparer.Compare(value, comparand) < 0;
   }
 
 }

@@ -19,6 +19,28 @@ public static class Transformer {
   }
 
   [Pure]
+  public static Transformer<T1, T2> Dynamic<T1, T2>(IProvider<Transformer<T1, T2>> provider) {
+    ExceptionsHelper.ThrowIfNull(provider, nameof(provider));
+    return new DynamicTransformer<T1, T2>(provider);
+  }
+
+  [Pure]
+  public static Transformer<T1, T2> Dynamic<T1, T2>(Func<Transformer<T1, T2>> provider) {
+    return Dynamic(Provider.FromMethod(provider));
+  }
+
+  [Pure]
+  public static Transformer<T1, T2> Lazy<T1, T2>(IResolver<Transformer<T1, T2>> resolver) {
+    ExceptionsHelper.ThrowIfNull(resolver, nameof(resolver));
+    return new LazyTransformer<T1, T2>(resolver);
+  }
+
+  [Pure]
+  public static Transformer<T1, T2> Lazy<T1, T2>(Func<Transformer<T1, T2>> resolver) {
+    return Lazy(Resolver.FromMethod(resolver));
+  }
+
+  [Pure]
   public static SymmetricTransformer<byte[], string> Encode(Encoding encoding = null) {
     return encoding == null ? Encoder.FromUTF8 : new Encoder(encoding);
   }

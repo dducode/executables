@@ -4,7 +4,6 @@
         <TargetFramework>net9.0</TargetFramework>
         <RootNamespace>Interactions.Tests</RootNamespace>
         <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
         <IsPackable>false</IsPackable>
     </PropertyGroup>
 

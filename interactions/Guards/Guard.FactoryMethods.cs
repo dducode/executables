@@ -14,6 +14,28 @@ public abstract partial class Guard {
     return IdentityGuard.Instance;
   }
 
+  [Pure]
+  public static Guard Dynamic(IProvider<Guard> provider) {
+    ExceptionsHelper.ThrowIfNull(provider, nameof(provider));
+    return new DynamicGuard(provider);
+  }
+
+  [Pure]
+  public static Guard Dynamic(Func<Guard> provider) {
+    return Dynamic(Provider.FromMethod(provider));
+  }
+
+  [Pure]
+  public static Guard Lazy(IResolver<Guard> resolver) {
+    ExceptionsHelper.ThrowIfNull(resolver, nameof(resolver));
+    return new LazyGuard(resolver);
+  }
+
+  [Pure]
+  public static Guard Lazy(Func<Guard> resolver) {
+    return Lazy(Resolver.FromMethod(resolver));
+  }
+
   /// <summary>
   /// Creates a manually controlled guard.
   /// </summary>

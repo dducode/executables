@@ -1,6 +1,7 @@
 using System.Diagnostics.Contracts;
 using Interactions.Analytics;
 using Interactions.Core;
+using Interactions.Fallbacks;
 using Interactions.Guards;
 using Interactions.Validation;
 
@@ -15,6 +16,28 @@ public abstract partial class Policy<T1, T2> {
   [Pure]
   public static Policy<T1, T2> Identity() {
     return IdentityPolicy<T1, T2>.Instance;
+  }
+
+  [Pure]
+  public static Policy<T1, T2> Dynamic(IProvider<Policy<T1, T2>> provider) {
+    ExceptionsHelper.ThrowIfNull(provider, nameof(provider));
+    return new DynamicPolicy<T1, T2>(provider);
+  }
+
+  [Pure]
+  public static Policy<T1, T2> Dynamic(Func<Policy<T1, T2>> provider) {
+    return Dynamic(Provider.FromMethod(provider));
+  }
+
+  [Pure]
+  public static Policy<T1, T2> Lazy(IResolver<Policy<T1, T2>> resolver) {
+    ExceptionsHelper.ThrowIfNull(resolver, nameof(resolver));
+    return new LazyPolicy<T1, T2>(resolver);
+  }
+
+  [Pure]
+  public static Policy<T1, T2> Lazy(Func<Policy<T1, T2>> resolver) {
+    return Lazy(Resolver.FromMethod(resolver));
   }
 
   /// <summary>
@@ -115,6 +138,38 @@ public abstract partial class Policy<T1, T2> {
   public static Policy<T1, T2> Cache(ICacheStorage<T1, T2> storage) {
     ExceptionsHelper.ThrowIfNull(storage, nameof(storage));
     return new CachePolicy<T1, T2>(storage);
+  }
+
+  [Pure]
+  public static Policy<T1, T2> PreventReentrance() {
+    return new PreventReentrancePolicy<T1, T2>();
+  }
+
+  [Pure]
+  public static Policy<T1, T2> Fallback<TEx>(IFallbackHandler<T1, TEx, T2> fallback) where TEx : Exception {
+    ExceptionsHelper.ThrowIfNull(fallback, nameof(fallback));
+    return new FallbackPolicy<T1, T2, TEx>(fallback);
+  }
+
+  [Pure]
+  public static Policy<T1, T2> Fallback<TEx>(Func<T1, TEx, T2> fallback) where TEx : Exception {
+    return Fallback(FallbackHandler.FromMethod(fallback));
+  }
+
+  [Pure]
+  public static Policy<T1, T2> Optional(Func<bool> condition, Policy<T1, T2> other) {
+    ExceptionsHelper.ThrowIfNull(condition, nameof(condition));
+    ExceptionsHelper.ThrowIfNull(other, nameof(other));
+    return Dynamic(() => condition() ? other : Identity());
+  }
+
+}
+
+public static class Policy<T> {
+
+  [Pure]
+  public static Policy<T, Unit> OnThreadPool() {
+    return new ThreadPoolPolicy<T>();
   }
 
 }

@@ -4,7 +4,7 @@ namespace Interactions.Policies;
 
 internal sealed class IdentityPolicy<T1, T2> : Policy<T1, T2> {
 
-  internal static readonly IdentityPolicy<T1, T2> Instance = new();
+  internal static IdentityPolicy<T1, T2> Instance { get; } = new();
 
   private IdentityPolicy() { }
 
@@ -16,7 +16,7 @@ internal sealed class IdentityPolicy<T1, T2> : Policy<T1, T2> {
 
 internal sealed class AsyncIdentityPolicy<T1, T2> : AsyncPolicy<T1, T2> {
 
-  internal static readonly AsyncIdentityPolicy<T1, T2> Instance = new();
+  internal static AsyncIdentityPolicy<T1, T2> Instance { get; } = new();
 
   private AsyncIdentityPolicy() { }
 

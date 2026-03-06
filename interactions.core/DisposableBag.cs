@@ -22,7 +22,8 @@ public sealed class DisposableBag : IDisposable {
     if (Interlocked.Exchange(ref _disposed, 1) != 0)
       return;
 
-    using ListPool<Exception>.ListHandle exceptions = ListPool<Exception>.Get();
+    List<Exception> exceptions = Pool<List<Exception>>.Get();
+    using var handle = new ListHandle<Exception>(exceptions);
 
     lock (_lock) {
       for (int i = _source.Count - 1; i >= 0; i--) {
@@ -41,7 +42,7 @@ public sealed class DisposableBag : IDisposable {
       case > 1:
         throw new AggregateException(exceptions);
       case 1:
-        ExceptionDispatchInfo.Capture(exceptions.Single()).Throw();
+        ExceptionDispatchInfo.Capture(exceptions[0]).Throw();
         break;
     }
   }

@@ -3,7 +3,7 @@ using Interactions.Core;
 
 namespace Interactions.Pipelines;
 
-public static partial class Pipeline<T1, T4> {
+public static partial class AsyncPipeline<T1, T4> {
 
   /// <summary>
   /// Starts an async pipeline from a step that receives downstream call as async function.
@@ -59,7 +59,7 @@ public static partial class Pipeline<T1, T4> {
 
 }
 
-public static partial class Pipeline<T> {
+public static partial class AsyncPipeline<T> {
 
   /// <summary>
   /// Starts a parameterless async pipeline that returns value and can invoke downstream typed async function.
@@ -169,7 +169,7 @@ public static partial class Pipeline<T> {
 
 }
 
-public static partial class Pipeline {
+public static partial class AsyncPipeline {
 
   /// <summary>
   /// Starts a parameterless async void pipeline from a step that receives downstream typed async function.

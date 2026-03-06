@@ -2,20 +2,20 @@
 
     <PropertyGroup>
         <PackageId>com.dducode.interactions</PackageId>
-        <Version>1.4.0</Version>
+        <Version>2.0.0</Version>
         <Authors>dducode</Authors>
         <Company>dducode</Company>
         <Product>interactions-package</Product>
-        <PackageTags>interactions;handlers</PackageTags>
+        <PackageTags>interaction;handlers;pipeline;middleware;policies</PackageTags>
         <RepositoryUrl>https://github.com/dducode/com.dducode.interactions.git</RepositoryUrl>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 
+        <RootNamespace>Interactions</RootNamespace>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>disable</Nullable>
-        <RootNamespace>Interactions</RootNamespace>
         <TargetFrameworks>net9.0;netstandard2.1;net48</TargetFrameworks>
         <LangVersion>13.0</LangVersion>
-        <PackageReleaseNotes>policies added, policy handlers deprecated, bugs fixed</PackageReleaseNotes>
+        <PackageReleaseNotes>policies added, policy handlers deprecated, bugs fixed, interaction context added</PackageReleaseNotes>
     </PropertyGroup>
 
     <ItemGroup>
