@@ -1,6 +1,8 @@
 namespace Interactions.Core.Queries;
 
-public class Query<T1, T2> : Handleable<T1, T2>, IExecutable<T1, T2> {
+public interface IQuery<in T1, out T2> : IExecutable<T1, T2> { }
+
+public class Query<T1, T2> : Handleable<T1, T2>, IQuery<T1, T2> {
 
   private HandlerNode _handlerNode;
   private readonly object _lock = new();

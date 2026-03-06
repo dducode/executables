@@ -1,6 +1,8 @@
 namespace Interactions.Core.Queries;
 
-public class AsyncQuery<T1, T2> : AsyncHandleable<T1, T2>, IAsyncExecutable<T1, T2> {
+public interface IAsyncQuery<in T1, T2> : IAsyncExecutable<T1, T2>;
+
+public class AsyncQuery<T1, T2> : AsyncHandleable<T1, T2>, IAsyncQuery<T1, T2> {
 
   private HandlerNode _handlerNode;
   private readonly object _lock = new();

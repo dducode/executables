@@ -10,13 +10,13 @@ public static class ExecutableExtensions {
   [Pure]
   public static IExecutable<T1, T3> Next<T1, T2, T3>(this IExecutable<T1, T2> first, IExecutable<T2, T3> second) {
     ExceptionsHelper.ThrowIfNull(second, nameof(second));
-    return new ChainedExecutable<T1, T2, T3>(first, second);
+    return new CompositeExecutable<T1, T2, T3>(first, second);
   }
 
   [Pure]
   public static IAsyncExecutable<T1, T3> Next<T1, T2, T3>(this IAsyncExecutable<T1, T2> first, IAsyncExecutable<T2, T3> second) {
     ExceptionsHelper.ThrowIfNull(second, nameof(second));
-    return new AsyncChainedExecutable<T1, T2, T3>(first, second);
+    return new AsyncCompositeExecutable<T1, T2, T3>(first, second);
   }
 
   [Pure]
