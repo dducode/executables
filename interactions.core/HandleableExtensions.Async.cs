@@ -1,7 +1,7 @@
 using System.Diagnostics.Contracts;
 using Interactions.Core.Handlers;
 
-namespace Interactions.Core.Extensions;
+namespace Interactions.Core;
 
 public static partial class HandleableExtensions {
 

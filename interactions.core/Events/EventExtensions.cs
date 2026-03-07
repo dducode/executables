@@ -1,6 +1,4 @@
-using Interactions.Core.Events;
-
-namespace Interactions.Core.Extensions;
+namespace Interactions.Core.Events;
 
 public static class EventExtensions {
 

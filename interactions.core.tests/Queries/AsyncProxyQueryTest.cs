@@ -1,4 +1,3 @@
-using Interactions.Core.Extensions;
 using Interactions.Core.Queries;
 using JetBrains.Annotations;
 

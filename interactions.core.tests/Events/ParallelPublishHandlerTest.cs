@@ -1,5 +1,4 @@
 using Interactions.Core.Events;
-using Interactions.Core.Extensions;
 using Interactions.Core.Tests.Utils;
 using JetBrains.Annotations;
 using Xunit.Abstractions;

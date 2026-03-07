@@ -1,6 +1,6 @@
 using System.Diagnostics.Contracts;
 
-namespace Interactions.Core.Extensions;
+namespace Interactions.Core;
 
 public static class DisposableExtensions {
 

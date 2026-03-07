@@ -1,9 +1,8 @@
 using System.Diagnostics.Contracts;
-using Interactions.Commands;
 using Interactions.Core;
 using Interactions.Core.Commands;
 
-namespace Interactions.Extensions;
+namespace Interactions.Commands;
 
 public static class CommandsExtensions {
 

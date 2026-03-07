@@ -31,8 +31,8 @@ public class CompositeHandlerTest {
     var query = new Query<int, decimal>();
     using IDisposable handle = query.Handle(Handler
       .Create<int, Player>(id => storage.Get(id))
-      .Next(player => player.data)
-      .Next(data => data.money)
+      .Then(player => player.data)
+      .Then(data => data.money)
     );
 
     Assert.Equal(firstPlayerMoney, query.Execute(0));

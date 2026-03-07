@@ -1,6 +1,6 @@
 using Interactions.Core;
 using Interactions.Core.Queries;
-using Interactions.Extensions;
+using Interactions.Handlers;
 using Interactions.Transformation;
 using Interactions.Transformation.Filtering;
 using Interactions.Transformation.Parsing;

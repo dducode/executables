@@ -4,7 +4,7 @@ using Interactions.Transformation;
 using Interactions.Transformation.Filtering;
 using Interactions.Transformation.Parsing;
 
-namespace Interactions.Extensions;
+namespace Interactions.Handlers;
 
 public static partial class TransformHandlersExtensions {
 

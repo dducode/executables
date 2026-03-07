@@ -1,8 +1,7 @@
 using System.Diagnostics.Contracts;
 using Interactions.Core;
-using Interactions.Transformation;
 
-namespace Interactions.Extensions;
+namespace Interactions.Transformation;
 
 public static class TransformersExtensions {
 

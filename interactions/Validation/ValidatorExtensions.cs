@@ -1,8 +1,7 @@
 using System.Diagnostics.Contracts;
 using Interactions.Core;
-using Interactions.Validation;
 
-namespace Interactions.Extensions;
+namespace Interactions.Validation;
 
 public static class ValidatorExtensions {
 

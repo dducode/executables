@@ -1,10 +1,9 @@
 using System.Diagnostics.Contracts;
 using Interactions.Core;
-using Interactions.Policies;
 
-namespace Interactions.Extensions;
+namespace Interactions.Policies;
 
-public static class ExecutableExtensions {
+public static class PolicyExecutableExtensions {
 
   [Pure]
   public static IExecutable<T1, T2> WithPolicy<T1, T2>(this IExecutable<T1, T2> executable, Policy<T1, T2> policy) {

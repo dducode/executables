@@ -11,51 +11,51 @@ public static class HandlersExtensions {
   }
 
   [Pure]
-  public static AsyncHandler<T1, T3> Next<T1, T2, T3>(this AsyncHandler<T1, T2> handler, AsyncHandler<T2, T3> nextHandler) {
+  public static AsyncHandler<T1, T3> Then<T1, T2, T3>(this AsyncHandler<T1, T2> handler, AsyncHandler<T2, T3> nextHandler) {
     handler.ThrowIfNullReference();
     ExceptionsHelper.ThrowIfNull(nextHandler, nameof(nextHandler));
     return new AsyncCompositeHandler<T1, T2, T3>(handler, nextHandler);
   }
 
   [Pure]
-  public static AsyncHandler<T1, T3> Next<T1, T2, T3>(this AsyncHandler<T1, T2> handler, Handler<T2, T3> nextHandler) {
+  public static AsyncHandler<T1, T3> Then<T1, T2, T3>(this AsyncHandler<T1, T2> handler, Handler<T2, T3> nextHandler) {
     handler.ThrowIfNullReference();
     ExceptionsHelper.ThrowIfNull(nextHandler, nameof(nextHandler));
     return new AsyncCompositeHandler<T1, T2, T3>(handler, nextHandler.ToAsyncHandler());
   }
 
   [Pure]
-  public static AsyncHandler<T1, T3> Next<T1, T2, T3>(this AsyncHandler<T1, T2> handler, AsyncFunc<T2, T3> nextHandler) {
-    return handler.Next(AsyncHandler.Create(nextHandler));
+  public static AsyncHandler<T1, T3> Then<T1, T2, T3>(this AsyncHandler<T1, T2> handler, AsyncFunc<T2, T3> nextHandler) {
+    return handler.Then(AsyncHandler.Create(nextHandler));
   }
 
   [Pure]
-  public static AsyncHandler<T1, T3> Next<T1, T2, T3>(this AsyncHandler<T1, T2> handler, Func<T2, T3> nextHandler) {
-    return handler.Next(Handler.Create(nextHandler));
+  public static AsyncHandler<T1, T3> Then<T1, T2, T3>(this AsyncHandler<T1, T2> handler, Func<T2, T3> nextHandler) {
+    return handler.Then(Handler.Create(nextHandler));
   }
 
   [Pure]
-  public static Handler<T1, T3> Next<T1, T2, T3>(this Handler<T1, T2> handler, Handler<T2, T3> nextHandler) {
+  public static Handler<T1, T3> Then<T1, T2, T3>(this Handler<T1, T2> handler, Handler<T2, T3> nextHandler) {
     handler.ThrowIfNullReference();
     ExceptionsHelper.ThrowIfNull(nextHandler, nameof(nextHandler));
     return new CompositeHandler<T1, T2, T3>(handler, nextHandler);
   }
 
   [Pure]
-  public static AsyncHandler<T1, T3> Next<T1, T2, T3>(this Handler<T1, T2> handler, AsyncHandler<T2, T3> nextHandler) {
+  public static AsyncHandler<T1, T3> Then<T1, T2, T3>(this Handler<T1, T2> handler, AsyncHandler<T2, T3> nextHandler) {
     handler.ThrowIfNullReference();
     ExceptionsHelper.ThrowIfNull(nextHandler, nameof(nextHandler));
     return new AsyncCompositeHandler<T1, T2, T3>(handler.ToAsyncHandler(), nextHandler);
   }
 
   [Pure]
-  public static Handler<T1, T3> Next<T1, T2, T3>(this Handler<T1, T2> handler, Func<T2, T3> nextHandler) {
-    return handler.Next(Handler.Create(nextHandler));
+  public static Handler<T1, T3> Then<T1, T2, T3>(this Handler<T1, T2> handler, Func<T2, T3> nextHandler) {
+    return handler.Then(Handler.Create(nextHandler));
   }
 
   [Pure]
-  public static AsyncHandler<T1, T3> Next<T1, T2, T3>(this Handler<T1, T2> handler, AsyncFunc<T2, T3> nextHandler) {
-    return handler.Next(AsyncHandler.Create(nextHandler));
+  public static AsyncHandler<T1, T3> Then<T1, T2, T3>(this Handler<T1, T2> handler, AsyncFunc<T2, T3> nextHandler) {
+    return handler.Then(AsyncHandler.Create(nextHandler));
   }
 
   [Pure]

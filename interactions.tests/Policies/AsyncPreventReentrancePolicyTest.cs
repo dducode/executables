@@ -1,5 +1,4 @@
 using Interactions.Core;
-using Interactions.Core.Extensions;
 using Interactions.Policies;
 using JetBrains.Annotations;
 

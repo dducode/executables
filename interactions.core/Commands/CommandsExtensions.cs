@@ -1,7 +1,6 @@
 using System.Diagnostics.Contracts;
-using Interactions.Core.Commands;
 
-namespace Interactions.Core.Extensions;
+namespace Interactions.Core.Commands;
 
 public static class CommandsExtensions {
 

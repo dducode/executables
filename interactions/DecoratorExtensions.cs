@@ -1,7 +1,7 @@
 using System.Diagnostics.Contracts;
 using Interactions.Core;
 
-namespace Interactions.Extensions;
+namespace Interactions;
 
 public static class DecoratorExtensions {
 

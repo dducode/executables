@@ -1,5 +1,4 @@
 using System.Diagnostics.Contracts;
-using Interactions.Core.Extensions;
 using Interactions.Core.Handlers;
 
 namespace Interactions.Core;

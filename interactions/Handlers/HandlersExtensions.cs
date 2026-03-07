@@ -1,10 +1,9 @@
 using System.Diagnostics.Contracts;
 using Interactions.Core;
 using Interactions.Core.Handlers;
-using Interactions.Handlers;
 using Interactions.Transformation;
 
-namespace Interactions.Extensions;
+namespace Interactions.Handlers;
 
 public static partial class HandlersExtensions {
 
@@ -44,13 +43,13 @@ public static partial class HandlersExtensions {
   [Pure]
   public static Handler<T1, T2> Tap<T1, T2>(this Handler<T1, T2> handler, Action<T2> action) {
     ExceptionsHelper.ThrowIfNull(action, nameof(action));
-    return handler.Next(new TransitiveHandler<T2>(action));
+    return handler.Then(new TransitiveHandler<T2>(action));
   }
 
   [Pure]
   public static AsyncHandler<T1, T2> Tap<T1, T2>(this Handler<T1, T2> handler, AsyncAction<T2> action) {
     ExceptionsHelper.ThrowIfNull(action, nameof(action));
-    return handler.Next(new AsyncTransitiveHandler<T2>(action));
+    return handler.Then(new AsyncTransitiveHandler<T2>(action));
   }
 
 }

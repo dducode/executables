@@ -1,7 +1,6 @@
-using Interactions.Commands;
 using Interactions.Core.Commands;
 
-namespace Interactions.Extensions;
+namespace Interactions.Commands;
 
 public static class CommandContextExtensions {
 
