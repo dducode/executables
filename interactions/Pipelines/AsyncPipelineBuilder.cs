@@ -31,16 +31,10 @@ public class AsyncPipelineBuilder<T1, T2, T3, T4> {
   }
 
   /// <summary>
-  /// Finalizes async composition by binding terminal async handler.
+  /// Finalizes async composition by binding terminal async executable
   /// </summary>
-  /// <param name="handler">Terminal async handler invoked when chain reaches the end.</param>
-  /// <returns>Composed async handler that represents the entire pipeline chain.</returns>
-  [Pure]
-  public virtual AsyncHandler<T1, T4> End(AsyncHandler<T2, T3> handler) {
-    ExceptionsHelper.ThrowIfNull(handler, nameof(handler));
-    return new AsyncMiddlewareHandler<T1, T2, T3, T4>(_middleware, handler);
-  }
-
+  /// <param name="executable">Terminal async executable invoked when chain reaches the end.</param>
+  /// <returns>Composed async executable that represents the entire pipeline chain.</returns>
   [Pure]
   public virtual IAsyncExecutable<T1, T4> End(IAsyncExecutable<T2, T3> executable) {
     ExceptionsHelper.ThrowIfNull(executable, nameof(executable));

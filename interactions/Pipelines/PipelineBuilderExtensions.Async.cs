@@ -312,4 +312,20 @@ public static partial class PipelineBuilderExtensions {
     }));
   }
 
+  public static IAsyncExecutable<T1, T4> End<T1, T2, T3, T4>(this AsyncPipelineBuilder<T1, T2, T3, T4> builder, AsyncFunc<T2, T3> func) {
+    return builder.End(AsyncExecutable.Create(func));
+  }
+
+  public static IAsyncExecutable<T1, T3> End<T1, T2, T3>(this AsyncPipelineBuilder<T1, Unit, T2, T3> builder, AsyncFunc<T2> func) {
+    return builder.End(AsyncExecutable.Create(func));
+  }
+
+  public static IAsyncExecutable<T1, T3> End<T1, T2, T3>(this AsyncPipelineBuilder<T1, T2, Unit, T3> builder, AsyncAction<T2> func) {
+    return builder.End(AsyncExecutable.Create(func));
+  }
+
+  public static IAsyncExecutable<T1, T3> End<T1, T3>(this AsyncPipelineBuilder<T1, Unit, Unit, T3> builder, AsyncAction func) {
+    return builder.End(AsyncExecutable.Create(func));
+  }
+
 }

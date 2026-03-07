@@ -306,4 +306,20 @@ public static partial class PipelineBuilderExtensions {
     }));
   }
 
+  public static IExecutable<T1, T4> End<T1, T2, T3, T4>(this PipelineBuilder<T1, T2, T3, T4> builder, Func<T2, T3> func) {
+    return builder.End(Executable.Create(func));
+  }
+
+  public static IExecutable<T1, T3> End<T1, T2, T3>(this PipelineBuilder<T1, Unit, T2, T3> builder, Func<T2> func) {
+    return builder.End(Executable.Create(func));
+  }
+
+  public static IExecutable<T1, T3> End<T1, T2, T3>(this PipelineBuilder<T1, T2, Unit, T3> builder, Action<T2> func) {
+    return builder.End(Executable.Create(func));
+  }
+
+  public static IExecutable<T1, T3> End<T1, T3>(this PipelineBuilder<T1, Unit, Unit, T3> builder, Action func) {
+    return builder.End(Executable.Create(func));
+  }
+
 }

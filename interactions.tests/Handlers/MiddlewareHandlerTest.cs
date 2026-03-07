@@ -40,7 +40,7 @@ public class MiddlewareHandlerTest(ITestOutputHelper testOutputHelper) {
         Assert.True(secondStarted);
         testOutputHelper.WriteLine("Finish");
         thirdEnd = true;
-      }))
+      })).AsHandler()
     );
 
     query.Execute();
@@ -62,7 +62,7 @@ public class MiddlewareHandlerTest(ITestOutputHelper testOutputHelper) {
         long result = next.Invoke(seconds);
         return TimeSpan.FromSeconds(result);
       })
-      .End(Handler.Create((double seconds) => (long)(seconds + addedSeconds)))
+      .End(seconds => (long)(seconds + addedSeconds)).AsHandler()
     );
 
     Assert.Equal(expected, query.Execute(input));

@@ -31,16 +31,10 @@ public class PipelineBuilder<T1, T2, T3, T4> {
   }
 
   /// <summary>
-  /// Finalizes composition by binding terminal handler to pipeline.
+  /// Finalizes composition by binding terminal executable to pipeline.
   /// </summary>
-  /// <param name="handler">Terminal handler invoked when pipeline reaches the end.</param>
-  /// <returns>Composed handler that represents the entire pipeline chain.</returns>
-  [Pure]
-  public virtual Handler<T1, T4> End(Handler<T2, T3> handler) {
-    ExceptionsHelper.ThrowIfNull(handler, nameof(handler));
-    return new MiddlewareHandler<T1, T2, T3, T4>(_middleware, handler);
-  }
-
+  /// <param name="executable">Terminal executable invoked when pipeline reaches the end.</param>
+  /// <returns>Composed executable that represents the entire pipeline chain.</returns>
   [Pure]
   public virtual IExecutable<T1, T4> End(IExecutable<T2, T3> executable) {
     ExceptionsHelper.ThrowIfNull(executable, nameof(executable));

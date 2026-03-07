@@ -48,13 +48,13 @@ public static class ExecutableExtensions {
   [Pure]
   public static Handler<T1, T2> AsHandler<T1, T2>(this IExecutable<T1, T2> executable) {
     executable.ThrowIfNullReference();
-    return new ExecutableHandlerProxy<T1, T2>(executable);
+    return new ExecutableHandlerWrapper<T1, T2>(executable);
   }
 
   [Pure]
   public static AsyncHandler<T1, T2> AsHandler<T1, T2>(this IAsyncExecutable<T1, T2> executable) {
     executable.ThrowIfNullReference();
-    return new AsyncExecutableHandlerProxy<T1, T2>(executable);
+    return new AsyncExecutableHandlerWrapper<T1, T2>(executable);
   }
 
   [Pure]
