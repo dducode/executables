@@ -45,20 +45,6 @@ public static partial class HandlersExtensions {
   }
 
   [Pure]
-  [Obsolete("Use Tap() instead")]
-  public static AsyncHandler<T1, T2> Do<T1, T2>(this AsyncHandler<T1, T2> handler, AsyncAction<T2> action) {
-    ExceptionsHelper.ThrowIfNull(action, nameof(action));
-    return handler.Next(new AsyncTransitiveHandler<T2>(action));
-  }
-
-  [Pure]
-  [Obsolete("Use Tap() instead")]
-  public static AsyncHandler<T1, T2> Do<T1, T2>(this AsyncHandler<T1, T2> handler, Action<T2> action) {
-    ExceptionsHelper.ThrowIfNull(action, nameof(action));
-    return handler.Next(new TransitiveHandler<T2>(action));
-  }
-
-  [Pure]
   public static AsyncHandler<T1, T2> Tap<T1, T2>(this AsyncHandler<T1, T2> handler, AsyncAction<T2> action) {
     ExceptionsHelper.ThrowIfNull(action, nameof(action));
     return handler.Next(new AsyncTransitiveHandler<T2>(action));
