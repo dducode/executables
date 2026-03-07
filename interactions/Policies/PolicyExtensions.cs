@@ -20,7 +20,7 @@ public static partial class PolicyExtensions {
   /// <returns>Composite policy.</returns>
   [Pure]
   public static Policy<T1, T2> Compose<T1, T2>(this Policy<T1, T2> policy, Policy<T1, T2> other) {
-    ExceptionsHelper.ThrowIfNullReference(policy);
+    policy.ThrowIfNullReference();
     ExceptionsHelper.ThrowIfNull(other, nameof(other));
     return new CompositePolicy<T1, T2>(policy, other);
   }

@@ -7,7 +7,7 @@ public static class HandleableExtensions {
 
   [Pure]
   public static Handleable<T1, T2> Merge<T1, T2>(this Handleable<T1, T2> first, Handleable<T1, T2> second) {
-    ExceptionsHelper.ThrowIfNullReference(first);
+    first.ThrowIfNullReference();
     ExceptionsHelper.ThrowIfNull(second, nameof(second));
     return new MergedHandleable<T1, T2>(first, second);
   }

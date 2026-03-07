@@ -13,7 +13,7 @@ public static partial class HandlersExtensions {
     this AsyncHandler<T2, T3> handler,
     Transformer<T1, T2> incoming,
     Transformer<T3, T4> outgoing) {
-    ExceptionsHelper.ThrowIfNullReference(handler);
+    handler.ThrowIfNullReference();
     ExceptionsHelper.ThrowIfNull(incoming, nameof(incoming));
     ExceptionsHelper.ThrowIfNull(outgoing, nameof(outgoing));
     return new AsyncTransformHandler<T1, T2, T3, T4>(incoming, handler, outgoing);

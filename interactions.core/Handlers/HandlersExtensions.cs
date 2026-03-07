@@ -6,20 +6,20 @@ public static class HandlersExtensions {
 
   [Pure]
   public static AsyncHandler<T1, T2> ToAsyncHandler<T1, T2>(this Handler<T1, T2> handler) {
-    ExceptionsHelper.ThrowIfNullReference(handler);
+    handler.ThrowIfNullReference();
     return new AsyncProxyHandler<T1, T2>(handler);
   }
 
   [Pure]
   public static AsyncHandler<T1, T3> Next<T1, T2, T3>(this AsyncHandler<T1, T2> handler, AsyncHandler<T2, T3> nextHandler) {
-    ExceptionsHelper.ThrowIfNullReference(handler);
+    handler.ThrowIfNullReference();
     ExceptionsHelper.ThrowIfNull(nextHandler, nameof(nextHandler));
     return new AsyncCompositeHandler<T1, T2, T3>(handler, nextHandler);
   }
 
   [Pure]
   public static AsyncHandler<T1, T3> Next<T1, T2, T3>(this AsyncHandler<T1, T2> handler, Handler<T2, T3> nextHandler) {
-    ExceptionsHelper.ThrowIfNullReference(handler);
+    handler.ThrowIfNullReference();
     ExceptionsHelper.ThrowIfNull(nextHandler, nameof(nextHandler));
     return new AsyncCompositeHandler<T1, T2, T3>(handler, nextHandler.ToAsyncHandler());
   }
@@ -36,14 +36,14 @@ public static class HandlersExtensions {
 
   [Pure]
   public static Handler<T1, T3> Next<T1, T2, T3>(this Handler<T1, T2> handler, Handler<T2, T3> nextHandler) {
-    ExceptionsHelper.ThrowIfNullReference(handler);
+    handler.ThrowIfNullReference();
     ExceptionsHelper.ThrowIfNull(nextHandler, nameof(nextHandler));
     return new CompositeHandler<T1, T2, T3>(handler, nextHandler);
   }
 
   [Pure]
   public static AsyncHandler<T1, T3> Next<T1, T2, T3>(this Handler<T1, T2> handler, AsyncHandler<T2, T3> nextHandler) {
-    ExceptionsHelper.ThrowIfNullReference(handler);
+    handler.ThrowIfNullReference();
     ExceptionsHelper.ThrowIfNull(nextHandler, nameof(nextHandler));
     return new AsyncCompositeHandler<T1, T2, T3>(handler.ToAsyncHandler(), nextHandler);
   }

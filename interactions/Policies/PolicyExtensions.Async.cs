@@ -21,7 +21,7 @@ public static partial class PolicyExtensions {
   /// <returns>Composite policy.</returns>
   [Pure]
   public static AsyncPolicy<T1, T2> Compose<T1, T2>(this AsyncPolicy<T1, T2> policy, AsyncPolicy<T1, T2> other) {
-    ExceptionsHelper.ThrowIfNullReference(policy);
+    policy.ThrowIfNullReference();
     ExceptionsHelper.ThrowIfNull(other, nameof(other));
     return new AsyncCompositePolicy<T1, T2>(policy, other);
   }

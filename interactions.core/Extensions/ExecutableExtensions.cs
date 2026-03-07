@@ -40,20 +40,20 @@ public static class ExecutableExtensions {
 
   [Pure]
   public static IAsyncExecutable<T1, T2> ToAsyncExecutable<T1, T2>(this IExecutable<T1, T2> inner) {
-    ExceptionsHelper.ThrowIfNullReference(inner);
+    inner.ThrowIfNullReference();
     return new AsyncProxyExecutable<T1, T2>(inner);
   }
 
   [Pure]
   public static IExecutable<T1, T3> Next<T1, T2, T3>(this IExecutable<T1, T2> first, IExecutable<T2, T3> second) {
-    ExceptionsHelper.ThrowIfNullReference(first);
+    first.ThrowIfNullReference();
     ExceptionsHelper.ThrowIfNull(second, nameof(second));
     return new CompositeExecutable<T1, T2, T3>(first, second);
   }
 
   [Pure]
   public static IAsyncExecutable<T1, T3> Next<T1, T2, T3>(this IAsyncExecutable<T1, T2> first, IAsyncExecutable<T2, T3> second) {
-    ExceptionsHelper.ThrowIfNullReference(first);
+    first.ThrowIfNullReference();
     ExceptionsHelper.ThrowIfNull(second, nameof(second));
     return new AsyncCompositeExecutable<T1, T2, T3>(first, second);
   }
