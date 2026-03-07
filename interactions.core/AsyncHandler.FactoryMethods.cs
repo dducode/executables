@@ -3,6 +3,17 @@ using Interactions.Core.Extensions;
 
 namespace Interactions.Core;
 
+/// <summary>
+/// Factory methods for creating <see cref="AsyncHandler{T1,T2}"/>.
+/// <example>
+/// <code>
+/// var asyncHandler = AsyncHandler.Create(async (int i, CancellationToken ct) => {
+///   await Task.Delay(10, ct);
+///   return i.ToString();
+/// });
+/// </code>
+/// </example>
+/// </summary>
 public static class AsyncHandler {
 
   /// <summary>
@@ -12,7 +23,7 @@ public static class AsyncHandler {
   /// <typeparam name="T2">Output type.</typeparam>
   /// <param name="func">Async function used for handling.</param>
   [Pure]
-  public static AsyncHandler<T1, T2> FromMethod<T1, T2>(AsyncFunc<T1, T2> func) {
+  public static AsyncHandler<T1, T2> Create<T1, T2>(AsyncFunc<T1, T2> func) {
     return AsyncExecutable.Create(func).AsHandler();
   }
 
@@ -22,7 +33,7 @@ public static class AsyncHandler {
   /// <typeparam name="T">Output type.</typeparam>
   /// <param name="func">Async function used for handling.</param>
   [Pure]
-  public static AsyncHandler<Unit, T> FromMethod<T>(AsyncFunc<T> func) {
+  public static AsyncHandler<Unit, T> Create<T>(AsyncFunc<T> func) {
     return AsyncExecutable.Create(func).AsHandler();
   }
 
@@ -32,7 +43,7 @@ public static class AsyncHandler {
   /// <typeparam name="T">Input type.</typeparam>
   /// <param name="action">Async action used for handling.</param>
   [Pure]
-  public static AsyncHandler<T, Unit> FromMethod<T>(AsyncAction<T> action) {
+  public static AsyncHandler<T, Unit> Create<T>(AsyncAction<T> action) {
     return AsyncExecutable.Create(action).AsHandler();
   }
 
@@ -41,7 +52,7 @@ public static class AsyncHandler {
   /// </summary>
   /// <param name="action">Async action used for handling.</param>
   [Pure]
-  public static AsyncHandler<Unit, Unit> FromMethod(AsyncAction action) {
+  public static AsyncHandler<Unit, Unit> Create(AsyncAction action) {
     return AsyncExecutable.Create(action).AsHandler();
   }
 

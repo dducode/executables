@@ -9,9 +9,9 @@ public class DynamicHandlerTest {
   [Fact]
   public void MultiplyHandle() {
     var multiplier = 0;
-    Handler<int, int> handler = Handler.Dynamic(Provider.FromMethod(() => {
+    Handler<int, int> handler = Handler.Dynamic(Provider.Create(() => {
       multiplier++;
-      return Handler.FromMethod<int, int>(num => num * multiplier);
+      return Handler.Create<int, int>(num => num * multiplier);
     }));
 
     Assert.Equal(10, handler.Execute(10));
@@ -21,14 +21,14 @@ public class DynamicHandlerTest {
 
   [Fact]
   public void ProvideNullHandler() {
-    Handler<Unit, Unit> handler = Handler.Dynamic(Provider.FromMethod(Handler<Unit, Unit> () => null));
+    Handler<Unit, Unit> handler = Handler.Dynamic(Provider.Create(Handler<Unit, Unit> () => null));
     Assert.Throws<InvalidOperationException>(() => handler.Execute(default));
   }
 
   [Fact]
   public void InnerHandlerNotDispose() {
     Handler<Unit, Unit> inner = Handler.Identity();
-    Handler<Unit, Unit> handler = Handler.Dynamic(Provider.FromMethod(() => inner));
+    Handler<Unit, Unit> handler = Handler.Dynamic(Provider.Create(() => inner));
     handler.Execute(default);
     Assert.False(inner.Disposed);
   }

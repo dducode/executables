@@ -22,7 +22,7 @@ public abstract partial class Guard {
 
   [Pure]
   public static Guard Dynamic(Func<Guard> provider) {
-    return Dynamic(Provider.FromMethod(provider));
+    return Dynamic(Provider.Create(provider));
   }
 
   [Pure]
@@ -33,7 +33,7 @@ public abstract partial class Guard {
 
   [Pure]
   public static Guard Lazy(Func<Guard> resolver) {
-    return Lazy(Resolver.FromMethod(resolver));
+    return Lazy(Resolver.Create(resolver));
   }
 
   /// <summary>
@@ -53,7 +53,7 @@ public abstract partial class Guard {
   /// <param name="condition">Predicate that returns true to allow access.</param>
   /// <param name="message">Error message used when access is denied.</param>
   [Pure]
-  public static Guard FromMethod(Func<bool> condition, string message) {
+  public static Guard Create(Func<bool> condition, string message) {
     ExceptionsHelper.ThrowIfNull(condition, nameof(condition));
     ExceptionsHelper.ThrowIfNullOrEmpty(message, nameof(message));
     return new AnonymousGuard(condition, message);

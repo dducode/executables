@@ -33,7 +33,7 @@ public static partial class PolicyExtensions {
 
   [Pure]
   public static AsyncPolicy<T1, T2> Dynamic<T1, T2>(this AsyncPolicy<T1, T2> policy, Func<AsyncPolicy<T1, T2>> provider) {
-    return policy.Dynamic(Provider.FromMethod(provider));
+    return policy.Dynamic(Provider.Create(provider));
   }
 
   [Pure]
@@ -43,7 +43,7 @@ public static partial class PolicyExtensions {
 
   [Pure]
   public static AsyncPolicy<T1, T2> Lazy<T1, T2>(this AsyncPolicy<T1, T2> policy, Func<AsyncPolicy<T1, T2>> resolver) {
-    return policy.Lazy(Resolver.FromMethod(resolver));
+    return policy.Lazy(Resolver.Create(resolver));
   }
 
   /// <summary>
@@ -76,7 +76,7 @@ public static partial class PolicyExtensions {
   [Pure]
   public static AsyncPolicy<T1, T2> Retry<T1, T2, TException>(this AsyncPolicy<T1, T2> policy, AsyncFunc<int, TException, bool> rule)
     where TException : Exception {
-    return policy.Retry(RetryRule.FromMethod(rule));
+    return policy.Retry(RetryRule.Create(rule));
   }
 
   /// <summary>
@@ -143,7 +143,7 @@ public static partial class PolicyExtensions {
   /// <returns>Composite policy.</returns>
   [Pure]
   public static AsyncPolicy<T1, T2> ValidateInput<T1, T2>(this AsyncPolicy<T1, T2> policy, Func<T1, bool> inputValidator, string errorMessage) {
-    return policy.ValidateInput(Validator.FromMethod(inputValidator, errorMessage));
+    return policy.ValidateInput(Validator.Create(inputValidator, errorMessage));
   }
 
   /// <summary>
@@ -157,7 +157,7 @@ public static partial class PolicyExtensions {
   /// <returns>Composite policy.</returns>
   [Pure]
   public static AsyncPolicy<T1, T2> ValidateOutput<T1, T2>(this AsyncPolicy<T1, T2> policy, Func<T2, bool> outputValidator, string errorMessage) {
-    return policy.ValidateOutput(Validator.FromMethod(outputValidator, errorMessage));
+    return policy.ValidateOutput(Validator.Create(outputValidator, errorMessage));
   }
 
   /// <summary>
@@ -198,7 +198,7 @@ public static partial class PolicyExtensions {
   /// <returns>Composite policy.</returns>
   [Pure]
   public static AsyncPolicy<T1, T2> Guard<T1, T2>(this AsyncPolicy<T1, T2> policy, Func<bool> guard, string errorMessage) {
-    return policy.Guard(Guards.Guard.FromMethod(guard, errorMessage));
+    return policy.Guard(Guards.Guard.Create(guard, errorMessage));
   }
 
   /// <summary>
@@ -228,7 +228,7 @@ public static partial class PolicyExtensions {
   [Pure]
   public static AsyncPolicy<T1, T2> Fallback<T1, T2, TException>(this AsyncPolicy<T1, T2> policy, Func<T1, TException, T2> fallback)
     where TException : Exception {
-    return policy.Fallback(FallbackHandler.FromMethod(fallback));
+    return policy.Fallback(FallbackHandler.Create(fallback));
   }
 
   [Pure]

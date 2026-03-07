@@ -36,7 +36,7 @@ public class MiddlewareHandlerTest(ITestOutputHelper testOutputHelper) {
         testOutputHelper.WriteLine("End second");
         secondEnd = true;
       })
-      .End(Handler.FromMethod(() => {
+      .End(Handler.Create(() => {
         Assert.True(secondStarted);
         testOutputHelper.WriteLine("Finish");
         thirdEnd = true;
@@ -62,7 +62,7 @@ public class MiddlewareHandlerTest(ITestOutputHelper testOutputHelper) {
         long result = next.Invoke(seconds);
         return TimeSpan.FromSeconds(result);
       })
-      .End(Handler.FromMethod((double seconds) => (long)(seconds + addedSeconds)))
+      .End(Handler.Create((double seconds) => (long)(seconds + addedSeconds)))
     );
 
     Assert.Equal(expected, query.Execute(input));

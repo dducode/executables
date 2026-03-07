@@ -12,7 +12,7 @@ public interface IFallbackHandler<in T1, in TException, out T2> where TException
 public static class FallbackHandler {
 
   [Pure]
-  public static IFallbackHandler<T1, TException, T2> FromMethod<T1, TException, T2>(Func<T1, TException, T2> fallback) where TException : Exception {
+  public static IFallbackHandler<T1, TException, T2> Create<T1, TException, T2>(Func<T1, TException, T2> fallback) where TException : Exception {
     ExceptionsHelper.ThrowIfNull(fallback, nameof(fallback));
     return new AnonymousFallbackHandler<T1, TException, T2>(fallback);
   }

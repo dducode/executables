@@ -26,7 +26,7 @@ public static class Provider {
   /// <typeparam name="T">Provided instance type.</typeparam>
   /// <param name="provider">Delegate that creates an instance.</param>
   [Pure]
-  public static IProvider<T> FromMethod<T>(Func<T> provider) {
+  public static IProvider<T> Create<T>(Func<T> provider) {
     ExceptionsHelper.ThrowIfNull(provider, nameof(provider));
     return new AnonymousProvider<T>(provider);
   }

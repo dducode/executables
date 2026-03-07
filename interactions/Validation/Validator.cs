@@ -35,7 +35,7 @@ public static class Validator {
 
   [Pure]
   public static Validator<T> Dynamic<T>(Func<Validator<T>> provider) {
-    return Dynamic(Provider.FromMethod(provider));
+    return Dynamic(Provider.Create(provider));
   }
 
   [Pure]
@@ -46,7 +46,7 @@ public static class Validator {
 
   [Pure]
   public static Validator<T> Lazy<T>(Func<Validator<T>> provider) {
-    return Lazy(Resolver.FromMethod(provider));
+    return Lazy(Resolver.Create(provider));
   }
 
   [Pure]
@@ -143,7 +143,7 @@ public static class Validator {
   }
 
   [Pure]
-  public static Validator<T> FromMethod<T>(Func<T, bool> validation, string errorMessage) {
+  public static Validator<T> Create<T>(Func<T, bool> validation, string errorMessage) {
     ExceptionsHelper.ThrowIfNull(validation, nameof(validation));
     ExceptionsHelper.ThrowIfNullOrEmpty(errorMessage, nameof(errorMessage));
     return new AnonymousValidator<T>(validation, errorMessage);

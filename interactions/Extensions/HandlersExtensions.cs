@@ -18,7 +18,7 @@ public static partial class HandlersExtensions {
 
   [Pure]
   public static Handler<T1, T4> Transform<T1, T2, T3, T4>(this Handler<T2, T3> handler, Func<T1, T2> incoming, Func<T3, T4> outgoing) {
-    return handler.Transform(Transformer.FromMethod(incoming), Transformer.FromMethod(outgoing));
+    return handler.Transform(Transformer.Create(incoming), Transformer.Create(outgoing));
   }
 
   [Pure]
@@ -33,12 +33,12 @@ public static partial class HandlersExtensions {
 
   [Pure]
   public static Handler<T1, T3> InputTransform<T1, T2, T3>(this Handler<T2, T3> handler, Func<T1, T2> incoming) {
-    return handler.InputTransform(Transformer.FromMethod(incoming));
+    return handler.InputTransform(Transformer.Create(incoming));
   }
 
   [Pure]
   public static Handler<T1, T3> OutputTransform<T1, T2, T3>(this Handler<T1, T2> handler, Func<T2, T3> outgoing) {
-    return handler.OutputTransform(Transformer.FromMethod(outgoing));
+    return handler.OutputTransform(Transformer.Create(outgoing));
   }
 
   [Pure]

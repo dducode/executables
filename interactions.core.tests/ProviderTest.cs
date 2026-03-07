@@ -7,7 +7,7 @@ public class ProviderTest {
 
   [Fact]
   public void PassNullProvider() {
-    Assert.Throws<ArgumentNullException>(() => Provider.FromMethod<Unit>(null));
+    Assert.Throws<ArgumentNullException>(() => Provider.Create<Unit>(null));
   }
 
 }

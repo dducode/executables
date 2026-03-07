@@ -26,7 +26,7 @@ public static class Resolver {
   /// <typeparam name="T">Resolved instance type.</typeparam>
   /// <param name="resolver">Delegate that resolves an instance.</param>
   [Pure]
-  public static IResolver<T> FromMethod<T>(Func<T> resolver) {
+  public static IResolver<T> Create<T>(Func<T> resolver) {
     ExceptionsHelper.ThrowIfNull(resolver, nameof(resolver));
     return new AnonymousResolver<T>(resolver);
   }

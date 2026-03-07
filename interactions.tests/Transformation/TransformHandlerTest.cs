@@ -15,7 +15,7 @@ public class TransformHandlerTest {
   [Fact]
   public void ParseNumberTest() {
     var query = new Query<string, string>();
-    using IDisposable handle = query.Handle(Handler.FromMethod((int num) => num + num).Parse(Parser.Integer()));
+    using IDisposable handle = query.Handle(Handler.Create((int num) => num + num).Parse(Parser.Integer()));
 
     Assert.Equal("84", query.Execute("42"));
     Assert.Throws<FormatException>(() => query.Execute("not-a-number"));

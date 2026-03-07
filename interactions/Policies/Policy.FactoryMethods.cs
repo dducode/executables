@@ -26,7 +26,7 @@ public abstract partial class Policy<T1, T2> {
 
   [Pure]
   public static Policy<T1, T2> Dynamic(Func<Policy<T1, T2>> provider) {
-    return Dynamic(Provider.FromMethod(provider));
+    return Dynamic(Provider.Create(provider));
   }
 
   [Pure]
@@ -37,7 +37,7 @@ public abstract partial class Policy<T1, T2> {
 
   [Pure]
   public static Policy<T1, T2> Lazy(Func<Policy<T1, T2>> resolver) {
-    return Lazy(Resolver.FromMethod(resolver));
+    return Lazy(Resolver.Create(resolver));
   }
 
   /// <summary>
@@ -81,7 +81,7 @@ public abstract partial class Policy<T1, T2> {
   /// <returns>Validation policy for invocation input.</returns>
   [Pure]
   public static Policy<T1, T2> ValidateInput(Func<T1, bool> inputValidator, string errorMessage) {
-    return ValidateInput(Validator.FromMethod(inputValidator, errorMessage));
+    return ValidateInput(Validator.Create(inputValidator, errorMessage));
   }
 
   /// <summary>
@@ -92,7 +92,7 @@ public abstract partial class Policy<T1, T2> {
   /// <returns>Validation policy for invocation output.</returns>
   [Pure]
   public static Policy<T1, T2> ValidateOutput(Func<T2, bool> outputValidator, string errorMessage) {
-    return ValidateOutput(Validator.FromMethod(outputValidator, errorMessage));
+    return ValidateOutput(Validator.Create(outputValidator, errorMessage));
   }
 
   /// <summary>
@@ -126,7 +126,7 @@ public abstract partial class Policy<T1, T2> {
   /// <returns>Guard policy.</returns>
   [Pure]
   public static Policy<T1, T2> Guard(Func<bool> guard, string errorMessage) {
-    return Guard(Guards.Guard.FromMethod(guard, errorMessage));
+    return Guard(Guards.Guard.Create(guard, errorMessage));
   }
 
   /// <summary>
@@ -153,7 +153,7 @@ public abstract partial class Policy<T1, T2> {
 
   [Pure]
   public static Policy<T1, T2> Fallback<TEx>(Func<T1, TEx, T2> fallback) where TEx : Exception {
-    return Fallback(FallbackHandler.FromMethod(fallback));
+    return Fallback(FallbackHandler.Create(fallback));
   }
 
   [Pure]

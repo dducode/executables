@@ -15,7 +15,7 @@ public class ReversibleCommandTest(ITestOutputHelper testOutputHelper) {
     var nums = new List<int>();
 
     var command = new ReversibleCommand<int, int>();
-    command.Handle(ReversibleHandler.FromMethod<int>(
+    command.Handle(ReversibleHandler.Create<int>(
       num => nums.Add(num),
       num => nums.Remove(num)
     ));
@@ -55,7 +55,7 @@ public class ReversibleCommandTest(ITestOutputHelper testOutputHelper) {
     int startValue = variable;
 
     var command = new ReversibleCommand<int, Change<int>>();
-    command.Handle(ReversibleHandler.FromMethod<int, Change<int>>(num => {
+    command.Handle(ReversibleHandler.Create<int, Change<int>>(num => {
         var change = new Change<int>(variable, num);
         variable = num;
         return change;

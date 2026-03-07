@@ -5,19 +5,11 @@ using Interactions.Core.Handlers;
 namespace Interactions.Core;
 
 /// <summary>
-/// Factory methods for creating <see cref="Handler{T1,T2}"/> and <see cref="AsyncHandler{T1,T2}"/>.
+/// Factory methods for creating <see cref="Handler{T1,T2}"/>.
 /// <example>
 /// <code>
-/// var handler = Handler.FromMethod((int i) => i + 1);
-/// var result = handler.Handle(41); // 42
-/// </code>
-/// </example>
-/// <example>
-/// <code>
-/// var asyncHandler = Handler.FromAsyncMethod(async (int i, CancellationToken ct) => {
-///   await Task.Delay(10, ct);
-///   return i.ToString();
-/// });
+/// var handler = Handler.Create((int i) => i + 1);
+/// var result = handler.Execute(41); // 42
 /// </code>
 /// </example>
 /// </summary>
@@ -92,7 +84,7 @@ public static class Handler {
   /// <typeparam name="T2">Output type.</typeparam>
   /// <param name="func">Function used for handling.</param>
   [Pure]
-  public static Handler<T1, T2> FromMethod<T1, T2>(Func<T1, T2> func) {
+  public static Handler<T1, T2> Create<T1, T2>(Func<T1, T2> func) {
     return Executable.Create(func).AsHandler();
   }
 
@@ -102,7 +94,7 @@ public static class Handler {
   /// <typeparam name="T">Output type.</typeparam>
   /// <param name="func">Function used for handling.</param>
   [Pure]
-  public static Handler<Unit, T> FromMethod<T>(Func<T> func) {
+  public static Handler<Unit, T> Create<T>(Func<T> func) {
     return Executable.Create(func).AsHandler();
   }
 
@@ -112,7 +104,7 @@ public static class Handler {
   /// <typeparam name="T">Input type.</typeparam>
   /// <param name="action">Action used for handling.</param>
   [Pure]
-  public static Handler<T, Unit> FromMethod<T>(Action<T> action) {
+  public static Handler<T, Unit> Create<T>(Action<T> action) {
     return Executable.Create(action).AsHandler();
   }
 
@@ -121,7 +113,7 @@ public static class Handler {
   /// </summary>
   /// <param name="action">Action used for handling.</param>
   [Pure]
-  public static Handler<Unit, Unit> FromMethod(Action action) {
+  public static Handler<Unit, Unit> Create(Action action) {
     return Executable.Create(action).AsHandler();
   }
 

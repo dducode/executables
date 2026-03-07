@@ -30,7 +30,7 @@ public static class Filter {
   [Pure]
   public static Filter<T> Where<T>(Func<T, bool> predicate) {
     ExceptionsHelper.ThrowIfNull(predicate, nameof(predicate));
-    return Where(Validator.FromMethod(predicate, string.Empty));
+    return Where(Validator.Create(predicate, string.Empty));
   }
 
   [Pure]
@@ -49,7 +49,7 @@ public static class Filter {
   }
 
   [Pure]
-  public static Filter<T> FromMethod<T>(Func<IEnumerable<T>, IEnumerable<T>> filtration) {
+  public static Filter<T> Create<T>(Func<IEnumerable<T>, IEnumerable<T>> filtration) {
     ExceptionsHelper.ThrowIfNull(filtration, nameof(filtration));
     return new AnonymousFilter<T>(filtration);
   }

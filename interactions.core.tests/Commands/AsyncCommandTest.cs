@@ -16,7 +16,7 @@ public class AsyncCommandTest {
   public async Task AddItemToList<T>(T item) {
     var list = new List<T>();
     var addCommand = new AsyncCommand<T>();
-    addCommand.Handle(Handler.FromMethod((T obj) => list.Add(obj)).ToAsyncHandler());
+    addCommand.Handle(Handler.Create((T obj) => list.Add(obj)).ToAsyncHandler());
 
     await addCommand.Execute(item);
     Assert.Contains(item, list);

@@ -14,7 +14,7 @@ public static class FilterExtensions {
 
   [Pure]
   public static Filter<T> Where<T>(this Filter<T> filter, Func<T, bool> predicate) {
-    return filter.Where(Validator.FromMethod(predicate, string.Empty));
+    return filter.Where(Validator.Create(predicate, string.Empty));
   }
 
   [Pure]

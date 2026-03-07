@@ -25,7 +25,7 @@ public abstract class ReversibleHandler<TInput, TChange> : Handler<TInput, TChan
 public static class ReversibleHandler {
 
   [Pure]
-  public static ReversibleHandler<T1, T2> FromMethod<T1, T2>(Func<T1, T2> execution, Action<T2> undo, Action<T2> redo) {
+  public static ReversibleHandler<T1, T2> Create<T1, T2>(Func<T1, T2> execution, Action<T2> undo, Action<T2> redo) {
     ExceptionsHelper.ThrowIfNull(execution, nameof(execution));
     ExceptionsHelper.ThrowIfNull(undo, nameof(undo));
     ExceptionsHelper.ThrowIfNull(redo, nameof(redo));
@@ -33,7 +33,7 @@ public static class ReversibleHandler {
   }
 
   [Pure]
-  public static ReversibleHandler<T, T> FromMethod<T>(Action<T> execution, Action<T> undo, Action<T> redo) {
+  public static ReversibleHandler<T, T> Create<T>(Action<T> execution, Action<T> undo, Action<T> redo) {
     ExceptionsHelper.ThrowIfNull(execution, nameof(execution));
     ExceptionsHelper.ThrowIfNull(undo, nameof(undo));
     ExceptionsHelper.ThrowIfNull(redo, nameof(redo));
@@ -44,7 +44,7 @@ public static class ReversibleHandler {
   }
 
   [Pure]
-  public static ReversibleHandler<T, T> FromMethod<T>(Action<T> execution, Action<T> undo) {
+  public static ReversibleHandler<T, T> Create<T>(Action<T> execution, Action<T> undo) {
     ExceptionsHelper.ThrowIfNull(execution, nameof(execution));
     ExceptionsHelper.ThrowIfNull(undo, nameof(undo));
     return new AnonymousReversibleHandler<T, T>(i => {

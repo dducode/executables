@@ -26,12 +26,12 @@ public static class HandlersExtensions {
 
   [Pure]
   public static AsyncHandler<T1, T3> Next<T1, T2, T3>(this AsyncHandler<T1, T2> handler, AsyncFunc<T2, T3> nextHandler) {
-    return handler.Next(AsyncHandler.FromMethod(nextHandler));
+    return handler.Next(AsyncHandler.Create(nextHandler));
   }
 
   [Pure]
   public static AsyncHandler<T1, T3> Next<T1, T2, T3>(this AsyncHandler<T1, T2> handler, Func<T2, T3> nextHandler) {
-    return handler.Next(Handler.FromMethod(nextHandler));
+    return handler.Next(Handler.Create(nextHandler));
   }
 
   [Pure]
@@ -50,12 +50,12 @@ public static class HandlersExtensions {
 
   [Pure]
   public static Handler<T1, T3> Next<T1, T2, T3>(this Handler<T1, T2> handler, Func<T2, T3> nextHandler) {
-    return handler.Next(Handler.FromMethod(nextHandler));
+    return handler.Next(Handler.Create(nextHandler));
   }
 
   [Pure]
   public static AsyncHandler<T1, T3> Next<T1, T2, T3>(this Handler<T1, T2> handler, AsyncFunc<T2, T3> nextHandler) {
-    return handler.Next(AsyncHandler.FromMethod(nextHandler));
+    return handler.Next(AsyncHandler.Create(nextHandler));
   }
 
   [Pure]

@@ -51,7 +51,7 @@ public class EventTest {
   [Fact]
   public void Resubscription() {
     var e = new Event<Unit>();
-    ISubscriber<Unit> subscriber = Subscriber.FromMethod<Unit>(_ => { });
+    ISubscriber<Unit> subscriber = Subscriber.Create<Unit>(_ => { });
     e.Subscribe(() => { });
     e.Subscribe(subscriber);
     Assert.Throws<InvalidOperationException>(() => e.Subscribe(subscriber));

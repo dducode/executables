@@ -1,7 +1,6 @@
 using AutoFixture;
 using Interactions.Core.Handlers;
 using Interactions.Core.Queries;
-using Interactions.Core.Extensions;
 using JetBrains.Annotations;
 
 namespace Interactions.Core.Tests.Handlers;
@@ -31,7 +30,7 @@ public class CompositeHandlerTest {
 
     var query = new Query<int, decimal>();
     using IDisposable handle = query.Handle(Handler
-      .FromMethod<int, Player>(id => storage.Get(id))
+      .Create<int, Player>(id => storage.Get(id))
       .Next(player => player.data)
       .Next(data => data.money)
     );

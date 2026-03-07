@@ -26,7 +26,7 @@ public static class Transformer {
 
   [Pure]
   public static Transformer<T1, T2> Dynamic<T1, T2>(Func<Transformer<T1, T2>> provider) {
-    return Dynamic(Provider.FromMethod(provider));
+    return Dynamic(Provider.Create(provider));
   }
 
   [Pure]
@@ -37,7 +37,7 @@ public static class Transformer {
 
   [Pure]
   public static Transformer<T1, T2> Lazy<T1, T2>(Func<Transformer<T1, T2>> resolver) {
-    return Lazy(Resolver.FromMethod(resolver));
+    return Lazy(Resolver.Create(resolver));
   }
 
   [Pure]
@@ -113,13 +113,13 @@ public static class Transformer {
   }
 
   [Pure]
-  public static Transformer<T1, T2> FromMethod<T1, T2>(Func<T1, T2> transformation) {
+  public static Transformer<T1, T2> Create<T1, T2>(Func<T1, T2> transformation) {
     ExceptionsHelper.ThrowIfNull(transformation, nameof(transformation));
     return new AnonymousTransformer<T1, T2>(transformation);
   }
 
   [Pure]
-  public static SymmetricTransformer<T1, T2> FromMethod<T1, T2>(Func<T1, T2> forward, Func<T2, T1> backward) {
+  public static SymmetricTransformer<T1, T2> Create<T1, T2>(Func<T1, T2> forward, Func<T2, T1> backward) {
     ExceptionsHelper.ThrowIfNull(forward, nameof(forward));
     ExceptionsHelper.ThrowIfNull(backward, nameof(backward));
     return new AnonymousSymmetricTransformer<T1, T2>(forward, backward);

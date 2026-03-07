@@ -15,7 +15,7 @@ public class CommandTest {
   public void AddItemToList<T>(T item) {
     var list = new List<T>();
     var addCommand = new Command<T>();
-    addCommand.Handle(Handler.FromMethod((T obj) => list.Add(obj)));
+    addCommand.Handle(Handler.Create((T obj) => list.Add(obj)));
 
     addCommand.Execute(item);
     Assert.Contains(item, list);

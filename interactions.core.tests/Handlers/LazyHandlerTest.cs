@@ -12,20 +12,20 @@ public class LazyHandlerTest {
   [InlineData("1E-10", 1e-10f)]
   [InlineData("True", true)]
   public void SimpleHandle<T>(string expected, T value) {
-    Handler<T, string> handler = Handler.Lazy(Resolver.FromMethod(TestHandler.ToStringHandler<T>));
+    Handler<T, string> handler = Handler.Lazy(Resolver.Create(TestHandler.ToStringHandler<T>));
     Assert.Equal(expected, handler.Execute(value));
   }
 
   [Fact]
   public void ProvideNullHandler() {
-    Handler<int, string> handler = Handler.Lazy(Resolver.FromMethod(Handler<int, string> () => null));
+    Handler<int, string> handler = Handler.Lazy(Resolver.Create(Handler<int, string> () => null));
     Assert.Throws<InvalidOperationException>(() => handler.Execute(10));
   }
 
   [Fact]
   public void DisposeInnerHandler() {
     Handler<Unit, Unit> inner = Handler.Identity();
-    Handler<Unit, Unit> handler = Handler.Lazy(Resolver.FromMethod(() => inner));
+    Handler<Unit, Unit> handler = Handler.Lazy(Resolver.Create(() => inner));
     handler.Execute(default);
     handler.Dispose();
     Assert.Throws<HandlerDisposedException>(() => inner.Execute(default));

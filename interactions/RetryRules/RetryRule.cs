@@ -71,7 +71,7 @@ public static class RetryRule {
   /// </param>
   /// <returns>Retry rule backed by provided delegate.</returns>
   [Pure]
-  public static IRetryRule<TEx> FromMethod<TEx>(AsyncFunc<int, TEx, bool> rule) where TEx : Exception {
+  public static IRetryRule<TEx> Create<TEx>(AsyncFunc<int, TEx, bool> rule) where TEx : Exception {
     ExceptionsHelper.ThrowIfNull(rule, nameof(rule));
     return new AnonymousRule<TEx>(rule);
   }

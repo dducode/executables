@@ -13,15 +13,15 @@ public class HandlersFactoryTest {
     Assert.Throws<ArgumentNullException>(() => Handler.Dynamic((IProvider<Handler<Unit, Unit>>)null));
     Assert.Throws<ArgumentNullException>(() => Handler.Dynamic((IProvider<AsyncHandler<Unit, Unit>>)null));
 
-    Assert.Throws<ArgumentNullException>(() => Handler.FromMethod((Action)null));
-    Assert.Throws<ArgumentNullException>(() => Handler.FromMethod((Action<Unit>)null));
-    Assert.Throws<ArgumentNullException>(() => Handler.FromMethod((Func<Unit>)null));
-    Assert.Throws<ArgumentNullException>(() => Handler.FromMethod((Func<Unit, Unit>)null));
+    Assert.Throws<ArgumentNullException>(() => Handler.Create(null));
+    Assert.Throws<ArgumentNullException>(() => Handler.Create((Action<Unit>)null));
+    Assert.Throws<ArgumentNullException>(() => Handler.Create<Unit>(null));
+    Assert.Throws<ArgumentNullException>(() => Handler.Create<Unit, Unit>(null));
 
-    Assert.Throws<ArgumentNullException>(() => Handler.FromMethod((Action)null));
-    Assert.Throws<ArgumentNullException>(() => Handler.FromMethod((Action<Unit>)null));
-    Assert.Throws<ArgumentNullException>(() => Handler.FromMethod((Func<Unit>)null));
-    Assert.Throws<ArgumentNullException>(() => Handler.FromMethod((Func<Unit, Unit>)null));
+    Assert.Throws<ArgumentNullException>(() => Handler.Create(null));
+    Assert.Throws<ArgumentNullException>(() => Handler.Create((Action<Unit>)null));
+    Assert.Throws<ArgumentNullException>(() => Handler.Create<Unit>(null));
+    Assert.Throws<ArgumentNullException>(() => Handler.Create<Unit, Unit>(null));
   }
 
 }
