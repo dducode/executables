@@ -1,9 +1,7 @@
-using Interactions.Core;
-using Interactions.Extensions;
-using Interactions.Handlers;
+using Interactions.Core.Handlers;
 using JetBrains.Annotations;
 
-namespace Interactions.Tests.Handlers;
+namespace Interactions.Core.Tests.Handlers;
 
 [TestSubject(typeof(AnonymousDisposeHandler<,>))]
 public class AnonymousDisposeHandlerTest {

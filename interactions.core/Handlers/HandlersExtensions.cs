@@ -58,4 +58,18 @@ public static class HandlersExtensions {
     return handler.Next(AsyncHandler.FromMethod(nextHandler));
   }
 
+  [Pure]
+  public static AsyncHandler<T1, T2> OnDispose<T1, T2>(this AsyncHandler<T1, T2> handler, Action dispose) {
+    handler.ThrowIfNullReference();
+    ExceptionsHelper.ThrowIfNull(dispose, nameof(dispose));
+    return new AsyncAnonymousDisposeHandler<T1, T2>(handler, dispose);
+  }
+
+  [Pure]
+  public static Handler<T1, T2> OnDispose<T1, T2>(this Handler<T1, T2> handler, Action dispose) {
+    handler.ThrowIfNullReference();
+    ExceptionsHelper.ThrowIfNull(dispose, nameof(dispose));
+    return new AnonymousDisposeHandler<T1, T2>(handler, dispose);
+  }
+
 }

@@ -1,6 +1,4 @@
-using Interactions.Core;
-
-namespace Interactions.Handlers;
+namespace Interactions.Core.Handlers;
 
 internal sealed class AsyncAnonymousDisposeHandler<T1, T2>(AsyncHandler<T1, T2> inner, Action dispose) : AsyncHandler<T1, T2> {
 

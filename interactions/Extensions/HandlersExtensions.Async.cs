@@ -56,11 +56,4 @@ public static partial class HandlersExtensions {
     return handler.Next(new TransitiveHandler<T2>(action));
   }
 
-  [Pure]
-  public static AsyncHandler<T1, T2> OnDispose<T1, T2>(this AsyncHandler<T1, T2> handler, Action dispose) {
-    ExceptionsHelper.ThrowIfNullReference(handler);
-    ExceptionsHelper.ThrowIfNull(dispose, nameof(dispose));
-    return new AsyncAnonymousDisposeHandler<T1, T2>(handler, dispose);
-  }
-
 }
