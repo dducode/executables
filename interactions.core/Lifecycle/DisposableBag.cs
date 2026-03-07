@@ -1,7 +1,7 @@
 using System.Runtime.ExceptionServices;
 using Interactions.Core.Internal;
 
-namespace Interactions.Core;
+namespace Interactions.Core.Lifecycle;
 
 public sealed class DisposableBag : IDisposable {
 

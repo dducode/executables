@@ -1,7 +1,8 @@
 using Interactions.Core;
 using Interactions.Core.Internal;
+using Interactions.Pipelines;
 
-namespace Interactions.Pipelines;
+namespace Interactions;
 
 /// <summary>
 /// Entry point for building pipelines that return a value.

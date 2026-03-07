@@ -1,5 +1,6 @@
 using System.Runtime.ExceptionServices;
 using Interactions.Core.Internal;
+using Interactions.Core.Subscribers;
 
 namespace Interactions.Core.Events;
 

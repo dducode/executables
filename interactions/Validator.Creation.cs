@@ -1,9 +1,11 @@
 using System.Diagnostics.Contracts;
 using System.Text.RegularExpressions;
-using Interactions.Core;
 using Interactions.Core.Internal;
+using Interactions.Core.Providers;
+using Interactions.Core.Resolvers;
+using Interactions.Validation;
 
-namespace Interactions.Validation;
+namespace Interactions;
 
 public static class Validator {
 

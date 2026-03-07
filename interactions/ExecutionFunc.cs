@@ -1,6 +1,6 @@
 using Interactions.Core;
 
-namespace Interactions.Operations;
+namespace Interactions;
 
 public delegate T4 ExecutionFunc<in T1, out T2, in T3, out T4>(T1 input, IExecutable<T2, T3> next);
 

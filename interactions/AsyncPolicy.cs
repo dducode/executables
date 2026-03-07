@@ -1,6 +1,6 @@
 using Interactions.Operations;
 
-namespace Interactions.Policies;
+namespace Interactions;
 
 /// <summary>
 /// Defines an asynchronous policy that can wrap query or command invocation.

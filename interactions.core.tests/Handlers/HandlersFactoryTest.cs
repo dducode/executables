@@ -1,3 +1,5 @@
+using Interactions.Core.Providers;
+using Interactions.Core.Resolvers;
 using JetBrains.Annotations;
 
 namespace Interactions.Core.Tests.Handlers;

@@ -1,3 +1,5 @@
+using Interactions.Core.Providers;
+
 namespace Interactions.Core.Handlers;
 
 internal sealed class AsyncDynamicHandler<T1, T2>(IProvider<AsyncHandler<T1, T2>> provider) : AsyncHandler<T1, T2> {

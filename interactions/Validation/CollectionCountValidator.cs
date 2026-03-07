@@ -1,4 +1,4 @@
-using static Interactions.Validation.Validator;
+using static Interactions.Validator;
 
 namespace Interactions.Validation;
 

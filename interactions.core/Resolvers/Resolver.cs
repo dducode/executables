@@ -1,4 +1,4 @@
-namespace Interactions.Core;
+namespace Interactions.Core.Resolvers;
 
 /// <summary>
 /// Resolves a single instance, typically once per lazy handler.

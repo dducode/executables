@@ -1,4 +1,4 @@
-namespace Interactions.Validation;
+namespace Interactions;
 
 public abstract class Validator<T> {
 

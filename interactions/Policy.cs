@@ -1,6 +1,6 @@
 using Interactions.Operations;
 
-namespace Interactions.Policies;
+namespace Interactions;
 
 /// <summary>
 /// Defines a synchronous policy that can wrap executable invocation.

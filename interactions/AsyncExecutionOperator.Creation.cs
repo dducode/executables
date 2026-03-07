@@ -1,7 +1,8 @@
 using System.Diagnostics.Contracts;
 using Interactions.Core.Internal;
+using Interactions.Operations;
 
-namespace Interactions.Operations;
+namespace Interactions;
 
 public static class AsyncExecutionOperator {
 

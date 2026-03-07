@@ -1,3 +1,3 @@
-namespace Interactions.Core;
+namespace Interactions.Core.Subscribers;
 
 public interface ISubscriber<in T> : IExecutable<T, Unit>;

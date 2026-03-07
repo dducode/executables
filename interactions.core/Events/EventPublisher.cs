@@ -1,7 +1,6 @@
 using System.Diagnostics.Contracts;
-using Interactions.Core.Events;
 
-namespace Interactions.Core;
+namespace Interactions.Core.Events;
 
 public static class EventPublisher {
 

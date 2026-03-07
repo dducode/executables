@@ -1,7 +1,7 @@
 using AutoFixture;
 using Interactions.Validation;
 using JetBrains.Annotations;
-using static Interactions.Validation.Validator;
+using static Interactions.Validator;
 
 namespace Interactions.Tests.Validation;
 

@@ -1,6 +1,6 @@
 using Interactions.Core;
 
-namespace Interactions.Operations;
+namespace Interactions;
 
 public abstract class ExecutionOperator<T1, T2, T3, T4> {
 

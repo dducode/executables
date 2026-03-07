@@ -1,4 +1,5 @@
 using Interactions.Core.Internal;
+using Interactions.Core.Lifecycle;
 using Interactions.Core.Subscribers;
 
 namespace Interactions.Core.Events;

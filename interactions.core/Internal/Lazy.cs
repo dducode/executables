@@ -1,3 +1,5 @@
+using Interactions.Core.Resolvers;
+
 namespace Interactions.Core.Internal;
 
 internal sealed class Lazy<T>(IResolver<T> resolver) where T : class {

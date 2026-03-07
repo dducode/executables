@@ -1,5 +1,6 @@
 using Interactions.Core;
 using Interactions.Core.Internal;
+using Interactions.Core.Lifecycle;
 using Interactions.Handlers;
 
 namespace Interactions.Commands;

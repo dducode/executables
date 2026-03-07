@@ -1,7 +1,8 @@
 using Interactions.Core;
 using Interactions.Core.Internal;
+using Interactions.Pipelines;
 
-namespace Interactions.Pipelines;
+namespace Interactions;
 
 public static partial class AsyncPipeline<T1, T4> {
 

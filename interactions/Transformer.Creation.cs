@@ -1,9 +1,12 @@
 using System.Diagnostics.Contracts;
 using System.Text;
-using Interactions.Core;
 using Interactions.Core.Internal;
+using Interactions.Core.Providers;
+using Interactions.Core.Resolvers;
+using Interactions.Transformation;
+using Encoder = Interactions.Transformation.Encoder;
 
-namespace Interactions.Transformation;
+namespace Interactions;
 
 public static class Transformer {
 

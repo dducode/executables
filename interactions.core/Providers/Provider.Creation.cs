@@ -1,8 +1,7 @@
 using System.Diagnostics.Contracts;
 using Interactions.Core.Internal;
-using Interactions.Core.Providers;
 
-namespace Interactions.Core;
+namespace Interactions.Core.Providers;
 
 /// <summary>
 /// Factory methods for <see cref="IProvider{T}"/>.

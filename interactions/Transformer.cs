@@ -1,4 +1,4 @@
-namespace Interactions.Transformation;
+namespace Interactions;
 
 public abstract class Transformer<T1, T2> {
 

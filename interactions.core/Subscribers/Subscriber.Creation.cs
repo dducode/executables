@@ -1,8 +1,7 @@
 using System.Diagnostics.Contracts;
 using Interactions.Core.Internal;
-using Interactions.Core.Subscribers;
 
-namespace Interactions.Core;
+namespace Interactions.Core.Subscribers;
 
 public static class Subscriber {
 

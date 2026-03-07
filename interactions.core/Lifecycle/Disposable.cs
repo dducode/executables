@@ -1,8 +1,7 @@
 using System.Diagnostics.Contracts;
 using Interactions.Core.Internal;
-using Interactions.Core.Lifecycle;
 
-namespace Interactions.Core;
+namespace Interactions.Core.Lifecycle;
 
 public static class Disposable {
 

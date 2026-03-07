@@ -1,5 +1,6 @@
 using System.Collections;
 using Interactions.Core.Internal;
+using Interactions.Core.Subscribers;
 
 namespace Interactions.Core.Events;
 

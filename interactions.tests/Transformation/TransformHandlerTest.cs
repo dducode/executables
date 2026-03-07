@@ -4,7 +4,7 @@ using Interactions.Transformation;
 using Interactions.Transformation.Filtering;
 using Interactions.Transformation.Parsing;
 using JetBrains.Annotations;
-using static Interactions.Validation.Validator;
+using static Interactions.Validator;
 
 namespace Interactions.Tests.Transformation;
 
