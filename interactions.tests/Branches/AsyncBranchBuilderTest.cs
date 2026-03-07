@@ -1,8 +1,9 @@
-using Interactions.Core.Extensions;
+using Interactions.Branches;
+using Interactions.Core;
 using Interactions.Core.Handlers;
 using JetBrains.Annotations;
 
-namespace Interactions.Core.Tests.Branches;
+namespace Interactions.Tests.Branches;
 
 [TestSubject(typeof(AsyncBranchBuilder<,>))]
 public class AsyncBranchBuilderTest {

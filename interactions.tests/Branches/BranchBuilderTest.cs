@@ -1,7 +1,8 @@
-using Interactions.Core.Extensions;
+using Interactions.Branches;
+using Interactions.Core;
 using JetBrains.Annotations;
 
-namespace Interactions.Core.Tests.Branches;
+namespace Interactions.Tests.Branches;
 
 [TestSubject(typeof(BranchBuilder<,>))]
 public class BranchBuilderTest {

@@ -1,4 +1,6 @@
-namespace Interactions.Core;
+using Interactions.Core;
+
+namespace Interactions.Branches;
 
 internal sealed class ConditionalExecutable<T1, T2>(
   Func<bool> condition,

@@ -1,6 +1,7 @@
 using System.Diagnostics.Contracts;
+using Interactions.Core;
 
-namespace Interactions.Core;
+namespace Interactions.Branches;
 
 public class BranchBuilder<T1, T2> {
 

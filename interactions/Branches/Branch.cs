@@ -1,4 +1,6 @@
-namespace Interactions.Core;
+using Interactions.Core;
+
+namespace Interactions.Branches;
 
 public static class Branch<T1, T2> {
 

@@ -1,6 +1,7 @@
 using System.Diagnostics.Contracts;
+using Interactions.Core;
 
-namespace Interactions.Core.Extensions;
+namespace Interactions.Branches;
 
 public static partial class BranchBuilderExtensions {
 
