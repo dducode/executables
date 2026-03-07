@@ -11,7 +11,7 @@ internal sealed class ParallelPublishHandler<T>(ParallelOptions options) : Handl
     try {
       Parallel.ForEach(publishing, options, subscriber => {
         try {
-          subscriber.Receive(publishing.arg);
+          subscriber.Execute(publishing.arg);
         }
         catch (Exception e) {
           exceptions.Enqueue(e);

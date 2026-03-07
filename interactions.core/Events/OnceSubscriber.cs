@@ -2,9 +2,10 @@ namespace Interactions.Core.Events;
 
 internal sealed class OnceSubscriber<T>(ISubscriber<T> inner, IDisposable handle) : ISubscriber<T> {
 
-  public void Receive(T arg) {
+  public Unit Execute(T arg) {
     try {
-      inner.Receive(arg);
+      inner.Execute(arg);
+      return default;
     }
     finally {
       handle.Dispose();

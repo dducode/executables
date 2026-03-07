@@ -2,11 +2,7 @@ using System.Diagnostics.Contracts;
 
 namespace Interactions.Core.Events;
 
-public interface ISubscriber<in T> {
-
-  void Receive(T arg);
-
-}
+public interface ISubscriber<in T> : IExecutable<T, Unit>;
 
 public static class Subscriber {
 

@@ -10,7 +10,7 @@ internal sealed class SequentialPublishHandler<T>(PublishOrder order) : Handler<
 
     foreach (ISubscriber<T> subscriber in order == PublishOrder.Direct ? publishing : publishing.Reverse()) {
       try {
-        subscriber.Receive(publishing.arg);
+        subscriber.Execute(publishing.arg);
       }
       catch (Exception e) {
         exceptions.Add(e);
