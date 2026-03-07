@@ -1,4 +1,5 @@
 using System.Diagnostics.Contracts;
+using Interactions.Core.Extensions;
 using Interactions.Core.Handlers;
 
 namespace Interactions.Core;
@@ -92,19 +93,17 @@ public static class Handler {
   /// <param name="func">Function used for handling.</param>
   [Pure]
   public static Handler<T1, T2> FromMethod<T1, T2>(Func<T1, T2> func) {
-    ExceptionsHelper.ThrowIfNull(func, nameof(func));
-    return new AnonymousHandler<T1, T2>(func);
+    return Executable.Create(func).AsHandler();
   }
 
   /// <summary>
   /// Creates a handler from a parameterless function.
   /// </summary>
   /// <typeparam name="T">Output type.</typeparam>
-  /// <param name="action">Function used for handling.</param>
+  /// <param name="func">Function used for handling.</param>
   [Pure]
-  public static Handler<Unit, T> FromMethod<T>(Func<T> action) {
-    ExceptionsHelper.ThrowIfNull(action, nameof(action));
-    return FromMethod((Unit _) => action());
+  public static Handler<Unit, T> FromMethod<T>(Func<T> func) {
+    return Executable.Create(func).AsHandler();
   }
 
   /// <summary>
@@ -114,11 +113,7 @@ public static class Handler {
   /// <param name="action">Action used for handling.</param>
   [Pure]
   public static Handler<T, Unit> FromMethod<T>(Action<T> action) {
-    ExceptionsHelper.ThrowIfNull(action, nameof(action));
-    return FromMethod<T, Unit>(input => {
-      action(input);
-      return default;
-    });
+    return Executable.Create(action).AsHandler();
   }
 
   /// <summary>
@@ -127,11 +122,7 @@ public static class Handler {
   /// <param name="action">Action used for handling.</param>
   [Pure]
   public static Handler<Unit, Unit> FromMethod(Action action) {
-    ExceptionsHelper.ThrowIfNull(action, nameof(action));
-    return FromMethod<Unit, Unit>(_ => {
-      action();
-      return default;
-    });
+    return Executable.Create(action).AsHandler();
   }
 
 }

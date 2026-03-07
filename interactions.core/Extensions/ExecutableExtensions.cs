@@ -1,4 +1,5 @@
 using System.Diagnostics.Contracts;
+using Interactions.Core.Handlers;
 
 namespace Interactions.Core.Extensions;
 
@@ -42,6 +43,18 @@ public static class ExecutableExtensions {
   public static IAsyncExecutable<T1, T2> ToAsyncExecutable<T1, T2>(this IExecutable<T1, T2> inner) {
     inner.ThrowIfNullReference();
     return new AsyncProxyExecutable<T1, T2>(inner);
+  }
+
+  [Pure]
+  public static Handler<T1, T2> AsHandler<T1, T2>(this IExecutable<T1, T2> executable) {
+    executable.ThrowIfNullReference();
+    return new ExecutableHandlerProxy<T1, T2>(executable);
+  }
+
+  [Pure]
+  public static AsyncHandler<T1, T2> AsHandler<T1, T2>(this IAsyncExecutable<T1, T2> executable) {
+    executable.ThrowIfNullReference();
+    return new AsyncExecutableHandlerProxy<T1, T2>(executable);
   }
 
   [Pure]
