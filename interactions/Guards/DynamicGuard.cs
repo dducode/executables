@@ -1,4 +1,5 @@
 using Interactions.Core;
+using Interactions.Core.Providers;
 
 namespace Interactions.Guards;
 

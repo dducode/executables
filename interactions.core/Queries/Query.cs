@@ -1,3 +1,7 @@
+using Interactions.Core.Executables;
+using Interactions.Core.Handleables;
+using Interactions.Core.Handlers;
+
 namespace Interactions.Core.Queries;
 
 public interface IQuery<in T1, out T2> : IExecutable<T1, T2> { }

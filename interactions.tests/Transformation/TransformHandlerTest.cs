@@ -1,4 +1,5 @@
 using Interactions.Core;
+using Interactions.Core.Handlers;
 using Interactions.Core.Queries;
 using Interactions.Handlers;
 using Interactions.Transformation;

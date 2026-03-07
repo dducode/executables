@@ -1,3 +1,5 @@
+using Interactions.Core.Lifecycle;
+
 namespace Interactions.Core.Handlers;
 
 internal sealed class AsyncCompositeHandler<T1, T2, T3>(AsyncHandler<T1, T2> first, AsyncHandler<T2, T3> second) : AsyncHandler<T1, T3> {

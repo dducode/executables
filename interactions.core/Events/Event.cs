@@ -1,3 +1,9 @@
+using Interactions.Core.Executables;
+using Interactions.Core.Handleables;
+using Interactions.Core.Handlers;
+using Interactions.Core.Internal;
+using Interactions.Core.Subscribers;
+
 namespace Interactions.Core.Events;
 
 public interface IEvent<T> : IExecutable<T, Unit> {

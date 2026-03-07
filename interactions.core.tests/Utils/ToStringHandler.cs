@@ -1,3 +1,5 @@
+using Interactions.Core.Handlers;
+
 namespace Interactions.Core.Tests.Utils;
 
 internal sealed class ToStringHandler<T> : Handler<T, string> {

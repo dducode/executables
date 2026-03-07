@@ -1,4 +1,6 @@
 using Interactions.Core.Commands;
+using Interactions.Core.Executables;
+using Interactions.Core.Handlers;
 using JetBrains.Annotations;
 
 namespace Interactions.Core.Tests.Commands;

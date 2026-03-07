@@ -1,4 +1,5 @@
 using Interactions.Core.Events;
+using Interactions.Core.Subscribers;
 
 namespace Interactions.Core.Tests.Utils;
 

@@ -1,5 +1,6 @@
 using System.Diagnostics.Contracts;
 using Interactions.Core;
+using Interactions.Core.Handlers;
 using Interactions.Transformation;
 using Interactions.Transformation.Filtering;
 using Interactions.Transformation.Parsing;

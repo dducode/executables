@@ -1,3 +1,7 @@
+using Interactions.Core.Executables;
+using Interactions.Core.Handleables;
+using Interactions.Core.Handlers;
+
 namespace Interactions.Core.Queries;
 
 public interface IAsyncQuery<in T1, T2> : IAsyncExecutable<T1, T2>;
