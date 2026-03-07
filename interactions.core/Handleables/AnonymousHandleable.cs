@@ -1,4 +1,5 @@
 using Interactions.Core.Handlers;
+using Interactions.Core.Internal;
 
 namespace Interactions.Core.Handleables;
 

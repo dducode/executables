@@ -1,5 +1,5 @@
-using Interactions.Core;
 using Interactions.Core.Executables;
+using Interactions.Core.Internal;
 
 namespace Interactions;
 

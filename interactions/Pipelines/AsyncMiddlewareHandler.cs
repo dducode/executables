@@ -1,4 +1,3 @@
-using Interactions.Core;
 using Interactions.Core.Handlers;
 
 namespace Interactions.Pipelines;

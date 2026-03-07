@@ -1,5 +1,5 @@
-using Interactions.Core;
 using Interactions.Core.Commands;
+using Interactions.Core.Internal;
 using Interactions.Core.Lifecycle;
 
 namespace Interactions.Commands;

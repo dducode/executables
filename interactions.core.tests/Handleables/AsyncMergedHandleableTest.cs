@@ -1,6 +1,5 @@
 using Interactions.Core.Handleables;
 using Interactions.Core.Handlers;
-using Interactions.Core.Internal;
 using Interactions.Core.Lifecycle;
 using JetBrains.Annotations;
 

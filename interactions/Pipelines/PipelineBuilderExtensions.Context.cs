@@ -1,4 +1,5 @@
 using Interactions.Core;
+using Interactions.Core.Internal;
 
 namespace Interactions.Pipelines;
 

@@ -1,5 +1,6 @@
 using System.Diagnostics.Contracts;
 using Interactions.Core.Executables;
+using Interactions.Core.Internal;
 using Interactions.Core.Providers;
 using Interactions.Core.Resolvers;
 

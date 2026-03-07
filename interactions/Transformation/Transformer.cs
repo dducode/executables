@@ -1,9 +1,8 @@
 using System.Diagnostics.Contracts;
 using System.Text;
-using Interactions.Core;
+using Interactions.Core.Internal;
 using Interactions.Core.Providers;
 using Interactions.Core.Resolvers;
-using Interactions.Extensions;
 
 namespace Interactions.Transformation;
 

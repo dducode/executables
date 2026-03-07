@@ -1,3 +1,5 @@
+using Interactions.Core.Internal;
+
 namespace Interactions.Core.Lifecycle;
 
 public sealed class DisposeHandle : IDisposable {

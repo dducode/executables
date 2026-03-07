@@ -1,6 +1,6 @@
 using System.Diagnostics.Contracts;
 using System.Globalization;
-using Interactions.Core;
+using Interactions.Core.Internal;
 
 namespace Interactions.Transformation.Parsing;
 

@@ -1,6 +1,6 @@
 using System.Diagnostics.Contracts;
-using Interactions.Core;
 using Interactions.Core.Commands;
+using Interactions.Core.Internal;
 
 namespace Interactions.Commands;
 

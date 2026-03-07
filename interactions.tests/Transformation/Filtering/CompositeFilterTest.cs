@@ -1,4 +1,3 @@
-using Interactions.Extensions;
 using Interactions.Transformation.Filtering;
 using Interactions.Validation;
 using JetBrains.Annotations;

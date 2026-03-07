@@ -1,5 +1,5 @@
 using System.Diagnostics.Contracts;
-using Interactions.Core;
+using Interactions.Core.Internal;
 using Interactions.Core.Providers;
 using Interactions.Core.Resolvers;
 

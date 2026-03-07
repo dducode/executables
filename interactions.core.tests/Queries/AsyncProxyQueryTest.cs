@@ -1,6 +1,5 @@
 using Interactions.Core.Executables;
 using Interactions.Core.Handlers;
-using Interactions.Core.Internal;
 using Interactions.Core.Queries;
 using JetBrains.Annotations;
 

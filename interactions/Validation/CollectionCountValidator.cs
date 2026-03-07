@@ -1,4 +1,3 @@
-using Interactions.Extensions;
 using static Interactions.Validation.Validator;
 
 namespace Interactions.Validation;

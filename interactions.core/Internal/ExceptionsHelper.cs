@@ -1,6 +1,6 @@
 using System.Runtime.CompilerServices;
 
-namespace Interactions.Core;
+namespace Interactions.Core.Internal;
 
 internal static class ExceptionsHelper {
 

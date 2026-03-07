@@ -1,5 +1,6 @@
 using System.Diagnostics.Contracts;
 using Interactions.Core.Handlers;
+using Interactions.Core.Internal;
 using Interactions.Core.Lifecycle;
 
 namespace Interactions.Core.Handleables;

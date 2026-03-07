@@ -1,5 +1,5 @@
 using System.Diagnostics.Contracts;
-using Interactions.Core;
+using Interactions.Core.Internal;
 using Interactions.Validation;
 
 namespace Interactions.Transformation.Filtering;

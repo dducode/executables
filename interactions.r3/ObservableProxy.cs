@@ -1,4 +1,3 @@
-using Interactions.Core;
 using Interactions.Core.Handleables;
 using R3;
 using Unit = Interactions.Core.Unit;

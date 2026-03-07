@@ -1,5 +1,5 @@
 using System.Diagnostics.Contracts;
-using Interactions.Core.Events;
+using Interactions.Core.Internal;
 
 namespace Interactions.Core.Subscribers;
 

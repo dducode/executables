@@ -1,7 +1,6 @@
 using System.Diagnostics.Contracts;
-using Interactions.Core;
 using Interactions.Core.Handlers;
-using Interactions.Extensions;
+using Interactions.Core.Internal;
 using Interactions.Handlers;
 using Interactions.Validation;
 

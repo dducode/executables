@@ -1,6 +1,7 @@
 using System.Diagnostics.Contracts;
 using Interactions.Core;
 using Interactions.Core.Handlers;
+using Interactions.Core.Internal;
 
 namespace Interactions;
 

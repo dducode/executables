@@ -1,5 +1,3 @@
-using Interactions.Core;
-
 namespace Interactions.Pipelines;
 
 /// <summary>

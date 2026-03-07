@@ -1,4 +1,3 @@
-using Interactions.Extensions;
 using Interactions.Validation;
 using JetBrains.Annotations;
 using static Interactions.Validation.Validator;
