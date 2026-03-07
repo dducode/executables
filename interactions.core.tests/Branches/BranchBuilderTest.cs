@@ -12,7 +12,7 @@ public class BranchBuilderTest {
   [InlineData(2, 2)]
   [InlineData(3, -1)]
   public void LinearBranch(int state, int expected) {
-    Handler<Unit, int> handler = Branch<int>
+    IExecutable<Unit, int> handler = Branch<int>
       .If(() => state == 0, () => 0)
       .ElseIf(() => state == 1, () => 1)
       .ElseIf(() => state == 2, () => 2)
@@ -27,7 +27,7 @@ public class BranchBuilderTest {
   [InlineData(false, true, 2)]
   [InlineData(false, false, 3)]
   public void NestedBranch(bool topConditional, bool nestedConditional, int expected) {
-    Handler<Unit, int> handler = Branch<int>
+    IExecutable<Unit, int> executable = Branch<int>
       .If(() => topConditional, Branch<int>
         .If(() => nestedConditional, () => 0)
         .Else(() => 1)
@@ -36,7 +36,7 @@ public class BranchBuilderTest {
         .Else(() => 3)
       );
 
-    Assert.Equal(expected, handler.Execute(default));
+    Assert.Equal(expected, executable.Execute(default));
   }
 
   [Fact]
@@ -56,7 +56,7 @@ public class BranchBuilderTest {
     });
 
     Assert.Throws<ArgumentNullException>(() => {
-      Handler<Unit, Unit> _ = Branch<Unit, Unit>
+      IExecutable<Unit, Unit> _ = Branch<Unit, Unit>
         .If(() => true, Handler.Identity())
         .Else(null);
     });
