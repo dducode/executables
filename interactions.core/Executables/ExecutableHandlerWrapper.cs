@@ -1,5 +1,3 @@
-using Interactions.Core.Handlers;
-
 namespace Interactions.Core.Executables;
 
 internal sealed class ExecutableHandlerWrapper<T1, T2>(IExecutable<T1, T2> inner) : Handler<T1, T2> {

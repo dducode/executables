@@ -1,4 +1,4 @@
-using Interactions.Core.Executables;
+using Interactions.Core;
 using Interactions.RetryRules;
 
 namespace Interactions.Policies;

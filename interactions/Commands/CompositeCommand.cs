@@ -1,7 +1,4 @@
 using Interactions.Core;
-using Interactions.Core.Commands;
-using Interactions.Core.Handleables;
-using Interactions.Core.Handlers;
 using Interactions.Core.Internal;
 
 namespace Interactions.Commands;

@@ -1,7 +1,8 @@
 using System.Diagnostics.Contracts;
 using Interactions.Core.Internal;
+using Interactions.Core.Resolvers;
 
-namespace Interactions.Core.Resolvers;
+namespace Interactions.Core;
 
 /// <summary>
 /// Factory methods for <see cref="IResolver{T}"/>.

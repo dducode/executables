@@ -1,6 +1,5 @@
 using System.Collections.Concurrent;
 using System.Runtime.ExceptionServices;
-using Interactions.Core.Handlers;
 using Interactions.Core.Internal;
 
 namespace Interactions.Core.Events;

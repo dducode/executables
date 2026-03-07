@@ -2,8 +2,6 @@ using System.Diagnostics.Contracts;
 using Interactions.Analytics;
 using Interactions.Core;
 using Interactions.Core.Internal;
-using Interactions.Core.Providers;
-using Interactions.Core.Resolvers;
 using Interactions.Fallbacks;
 using Interactions.Guards;
 using Interactions.Validation;

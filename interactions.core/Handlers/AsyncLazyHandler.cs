@@ -1,5 +1,3 @@
-using Interactions.Core.Resolvers;
-
 namespace Interactions.Core.Handlers;
 
 internal sealed class AsyncLazyHandler<T1, T2>(IResolver<AsyncHandler<T1, T2>> resolver) : AsyncHandler<T1, T2> {

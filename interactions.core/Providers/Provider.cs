@@ -1,4 +1,4 @@
-namespace Interactions.Core.Providers;
+namespace Interactions.Core;
 
 /// <summary>
 /// Produces a new instance per call and may hold disposable resources.

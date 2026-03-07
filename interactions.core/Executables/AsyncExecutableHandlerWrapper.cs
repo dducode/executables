@@ -1,5 +1,3 @@
-using Interactions.Core.Handlers;
-
 namespace Interactions.Core.Executables;
 
 internal sealed class AsyncExecutableHandlerWrapper<T1, T2>(IAsyncExecutable<T1, T2> inner) : AsyncHandler<T1, T2> {

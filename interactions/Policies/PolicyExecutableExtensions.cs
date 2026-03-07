@@ -1,5 +1,5 @@
 using System.Diagnostics.Contracts;
-using Interactions.Core.Executables;
+using Interactions.Core;
 using Interactions.Core.Internal;
 
 namespace Interactions.Policies;

@@ -1,5 +1,4 @@
 using Interactions.Core.Handleables;
-using Interactions.Core.Handlers;
 using JetBrains.Annotations;
 
 namespace Interactions.Core.Tests.Extensions;

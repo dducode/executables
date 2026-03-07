@@ -1,6 +1,5 @@
 using AutoFixture;
 using Interactions.Core.Handlers;
-using Interactions.Core.Queries;
 using JetBrains.Annotations;
 
 namespace Interactions.Core.Tests.Handlers;

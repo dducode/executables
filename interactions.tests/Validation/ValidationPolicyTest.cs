@@ -1,6 +1,4 @@
-using Interactions.Core.Executables;
-using Interactions.Core.Handlers;
-using Interactions.Core.Queries;
+using Interactions.Core;
 using Interactions.Policies;
 using Interactions.Validation;
 using JetBrains.Annotations;

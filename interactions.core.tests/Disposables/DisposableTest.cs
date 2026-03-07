@@ -1,4 +1,3 @@
-using Interactions.Core.Lifecycle;
 using JetBrains.Annotations;
 
 namespace Interactions.Core.Tests.Disposables;

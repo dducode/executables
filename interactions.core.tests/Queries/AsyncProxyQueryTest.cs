@@ -1,6 +1,4 @@
 using Interactions.Core.Executables;
-using Interactions.Core.Handlers;
-using Interactions.Core.Queries;
 using JetBrains.Annotations;
 
 namespace Interactions.Core.Tests.Queries;

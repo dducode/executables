@@ -1,4 +1,4 @@
-using Interactions.Core.Resolvers;
+using Interactions.Core;
 
 namespace Interactions.Guards;
 

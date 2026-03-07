@@ -1,5 +1,3 @@
-using Interactions.Core.Providers;
-
 namespace Interactions.Core.Handlers;
 
 internal sealed class DynamicHandler<T1, T2>(IProvider<Handler<T1, T2>> provider) : Handler<T1, T2> {

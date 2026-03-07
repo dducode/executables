@@ -1,4 +1,4 @@
-using Interactions.Core.Providers;
+using Interactions.Core;
 
 namespace Interactions.Guards;
 

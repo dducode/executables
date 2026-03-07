@@ -3,9 +3,6 @@ using Interactions.Core.Internal;
 
 namespace Interactions.Guards;
 
-/// <summary>
-/// Extension methods for guard composition.
-/// </summary>
 public static class GuardExtensions {
 
   /// <summary>

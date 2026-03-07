@@ -1,5 +1,3 @@
-using Interactions.Core.Handlers;
-
 namespace Interactions.Core.Tests.Utils;
 
 internal sealed class IntParseHandler : Handler<string, int> {
