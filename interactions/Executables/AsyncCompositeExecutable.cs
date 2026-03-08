@@ -1,4 +1,6 @@
-namespace Interactions.Core.Executables;
+using Interactions.Core;
+
+namespace Interactions.Executables;
 
 internal sealed class AsyncCompositeExecutable<T1, T2, T3>(IAsyncExecutable<T1, T2> first, IAsyncExecutable<T2, T3> second) : IAsyncExecutable<T1, T3> {
 
