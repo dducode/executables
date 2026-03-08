@@ -18,12 +18,12 @@ public static class R3Extensions {
   }
 
   [Pure]
-  public static Observable<T> AsObservable<T>(this Handleable<T, Unit> handleable) {
+  public static Observable<T> AsObservable<T>(this IHandleable<T, Unit> handleable) {
     return new ObservableProxy<T>(handleable);
   }
 
   [Pure]
-  public static Handleable<T, Unit> AsHandleable<T>(this Observable<T> observable) {
+  public static IHandleable<T, Unit> AsHandleable<T>(this Observable<T> observable) {
     return new HandleableProxy<T>(observable);
   }
 

@@ -4,9 +4,9 @@ using Unit = Interactions.Core.Unit;
 
 namespace Interactions.R3;
 
-internal sealed class HandleableProxy<T>(Observable<T> inner) : Handleable<T, Unit> {
+internal sealed class HandleableProxy<T>(Observable<T> inner) : IHandleable<T, Unit> {
 
-  public override IDisposable Handle(Handler<T, Unit> handler) {
+  public IDisposable Handle(Handler<T, Unit> handler) {
     return inner.Subscribe(handler.AsObserver());
   }
 

@@ -9,7 +9,7 @@ namespace Interactions.Commands;
 /// </summary>
 /// <typeparam name="TInput">Input type</typeparam>
 /// <typeparam name="TChange">Previous state for revert</typeparam>
-public sealed class ReversibleCommand<TInput, TChange> : ICommand<TInput>, IUndoRedo {
+public sealed class ReversibleCommand<TInput, TChange> : IHandleable<TInput, TChange, ReversibleHandler<TInput, TChange>>, ICommand<TInput>, IUndoRedo {
 
   private readonly History<TChange> _history;
   private readonly int _historyMaxSize;

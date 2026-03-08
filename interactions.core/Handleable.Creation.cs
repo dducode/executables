@@ -8,19 +8,13 @@ namespace Interactions.Core;
 public static class Handleable {
 
   [Pure]
-  public static Handleable<T1, T2> Create<T1, T2>(Func<Handler<T1, T2>, IDisposable> handling) {
+  public static IHandleable<T1, T2> Create<T1, T2>(Func<Handler<T1, T2>, IDisposable> handling) {
     ExceptionsHelper.ThrowIfNull(handling, nameof(handling));
     return new AnonymousHandleable<T1, T2>(handling);
   }
 
   [Pure]
-  public static AsyncHandleable<T1, T2> Create<T1, T2>(Func<AsyncHandler<T1, T2>, IDisposable> handling) {
-    ExceptionsHelper.ThrowIfNull(handling, nameof(handling));
-    return new AsyncAnonymousHandleable<T1, T2>(handling);
-  }
-
-  [Pure]
-  public static Handleable<T1, T2> FromEvent<T1, T2>(Action<Func<T1, T2>> add, Action<Func<T1, T2>> remove) {
+  public static IHandleable<T1, T2> FromEvent<T1, T2>(Action<Func<T1, T2>> add, Action<Func<T1, T2>> remove) {
     ExceptionsHelper.ThrowIfNull(add, nameof(add));
     ExceptionsHelper.ThrowIfNull(remove, nameof(remove));
 
@@ -31,7 +25,7 @@ public static class Handleable {
   }
 
   [Pure]
-  public static Handleable<T, Unit> FromEvent<T>(Action<Action<T>> add, Action<Action<T>> remove) {
+  public static IHandleable<T, Unit> FromEvent<T>(Action<Action<T>> add, Action<Action<T>> remove) {
     ExceptionsHelper.ThrowIfNull(add, nameof(add));
     ExceptionsHelper.ThrowIfNull(remove, nameof(remove));
 
@@ -43,7 +37,7 @@ public static class Handleable {
   }
 
   [Pure]
-  public static Handleable<Unit, Unit> FromEvent(Action<Action> add, Action<Action> remove) {
+  public static IHandleable<Unit, Unit> FromEvent(Action<Action> add, Action<Action> remove) {
     ExceptionsHelper.ThrowIfNull(add, nameof(add));
     ExceptionsHelper.ThrowIfNull(remove, nameof(remove));
 
@@ -54,7 +48,10 @@ public static class Handleable {
     });
   }
 
-  internal static IDisposable MergedHandle<T1, T2>(Handleable<T1, T2> first, Handleable<T1, T2> second, Handler<T1, T2> handler) {
+  internal static IDisposable MergedHandle<T1, T2, THandler>(
+    IHandleable<T1, T2, THandler> first,
+    IHandleable<T1, T2, THandler> second,
+    THandler handler) where THandler : Handler<T1, T2> {
     IDisposable firstDisposable = null;
     IDisposable secondDisposable = null;
 
@@ -74,7 +71,10 @@ public static class Handleable {
     }
   }
 
-  internal static IDisposable MergedHandle<T1, T2>(AsyncHandleable<T1, T2> first, AsyncHandleable<T1, T2> second, AsyncHandler<T1, T2> handler) {
+  internal static IDisposable MergedHandle<T1, T2, THandler>(
+    IAsyncHandleable<T1, T2, THandler> first,
+    IAsyncHandleable<T1, T2, THandler> second,
+    THandler handler) where THandler : AsyncHandler<T1, T2> {
     IDisposable firstDisposable = null;
     IDisposable secondDisposable = null;
 
