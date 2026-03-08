@@ -4,7 +4,7 @@ using Interactions.Core.Subscribers;
 
 namespace Interactions.Core.Events;
 
-internal sealed class SequentialPublishHandler<T>(PublishOrder order) : Handler<Publishing<T>, Unit> {
+internal sealed class SequentialPublisher<T>(PublishOrder order) : Handler<Publishing<T>, Unit> {
 
   protected override Unit ExecuteCore(Publishing<T> publishing) {
     List<Exception> exceptions = Pool<List<Exception>>.Get();

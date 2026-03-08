@@ -6,7 +6,7 @@ public static class EventPublisher {
 
   [Pure]
   public static Handler<Publishing<T>, Unit> Sequential<T>(PublishOrder order = PublishOrder.Direct) {
-    return new SequentialPublishHandler<T>(order);
+    return new SequentialPublisher<T>(order);
   }
 
   [Pure]
@@ -16,7 +16,7 @@ public static class EventPublisher {
 
   [Pure]
   public static Handler<Publishing<T>, Unit> Parallel<T>(ParallelOptions options = null) {
-    return new ParallelPublishHandler<T>(options ?? new ParallelOptions());
+    return new ParallelPublisher<T>(options ?? new ParallelOptions());
   }
 
   [Pure]

@@ -6,8 +6,8 @@ using Xunit.Abstractions;
 
 namespace Interactions.Core.Tests.Events;
 
-[TestSubject(typeof(ParallelPublishHandler<>))]
-public class ParallelPublishHandlerTest(ITestOutputHelper output) {
+[TestSubject(typeof(ParallelPublisher<>))]
+public class ParallelPublisherTest(ITestOutputHelper output) {
 
   [Fact]
   public void ParallelPublishing() {

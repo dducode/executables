@@ -18,7 +18,7 @@ internal sealed class AsyncMetricsPolicy<T1, T2>(IMetrics<T1, T2> metrics, strin
       T2 result;
 
       try {
-        sw.Restart();
+        sw.Start();
         result = await executable.Execute(input, token);
         sw.Stop();
       }
@@ -35,6 +35,7 @@ internal sealed class AsyncMetricsPolicy<T1, T2>(IMetrics<T1, T2> metrics, strin
       return result;
     }
     finally {
+      sw.Reset();
       _stopwatches.Push(sw);
     }
   }

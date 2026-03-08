@@ -2,10 +2,9 @@ namespace Interactions.Transformation;
 
 internal sealed class IdentityTransformer<T> : Transformer<T, T> {
 
-  internal static readonly IdentityTransformer<T> Instance = new();
+  internal static IdentityTransformer<T> Instance { get; } = new();
 
-  private IdentityTransformer() {
-  }
+  private IdentityTransformer() { }
 
   public override T Transform(T input) {
     return input;

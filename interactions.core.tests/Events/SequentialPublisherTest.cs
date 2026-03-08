@@ -6,8 +6,8 @@ using Xunit.Abstractions;
 
 namespace Interactions.Core.Tests.Events;
 
-[TestSubject(typeof(SequentialPublishHandler<>))]
-public class SequentialPublishHandlerTest(ITestOutputHelper output) {
+[TestSubject(typeof(SequentialPublisher<>))]
+public class SequentialPublisherTest(ITestOutputHelper output) {
 
   [Theory]
   [InlineData(PublishOrder.Direct)]

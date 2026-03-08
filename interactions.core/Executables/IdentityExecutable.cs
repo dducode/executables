@@ -2,7 +2,7 @@ namespace Interactions.Core.Executables;
 
 internal sealed class IdentityExecutable<T> : IExecutable<T, T> {
 
-  internal static readonly IdentityExecutable<T> Instance = new();
+  internal static IdentityExecutable<T> Instance { get; } = new();
 
   private IdentityExecutable() { }
 

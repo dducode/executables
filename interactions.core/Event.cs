@@ -12,7 +12,7 @@ public interface IEvent<T> : IExecutable<T, Unit> {
 
 public class Event<T> : Handleable<Publishing<T>, Unit>, IEvent<T> {
 
-  private readonly List<ISubscriber<T>> _subscribers = [];
+  private readonly HashSet<ISubscriber<T>> _subscribers = [];
   private readonly object _lock = new();
 
   public Unit Execute(T input) {
@@ -35,11 +35,9 @@ public class Event<T> : Handleable<Publishing<T>, Unit>, IEvent<T> {
   public IDisposable Subscribe(ISubscriber<T> subscriber) {
     ExceptionsHelper.ThrowIfNull(subscriber, nameof(subscriber));
 
-    lock (_lock) {
-      if (_subscribers.Contains(subscriber))
+    lock (_lock)
+      if (!_subscribers.Add(subscriber))
         throw new InvalidOperationException($"Already contains {subscriber}");
-      _subscribers.Add(subscriber);
-    }
 
     return new SubscriberNode(this, subscriber);
   }

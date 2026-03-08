@@ -18,7 +18,7 @@ internal sealed class MetricsPolicy<T1, T2>(IMetrics<T1, T2> metrics, string tag
       T2 result;
 
       try {
-        sw.Restart();
+        sw.Start();
         result = executable.Execute(input);
         sw.Stop();
       }
@@ -35,6 +35,7 @@ internal sealed class MetricsPolicy<T1, T2>(IMetrics<T1, T2> metrics, string tag
       return result;
     }
     finally {
+      sw.Reset();
       _stopwatches.Push(sw);
     }
   }

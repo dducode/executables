@@ -4,7 +4,7 @@ using Interactions.Core.Internal;
 
 namespace Interactions.Core.Events;
 
-internal sealed class ParallelPublishHandler<T>(ParallelOptions options) : Handler<Publishing<T>, Unit> {
+internal sealed class ParallelPublisher<T>(ParallelOptions options) : Handler<Publishing<T>, Unit> {
 
   protected override Unit ExecuteCore(Publishing<T> publishing) {
     ConcurrentQueue<Exception> exceptions = Pool<ConcurrentQueue<Exception>>.Get();
