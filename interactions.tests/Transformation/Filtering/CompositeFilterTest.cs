@@ -1,5 +1,4 @@
 using Interactions.Transformation.Filtering;
-using Interactions.Validation;
 using JetBrains.Annotations;
 
 namespace Interactions.Tests.Transformation.Filtering;

@@ -1,5 +1,3 @@
-using Interactions.Operations;
-
 namespace Interactions;
 
 /// <summary>

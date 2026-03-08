@@ -1,7 +1,6 @@
 using Interactions.Context;
 using Interactions.Core;
 using Interactions.Guards;
-using Interactions.Policies;
 using JetBrains.Annotations;
 using Xunit.Abstractions;
 

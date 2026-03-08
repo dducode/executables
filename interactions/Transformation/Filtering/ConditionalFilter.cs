@@ -1,5 +1,3 @@
-using Interactions.Validation;
-
 namespace Interactions.Transformation.Filtering;
 
 internal sealed class ConditionalFilter<T>(Validator<T> itemValidator) : Filter<T> {

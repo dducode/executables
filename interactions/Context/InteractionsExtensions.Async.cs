@@ -1,6 +1,5 @@
 using Interactions.Core;
 using Interactions.Core.Internal;
-using Interactions.Operations;
 
 namespace Interactions.Context;
 
