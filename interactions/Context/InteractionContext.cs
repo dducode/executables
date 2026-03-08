@@ -6,7 +6,10 @@ public interface IReadonlyContext : IFormattable {
 
   IReadonlyContext Parent { get; }
   string Name { get; }
-  Guid Id { get; }
+  Guid CorrelationId { get; }
+  long ContextId { get; }
+  int Depth { get; }
+  IReadonlyContext Root { get; }
 
   bool TryGet<T>(object key, out T value);
   bool TryGetLocal<T>(object key, out T value);
@@ -20,18 +23,25 @@ public sealed class InteractionContext : IDisposable, IReadonlyContext {
     internal set => _current.Value = value;
   }
 
+  private static long _id;
   private static readonly AsyncLocal<IReadonlyContext> _current = new();
 
+  public IReadonlyContext Root { get; }
   public IReadonlyContext Parent { get; }
+  public Guid CorrelationId { get; }
+  public long ContextId { get; }
+  public int Depth { get; }
   public string Name { get; set; }
-  public Guid Id { get; }
 
   private readonly Dictionary<object, object> _context = new();
   private bool _disposed;
 
-  internal InteractionContext(IReadonlyContext parent, Guid id) {
+  internal InteractionContext(IReadonlyContext parent) {
+    Root = parent?.Root ?? this;
     Parent = parent;
-    Id = id;
+    CorrelationId = parent?.CorrelationId ?? Guid.NewGuid();
+    ContextId = Interlocked.Increment(ref _id);
+    Depth = parent?.Depth + 1 ?? 0;
   }
 
   public void Set<T>(object key, T value) {
@@ -42,10 +52,12 @@ public sealed class InteractionContext : IDisposable, IReadonlyContext {
   public bool TryGet<T>(object key, out T value) {
     ThrowIfDisposed();
 
-    if (TryGetLocal(key, out value))
-      return true;
+    for (IReadonlyContext context = this; context != null; context = context.Parent)
+      if (context.TryGetLocal(key, out value))
+        return true;
 
-    return Parent?.TryGet(key, out value) ?? false;
+    value = default;
+    return false;
   }
 
   public bool TryGetLocal<T>(object key, out T value) {
@@ -61,7 +73,7 @@ public sealed class InteractionContext : IDisposable, IReadonlyContext {
   }
 
   public override string ToString() {
-    return $"Name: {Name ?? "Null"}, Id: {Id}";
+    return $"[{CorrelationId}] {Name ?? "Context"}({ContextId}:{Depth})";
   }
 
   public string ToString(string format, IFormatProvider formatProvider) {
@@ -69,7 +81,7 @@ public sealed class InteractionContext : IDisposable, IReadonlyContext {
   }
 
   private string ToStringVerbose() {
-    return Parent == null ? $"{ToString()}, Parent: Null" : $"{ToString()}, Parent: {{\n\t{Parent:v}\n}}";
+    return Parent == null ? ToString() : $"{Parent:v}{Environment.NewLine}{ToString()}";
   }
 
   public void Dispose() {

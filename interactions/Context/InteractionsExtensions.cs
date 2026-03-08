@@ -10,7 +10,7 @@ public static partial class InteractionsExtensions {
     ExceptionsHelper.ThrowIfNull(init, nameof(init));
 
     IReadonlyContext previous = InteractionContext.Current;
-    using var current = new InteractionContext(previous, Guid.NewGuid());
+    using var current = new InteractionContext(previous);
     init(current);
     InteractionContext.Current = current;
 
@@ -31,7 +31,7 @@ public static partial class InteractionsExtensions {
     ExceptionsHelper.ThrowIfNull(init, nameof(init));
 
     IReadonlyContext previous = InteractionContext.Current;
-    using var current = new InteractionContext(previous, Guid.NewGuid());
+    using var current = new InteractionContext(previous);
     init(current);
     InteractionContext.Current = current;
 
