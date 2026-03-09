@@ -8,8 +8,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "interactions.core", "intera
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "interactions.core.tests", "interactions.core.tests\interactions.core.tests.csproj", "{AFDE3D79-674A-4C96-A82D-07C0D8F4619E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "interactions.r3", "interactions.r3\interactions.r3.csproj", "{7DC5A45E-47B1-42C2-A9CC-EE67BFC4D1C4}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,9 +30,5 @@ Global
 		{AFDE3D79-674A-4C96-A82D-07C0D8F4619E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AFDE3D79-674A-4C96-A82D-07C0D8F4619E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AFDE3D79-674A-4C96-A82D-07C0D8F4619E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7DC5A45E-47B1-42C2-A9CC-EE67BFC4D1C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7DC5A45E-47B1-42C2-A9CC-EE67BFC4D1C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7DC5A45E-47B1-42C2-A9CC-EE67BFC4D1C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7DC5A45E-47B1-42C2-A9CC-EE67BFC4D1C4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
