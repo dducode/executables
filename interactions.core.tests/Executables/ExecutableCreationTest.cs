@@ -1,6 +1,6 @@
 using JetBrains.Annotations;
 
-namespace Interactions.Core.Tests.Handlers;
+namespace Interactions.Core.Tests.Executables;
 
 [TestSubject(typeof(Executable))]
 public class ExecutableCreationTest {

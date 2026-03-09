@@ -1,7 +1,7 @@
 using Interactions.Core.Executables;
 using JetBrains.Annotations;
 
-namespace Interactions.Core.Tests.Handlers;
+namespace Interactions.Core.Tests.Executables;
 
 [TestSubject(typeof(IdentityExecutable<>))]
 public class IdentityExecutableTest {

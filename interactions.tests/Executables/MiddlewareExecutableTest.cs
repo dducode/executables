@@ -4,7 +4,7 @@ using Interactions.Pipelines;
 using JetBrains.Annotations;
 using Xunit.Abstractions;
 
-namespace Interactions.Tests.Handlers;
+namespace Interactions.Tests.Executables;
 
 [TestSubject(typeof(MiddlewareExecutable<,,,>))]
 public class MiddlewareExecutableTest(ITestOutputHelper testOutputHelper) {

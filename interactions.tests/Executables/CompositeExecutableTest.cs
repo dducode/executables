@@ -3,7 +3,7 @@ using Interactions.Core;
 using Interactions.Executables;
 using JetBrains.Annotations;
 
-namespace Interactions.Tests.Handlers;
+namespace Interactions.Tests.Executables;
 
 [TestSubject(typeof(CompositeExecutable<,,>))]
 public class CompositeExecutableTest {
