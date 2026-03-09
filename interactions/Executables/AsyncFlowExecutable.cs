@@ -2,7 +2,7 @@ using Interactions.Core;
 
 namespace Interactions.Executables;
 
-internal sealed class AsyncZipExecutable<T1, T2, T3, T4>(
+internal sealed class AsyncFlowExecutable<T1, T2, T3, T4>(
   IAsyncExecutable<T1, T2> first,
   IAsyncExecutable<T1, T3> second,
   IAggregator<T2, T3, T4> aggregator) : IAsyncExecutable<T1, T4> {

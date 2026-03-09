@@ -1,11 +1,12 @@
 using AutoFixture;
-using Interactions.Core.Handlers;
+using Interactions.Core;
+using Interactions.Executables;
 using JetBrains.Annotations;
 
-namespace Interactions.Core.Tests.Handlers;
+namespace Interactions.Tests.Handlers;
 
-[TestSubject(typeof(CompositeHandler<,,>))]
-public class CompositeHandlerTest {
+[TestSubject(typeof(CompositeExecutable<,,>))]
+public class CompositeExecutableTest {
 
   [Fact]
   public void GetPlayerMoneyFromStorageTest() {
@@ -27,15 +28,13 @@ public class CompositeHandlerTest {
       }
     });
 
-    var query = new Query<int, decimal>();
-    using IDisposable handle = query.Handle(Handler
+    IExecutable<int, decimal> executable = Executable
       .Create<int, Player>(id => storage.Get(id))
       .Then(player => player.data)
-      .Then(data => data.money)
-    );
+      .Then(data => data.money);
 
-    Assert.Equal(firstPlayerMoney, query.Execute(0));
-    Assert.Equal(secondPlayerMoney, query.Execute(1));
+    Assert.Equal(firstPlayerMoney, executable.Execute(0));
+    Assert.Equal(secondPlayerMoney, executable.Execute(1));
   }
 
 }

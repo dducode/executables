@@ -6,11 +6,6 @@ namespace Interactions.Executables;
 public static class Aggregator {
 
   [Pure]
-  public static IAggregator<T1, T2, (T1, T2)> Tuple<T1, T2>() {
-    return TupleAggregator<T1, T2>.Instance;
-  }
-
-  [Pure]
   public static IAggregator<T1, T2, T3> Create<T1, T2, T3>(Func<T1, T2, T3> aggregation) {
     ExceptionsHelper.ThrowIfNull(aggregation, nameof(aggregation));
     return new AnonymousAggregator<T1, T2, T3>(aggregation);
