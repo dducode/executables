@@ -102,7 +102,7 @@ public class PolicyBuilder<T1, T2> {
     return _policies
       .AsEnumerable()
       .Reverse()
-      .Aggregate(executable, (current, policy) => new ExecutablePolicy<T1, T2>(current, policy));
+      .Aggregate(executable, (current, policy) => new ExecutablePolicy<T1, T2>(policy, current));
   }
 
 }
