@@ -42,23 +42,23 @@ public class BranchBuilderTest {
 
   [Fact]
   public void PassNullArguments() {
-    Assert.Throws<ArgumentNullException>(() => Branch<Unit, Unit>.If(null, Handler.Identity()));
+    Assert.Throws<ArgumentNullException>(() => Branch<Unit, Unit>.If(null, Executable.Identity()));
     Assert.Throws<ArgumentNullException>(() => Branch<Unit, Unit>.If(() => true, (Handler<Unit, Unit>)null));
 
     Assert.Throws<ArgumentNullException>(() => {
       Branch<Unit, Unit>
-        .If(() => true, Handler.Identity())
-        .ElseIf(null, Handler.Identity());
+        .If(() => true, Executable.Identity())
+        .ElseIf(null, Executable.Identity());
     });
     Assert.Throws<ArgumentNullException>(() => {
       Branch<Unit, Unit>
-        .If(() => true, Handler.Identity())
+        .If(() => true, Executable.Identity())
         .ElseIf(() => true, null);
     });
 
     Assert.Throws<ArgumentNullException>(() => {
       IExecutable<Unit, Unit> _ = Branch<Unit, Unit>
-        .If(() => true, Handler.Identity())
+        .If(() => true, Executable.Identity())
         .Else(null);
     });
   }

@@ -1,6 +1,6 @@
 using Interactions.Branches;
 using Interactions.Core;
-using Interactions.Core.Handlers;
+using Interactions.Core.Executables;
 using JetBrains.Annotations;
 
 namespace Interactions.Tests.Branches;
@@ -43,23 +43,23 @@ public class AsyncBranchBuilderTest {
 
   [Fact]
   public void PassNullArguments() {
-    Assert.Throws<ArgumentNullException>(() => Branch<Unit, Unit>.If(null, Handler.Identity().ToAsyncHandler()));
+    Assert.Throws<ArgumentNullException>(() => Branch<Unit, Unit>.If(null, Executable.Identity().ToAsyncExecutable()));
     Assert.Throws<ArgumentNullException>(() => Branch<Unit, Unit>.If(() => true, (AsyncHandler<Unit, Unit>)null));
 
     Assert.Throws<ArgumentNullException>(() => {
       Branch<Unit, Unit>
-        .If(() => true, Handler.Identity().ToAsyncHandler())
-        .ElseIf(null, Handler.Identity().ToAsyncHandler());
+        .If(() => true, Executable.Identity().ToAsyncExecutable())
+        .ElseIf(null, Executable.Identity().ToAsyncExecutable());
     });
     Assert.Throws<ArgumentNullException>(() => {
       Branch<Unit, Unit>
-        .If(() => true, Handler.Identity().ToAsyncHandler())
+        .If(() => true, Executable.Identity().ToAsyncExecutable())
         .ElseIf(() => true, null);
     });
 
     Assert.Throws<ArgumentNullException>(() => {
       IAsyncExecutable<Unit, Unit> _ = Branch<Unit, Unit>
-        .If(() => true, Handler.Identity().ToAsyncHandler())
+        .If(() => true, Executable.Identity().ToAsyncExecutable())
         .Else(null);
     });
   }

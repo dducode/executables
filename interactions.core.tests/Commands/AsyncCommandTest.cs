@@ -15,7 +15,7 @@ public class AsyncCommandTest {
   public async Task AddItemToList<T>(T item) {
     var list = new List<T>();
     var addCommand = new AsyncCommand<T>();
-    addCommand.Handle(Handler.Create((T obj) => list.Add(obj)).ToAsyncHandler());
+    addCommand.Handle(Executable.Create((T obj) => list.Add(obj)).AsHandler().ToAsyncHandler());
 
     await addCommand.Execute(item);
     Assert.Contains(item, list);
@@ -25,7 +25,7 @@ public class AsyncCommandTest {
   public async Task ExecuteWithoutHandler() {
     var command = new AsyncCommand<Unit>();
     Assert.False(await command.Execute());
-    IDisposable handle = command.Handle(Handler.Identity().ToAsyncHandler());
+    IDisposable handle = command.Handle(Executable.Identity().AsHandler().ToAsyncHandler());
     Assert.True(await command.Execute());
     handle.Dispose();
     Assert.False(await command.Execute());
@@ -34,7 +34,7 @@ public class AsyncCommandTest {
   [Fact]
   public async Task Cancel() {
     var command = new AsyncCommand<Unit>();
-    command.Handle(Handler.Identity().ToAsyncHandler());
+    command.Handle(Executable.Identity().AsHandler().ToAsyncHandler());
     var cts = new CancellationTokenSource();
 
     Assert.True(await command.Execute(cts.Token));
@@ -51,9 +51,9 @@ public class AsyncCommandTest {
   [Fact]
   public void AddHandlerWhenOtherExists() {
     var command = new AsyncCommand<Unit>();
-    using (command.Handle(Handler.Identity().ToAsyncHandler()))
-      Assert.Throws<InvalidOperationException>(() => command.Handle(Handler.Identity().ToAsyncHandler()));
-    command.Handle(Handler.Identity().ToAsyncHandler());
+    using (command.Handle(Executable.Identity().AsHandler().ToAsyncHandler()))
+      Assert.Throws<InvalidOperationException>(() => command.Handle(Executable.Identity().AsHandler().ToAsyncHandler()));
+    command.Handle(Executable.Identity().AsHandler().ToAsyncHandler());
   }
 
 }

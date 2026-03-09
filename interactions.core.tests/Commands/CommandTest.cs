@@ -14,7 +14,7 @@ public class CommandTest {
   public void AddItemToList<T>(T item) {
     var list = new List<T>();
     var addCommand = new Command<T>();
-    addCommand.Handle(Handler.Create((T obj) => list.Add(obj)));
+    addCommand.Handle(Executable.Create((T obj) => list.Add(obj)).AsHandler());
 
     addCommand.Execute(item);
     Assert.Contains(item, list);
@@ -24,7 +24,7 @@ public class CommandTest {
   public void ExecuteWithoutHandler() {
     var command = new Command<Unit>();
     Assert.False(command.Execute());
-    IDisposable handle = command.Handle(Handler.Identity());
+    IDisposable handle = command.Handle(Executable.Identity().AsHandler());
     Assert.True(command.Execute());
     handle.Dispose();
     Assert.False(command.Execute());
@@ -39,9 +39,9 @@ public class CommandTest {
   [Fact]
   public void AddHandlerWhenOtherExists() {
     var command = new Command<Unit>();
-    using (command.Handle(Handler.Identity()))
-      Assert.Throws<InvalidOperationException>(() => command.Handle(Handler.Identity()));
-    command.Handle(Handler.Identity());
+    using (command.Handle(Executable.Identity().AsHandler()))
+      Assert.Throws<InvalidOperationException>(() => command.Handle(Executable.Identity().AsHandler()));
+    command.Handle(Executable.Identity().AsHandler());
   }
 
 }

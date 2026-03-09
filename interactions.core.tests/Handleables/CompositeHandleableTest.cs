@@ -1,3 +1,4 @@
+using Interactions.Core.Executables;
 using Interactions.Core.Handleables;
 using Interactions.Core.Lifecycle;
 using JetBrains.Annotations;
@@ -22,7 +23,7 @@ public class CompositeHandleableTest {
       secondCalled = true;
       return handler;
     });
-    Assert.Throws<InvalidOperationException>(() => first.Compose(second).Handle(Handler.Identity()));
+    Assert.Throws<InvalidOperationException>(() => first.Compose(second).Handle(Executable.Identity().AsHandler()));
     Assert.False(secondCalled);
   }
 
@@ -31,7 +32,7 @@ public class CompositeHandleableTest {
     var firstDisposed = false;
     IHandleable<Unit, Unit> first = Handleable.Create((Handler<Unit, Unit> _) => Disposable.Create(() => firstDisposed = true));
     IHandleable<Unit, Unit> second = Handleable.Create((Handler<Unit, Unit> _) => throw new InvalidOperationException());
-    Assert.Throws<InvalidOperationException>(() => first.Compose(second).Handle(Handler.Identity()));
+    Assert.Throws<InvalidOperationException>(() => first.Compose(second).Handle(Executable.Identity().AsHandler()));
     Assert.True(firstDisposed);
   }
 

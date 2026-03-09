@@ -13,7 +13,7 @@ public class AsyncProxyCommandTest {
     var inner = new Command<Unit>();
     IAsyncCommand<Unit> command = inner.ToAsyncCommand();
 
-    inner.Handle(Handler.Identity());
+    inner.Handle(Executable.Identity().AsHandler());
     await cts.CancelAsync();
     Assert.False(await command.Execute(cts.Token));
   }

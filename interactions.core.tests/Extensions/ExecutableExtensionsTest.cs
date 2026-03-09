@@ -56,7 +56,7 @@ public class ExecutableExtensionsTest {
   public async Task TryExecuteAsyncQueryWithCanceledToken() {
     var query = new AsyncQuery<Unit, Unit>();
     var cts = new CancellationTokenSource();
-    query.Handle(Handler.Identity().ToAsyncHandler());
+    query.Handle(Executable.Identity().AsHandler().ToAsyncHandler());
 
     await cts.CancelAsync();
     Result<Unit> result = await query.TryExecute(cts.Token);

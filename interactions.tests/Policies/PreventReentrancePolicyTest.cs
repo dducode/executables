@@ -20,7 +20,7 @@ public class PreventReentrancePolicyTest {
   public void NestedExecution() {
     var query = new Query<Unit, Unit>();
     IExecutable<Unit, Unit> executable = Policy.Of<Unit>().PreventReentrance().Apply(query);
-    query.Handle(Handler.Create(void () => executable.Execute()));
+    query.Handle(Executable.Create(void () => executable.Execute()).AsHandler());
     Assert.Throws<ReentranceException>(() => executable.Execute(default));
   }
 
@@ -38,7 +38,7 @@ public class PreventReentrancePolicyTest {
   public void ParallelNestedExecution() {
     var query = new Query<Unit, Unit>();
     IExecutable<Unit, Unit> executable = Policy.Of<Unit>().PreventReentrance().Apply(query);
-    query.Handle(Handler.Create(void () => executable.Execute()));
+    query.Handle(Executable.Create(void () => executable.Execute()).AsHandler());
 
     Parallel.For(0, 10, _ => Assert.Throws<ReentranceException>(() => executable.Execute(default)));
   }

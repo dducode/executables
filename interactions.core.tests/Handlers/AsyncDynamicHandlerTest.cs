@@ -1,3 +1,4 @@
+using Interactions.Core.Executables;
 using Interactions.Core.Handlers;
 using Interactions.Core.Providers;
 using JetBrains.Annotations;
@@ -10,9 +11,9 @@ public class AsyncDynamicHandlerTest {
   [Fact]
   public async Task MultiplyHandle() {
     var multiplier = 0;
-    AsyncHandler<int, int> handler = Handler.Dynamic(Provider.Create(() => {
+    AsyncHandler<int, int> handler = AsyncHandler.Dynamic(Provider.Create(() => {
       multiplier++;
-      return AsyncHandler.Create((int num, CancellationToken _) => new ValueTask<int>(num * multiplier));
+      return AsyncExecutable.Create((int num, CancellationToken _) => new ValueTask<int>(num * multiplier)).AsHandler();
     }));
 
     Assert.Equal(10, await handler.Execute(10));
@@ -22,14 +23,14 @@ public class AsyncDynamicHandlerTest {
 
   [Fact]
   public async Task ProvideNullHandler() {
-    AsyncHandler<Unit, Unit> handler = Handler.Dynamic(Provider.Create(AsyncHandler<Unit, Unit> () => null));
+    AsyncHandler<Unit, Unit> handler = AsyncHandler.Dynamic(Provider.Create(AsyncHandler<Unit, Unit> () => null));
     await Assert.ThrowsAsync<InvalidOperationException>(async () => await handler.Execute(default));
   }
 
   [Fact]
   public async Task InnerHandlerNotDispose() {
-    AsyncHandler<Unit, Unit> inner = Handler.Identity().ToAsyncHandler();
-    AsyncHandler<Unit, Unit> handler = Handler.Dynamic(Provider.Create(() => inner));
+    AsyncHandler<Unit, Unit> inner = Executable.Identity().AsHandler().ToAsyncHandler();
+    AsyncHandler<Unit, Unit> handler = AsyncHandler.Dynamic(Provider.Create(() => inner));
     await handler.Execute(default);
     Assert.False(inner.Disposed);
   }

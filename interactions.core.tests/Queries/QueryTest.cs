@@ -1,3 +1,4 @@
+using Interactions.Core.Executables;
 using Interactions.Core.Tests.Utils;
 using JetBrains.Annotations;
 
@@ -20,7 +21,7 @@ public class QueryTest {
   public void SendWithoutHandler() {
     var query = new Query<Unit, Unit>();
     Assert.Throws<MissingHandlerException>(() => query.Execute(default));
-    IDisposable handle = query.Handle(Handler.Identity());
+    IDisposable handle = query.Handle(Executable.Identity().AsHandler());
     query.Execute(default);
     handle.Dispose();
     Assert.Throws<MissingHandlerException>(() => query.Execute(default));
@@ -35,9 +36,9 @@ public class QueryTest {
   [Fact]
   public void AddHandlerWhenOtherExists() {
     var query = new Query<Unit, Unit>();
-    using (query.Handle(Handler.Identity()))
-      Assert.Throws<InvalidOperationException>(() => query.Handle(Handler.Identity()));
-    query.Handle(Handler.Identity());
+    using (query.Handle(Executable.Identity().AsHandler()))
+      Assert.Throws<InvalidOperationException>(() => query.Handle(Executable.Identity().AsHandler()));
+    query.Handle(Executable.Identity().AsHandler());
   }
 
 }

@@ -12,7 +12,7 @@ public class AsyncProxyExecutableTest {
     var inner = new Query<Unit, Unit>();
     IAsyncExecutable<Unit, Unit> query = inner.ToAsyncExecutable();
 
-    inner.Handle(Handler.Identity());
+    inner.Handle(Executable.Identity().AsHandler());
     await cts.CancelAsync();
     await Assert.ThrowsAsync<OperationCanceledException>(async () => await query.Execute(default, cts.Token));
   }

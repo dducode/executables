@@ -1,59 +1,35 @@
 using System.Diagnostics.Contracts;
-using Interactions.Core.Executables;
+using Interactions.Core.Handlers;
+using Interactions.Core.Internal;
+using Interactions.Core.Providers;
+using Interactions.Core.Resolvers;
 
 namespace Interactions.Core;
 
-/// <summary>
-/// Factory methods for creating <see cref="AsyncHandler{T1,T2}"/>.
-/// <example>
-/// <code>
-/// var asyncHandler = AsyncHandler.Create(async (int i, CancellationToken ct) => {
-///   await Task.Delay(10, ct);
-///   return i.ToString();
-/// });
-/// </code>
-/// </example>
-/// </summary>
 public static class AsyncHandler {
 
   /// <summary>
-  /// Creates an async handler from an async function.
+  /// Creates an async handler that resolves its inner handler lazily on first use.
   /// </summary>
   /// <typeparam name="T1">Input type.</typeparam>
   /// <typeparam name="T2">Output type.</typeparam>
-  /// <param name="func">Async function used for handling.</param>
+  /// <param name="resolver">Resolver for the inner async handler.</param>
   [Pure]
-  public static AsyncHandler<T1, T2> Create<T1, T2>(AsyncFunc<T1, T2> func) {
-    return AsyncExecutable.Create(func).AsHandler();
+  public static AsyncHandler<T1, T2> Lazy<T1, T2>(IResolver<AsyncHandler<T1, T2>> resolver) {
+    ExceptionsHelper.ThrowIfNull(resolver, nameof(resolver));
+    return new AsyncLazyHandler<T1, T2>(resolver);
   }
 
   /// <summary>
-  /// Creates an async handler from a parameterless async function.
+  /// Creates an async handler that resolves a new inner handler on every call.
   /// </summary>
-  /// <typeparam name="T">Output type.</typeparam>
-  /// <param name="func">Async function used for handling.</param>
+  /// <typeparam name="T1">Input type.</typeparam>
+  /// <typeparam name="T2">Output type.</typeparam>
+  /// <param name="provider">Provider for per-call async handler instances.</param>
   [Pure]
-  public static AsyncHandler<Unit, T> Create<T>(AsyncFunc<T> func) {
-    return AsyncExecutable.Create(func).AsHandler();
-  }
-
-  /// <summary>
-  /// Creates an async handler from an async action.
-  /// </summary>
-  /// <typeparam name="T">Input type.</typeparam>
-  /// <param name="action">Async action used for handling.</param>
-  [Pure]
-  public static AsyncHandler<T, Unit> Create<T>(AsyncAction<T> action) {
-    return AsyncExecutable.Create(action).AsHandler();
-  }
-
-  /// <summary>
-  /// Creates an async handler from a parameterless async action.
-  /// </summary>
-  /// <param name="action">Async action used for handling.</param>
-  [Pure]
-  public static AsyncHandler<Unit, Unit> Create(AsyncAction action) {
-    return AsyncExecutable.Create(action).AsHandler();
+  public static AsyncHandler<T1, T2> Dynamic<T1, T2>(IProvider<AsyncHandler<T1, T2>> provider) {
+    ExceptionsHelper.ThrowIfNull(provider, nameof(provider));
+    return new AsyncDynamicHandler<T1, T2>(provider);
   }
 
 }

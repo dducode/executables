@@ -1,3 +1,4 @@
+using Interactions.Core.Executables;
 using Interactions.Core.Handlers;
 using Interactions.Core.Resolvers;
 using Interactions.Core.Tests.Utils;
@@ -25,7 +26,7 @@ public class LazyHandlerTest {
 
   [Fact]
   public void DisposeInnerHandler() {
-    Handler<Unit, Unit> inner = Handler.Identity();
+    Handler<Unit, Unit> inner = Executable.Identity().AsHandler();
     Handler<Unit, Unit> handler = Handler.Lazy(Resolver.Create(() => inner));
     handler.Execute(default);
     handler.Dispose();

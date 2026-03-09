@@ -1,4 +1,5 @@
 using System.Diagnostics.Contracts;
+using Interactions.Core.Executables;
 using Interactions.Core.Internal;
 
 namespace Interactions.Core.Handleables;
@@ -15,19 +16,19 @@ public static partial class HandleableExtensions {
   }
 
   public static IDisposable Handle<T1, T2>(this IHandleable<T1, T2> handleable, Func<T1, T2> handler) {
-    return handleable.Handle(Handler.Create(handler));
+    return handleable.Handle(Executable.Create(handler).AsHandler());
   }
 
   public static IDisposable Handle<T>(this IHandleable<Unit, T> handleable, Func<T> handler) {
-    return handleable.Handle(Handler.Create(handler));
+    return handleable.Handle(Executable.Create(handler).AsHandler());
   }
 
   public static IDisposable Handle<T>(this IHandleable<T, Unit> handleable, Action<T> handler) {
-    return handleable.Handle(Handler.Create(handler));
+    return handleable.Handle(Executable.Create(handler).AsHandler());
   }
 
   public static IDisposable Handle(this IHandleable<Unit, Unit> handleable, Action handler) {
-    return handleable.Handle(Handler.Create(handler));
+    return handleable.Handle(Executable.Create(handler).AsHandler());
   }
 
 }

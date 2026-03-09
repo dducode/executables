@@ -1,3 +1,4 @@
+using Interactions.Core.Executables;
 using Interactions.Core.Handlers;
 using JetBrains.Annotations;
 
@@ -8,14 +9,14 @@ public class AnonymousDisposeHandlerTest {
 
   [Fact]
   public void InvokeInnerHandler() {
-    Handler<Unit, bool> handler = Handler.Create(() => true).OnDispose(() => { });
+    Handler<Unit, bool> handler = Executable.Create(() => true).AsHandler().OnDispose(() => { });
     Assert.True(handler.Execute(default));
   }
 
   [Fact]
   public void DisposeHandler() {
     var disposed = false;
-    Handler<Unit, Unit> inner = Handler.Identity();
+    Handler<Unit, Unit> inner = Executable.Identity().AsHandler();
     Handler<Unit, Unit> handler = inner.OnDispose(() => disposed = true);
 
     handler.Dispose();

@@ -1,3 +1,4 @@
+using Interactions.Core.Executables;
 using Interactions.Core.Handlers;
 using Interactions.Core.Tests.Utils;
 using JetBrains.Annotations;
@@ -21,7 +22,7 @@ public class AsyncQueryTest {
   private async Task Cancel() {
     var cts = new CancellationTokenSource();
     var query = new AsyncQuery<Unit, Unit>();
-    query.Handle(Handler.Identity().ToAsyncHandler());
+    query.Handle(Executable.Identity().AsHandler().ToAsyncHandler());
     await cts.CancelAsync();
     await Assert.ThrowsAsync<OperationCanceledException>(async () => await query.Execute(default, cts.Token));
   }
@@ -30,7 +31,7 @@ public class AsyncQueryTest {
   public async Task SendWithoutHandler() {
     var query = new AsyncQuery<Unit, Unit>();
     await Assert.ThrowsAsync<MissingHandlerException>(async () => await query.Execute(default));
-    IDisposable handle = query.Handle(Handler.Identity().ToAsyncHandler());
+    IDisposable handle = query.Handle(Executable.Identity().AsHandler().ToAsyncHandler());
     await query.Execute(default);
     handle.Dispose();
     await Assert.ThrowsAsync<MissingHandlerException>(async () => await query.Execute(default));
@@ -45,9 +46,9 @@ public class AsyncQueryTest {
   [Fact]
   public void AddHandlerWhenOtherExists() {
     var query = new AsyncQuery<Unit, Unit>();
-    using (query.Handle(Handler.Identity().ToAsyncHandler()))
-      Assert.Throws<InvalidOperationException>(() => query.Handle(Handler.Identity().ToAsyncHandler()));
-    query.Handle(Handler.Identity().ToAsyncHandler());
+    using (query.Handle(Executable.Identity().AsHandler().ToAsyncHandler()))
+      Assert.Throws<InvalidOperationException>(() => query.Handle(Executable.Identity().AsHandler().ToAsyncHandler()));
+    query.Handle(Executable.Identity().AsHandler().ToAsyncHandler());
   }
 
 }

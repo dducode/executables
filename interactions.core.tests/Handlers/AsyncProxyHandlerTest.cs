@@ -1,3 +1,4 @@
+using Interactions.Core.Executables;
 using Interactions.Core.Handlers;
 using JetBrains.Annotations;
 
@@ -8,7 +9,7 @@ public class AsyncProxyHandlerTest {
 
   [Fact]
   public void DisposeInnerHandler() {
-    Handler<Unit, Unit> inner = Handler.Identity();
+    Handler<Unit, Unit> inner = Executable.Identity().AsHandler();
     AsyncHandler<Unit, Unit> handler = inner.ToAsyncHandler();
     handler.Dispose();
     Assert.True(inner.Disposed);

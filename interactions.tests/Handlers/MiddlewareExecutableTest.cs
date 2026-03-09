@@ -17,8 +17,7 @@ public class MiddlewareExecutableTest(ITestOutputHelper testOutputHelper) {
     var secondEnd = false;
     var thirdEnd = false;
 
-    var query = new Query<Unit, Unit>();
-    using IDisposable handle = query.Handle(Pipeline
+    IExecutable<Unit, Unit> executable = Pipeline
       .Use(next => {
         testOutputHelper.WriteLine("Start first");
         firstStarted = true;
@@ -35,22 +34,20 @@ public class MiddlewareExecutableTest(ITestOutputHelper testOutputHelper) {
         testOutputHelper.WriteLine("End second");
         secondEnd = true;
       })
-      .End(Handler.Create(() => {
+      .End(Executable.Create(() => {
         Assert.True(secondStarted);
         testOutputHelper.WriteLine("Finish");
         thirdEnd = true;
-      })).AsHandler()
-    );
+      }));
 
-    query.Execute();
+    executable.Execute();
   }
 
   [Theory]
   [InlineData("00:05:00", "00:05:05", 5)]
   [InlineData("00:00:10", "00:00:00", -10)]
   public void PipelineWithDifferentTypesTest(string input, string expected, int addedSeconds) {
-    var query = new Query<string, string>();
-    using IDisposable handle = query.Handle(Pipeline<string, string>
+    IExecutable<string, string> executable = Pipeline<string, string>
       .Use((string time, Func<TimeSpan, TimeSpan> next) => {
         TimeSpan timeSpan = TimeSpan.Parse(time);
         TimeSpan result = next.Invoke(timeSpan);
@@ -61,10 +58,9 @@ public class MiddlewareExecutableTest(ITestOutputHelper testOutputHelper) {
         long result = next.Invoke(seconds);
         return TimeSpan.FromSeconds(result);
       })
-      .End(seconds => (long)(seconds + addedSeconds)).AsHandler()
-    );
+      .End(seconds => (long)(seconds + addedSeconds));
 
-    Assert.Equal(expected, query.Execute(input));
+    Assert.Equal(expected, executable.Execute(input));
   }
 
 }

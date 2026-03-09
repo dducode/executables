@@ -1,3 +1,4 @@
+using Interactions.Core.Executables;
 using Interactions.Core.Handlers;
 using Interactions.Core.Providers;
 using JetBrains.Annotations;
@@ -12,7 +13,7 @@ public class DynamicHandlerTest {
     var multiplier = 0;
     Handler<int, int> handler = Handler.Dynamic(Provider.Create(() => {
       multiplier++;
-      return Handler.Create<int, int>(num => num * multiplier);
+      return Executable.Create<int, int>(num => num * multiplier).AsHandler();
     }));
 
     Assert.Equal(10, handler.Execute(10));
@@ -28,7 +29,7 @@ public class DynamicHandlerTest {
 
   [Fact]
   public void InnerHandlerNotDispose() {
-    Handler<Unit, Unit> inner = Handler.Identity();
+    Handler<Unit, Unit> inner = Executable.Identity().AsHandler();
     Handler<Unit, Unit> handler = Handler.Dynamic(Provider.Create(() => inner));
     handler.Execute(default);
     Assert.False(inner.Disposed);
