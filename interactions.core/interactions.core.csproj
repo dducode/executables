@@ -15,7 +15,12 @@
         <Nullable>disable</Nullable>
         <TargetFrameworks>net9.0;netstandard2.1;net48</TargetFrameworks>
         <LangVersion>13.0</LangVersion>
-        <PackageReleaseNotes>added executable interface, execution operator; changed event handling; added new handlers: lazy, dynamic, automatically disposed; bugs fixed</PackageReleaseNotes>
+        <PackageReleaseNotes>
+            executable and handleable interfaces extracted;
+            event handling changed;
+            new handlers added: lazy, dynamic, automatically disposed;
+            bugs fixed
+        </PackageReleaseNotes>
 
     </PropertyGroup>
 

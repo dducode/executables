@@ -15,7 +15,13 @@
         <Nullable>disable</Nullable>
         <TargetFrameworks>net9.0;netstandard2.1;net48</TargetFrameworks>
         <LangVersion>13.0</LangVersion>
-        <PackageReleaseNotes>interaction context added; policies added, policy handlers deprecated; bugs fixed</PackageReleaseNotes>
+        <PackageReleaseNotes>
+            interaction context added;
+            execution operator added;
+            policies, maps added, policy handlers deprecated;
+            handlers data transformation deprecated, executable maps used instead;
+            bugs fixed
+        </PackageReleaseNotes>
     </PropertyGroup>
 
     <ItemGroup>
