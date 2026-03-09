@@ -10,33 +10,27 @@ public class FallbackPolicyTest {
 
   [Fact]
   public void RegularExecution() {
-    Policy<Unit, Unit> policy = Policy<Unit, Unit>.Fallback<InvalidOperationException>(FallbackHandler);
-    policy.Invoke(default, Executable.Identity());
+    IExecutable<Unit, Unit> executable = Policy.Of<Unit>().Fallback((Unit _, InvalidOperationException _) => default).Apply(Executable.Identity());
+    executable.Execute(default);
   }
 
   [Fact]
   public void ReturnFallbackOnException() {
-    Policy<int, int> policy = Policy<int, int>.Fallback<InvalidOperationException>(FallbackHandler);
-    Assert.Equal(10, policy.Invoke(10, Executable.Create<int, int>(_ => throw new InvalidOperationException())));
+    IExecutable<int, int> executable = Policy.Of<int>()
+      .Fallback((int input, InvalidOperationException _) => input)
+      .Apply(Executable.Create<int, int>(_ => throw new InvalidOperationException()));
+    Assert.Equal(10, executable.Execute(10));
   }
 
   [Fact]
   public void ThrowExceptionFromFallbackHandler() {
-    Policy<Unit, Unit> policy = Policy<Unit, Unit>.Fallback<InvalidOperationException>(RethrowHandler);
-    Assert.Throws<InvalidOperationException>(() => policy.Invoke(default, Executable.Create<Unit, Unit>(_ => throw new InvalidOperationException())));
-  }
-
-  private Unit FallbackHandler<TEx>(Unit input, TEx ex) where TEx : Exception {
-    return default;
-  }
-
-  private int FallbackHandler<TEx>(int input, TEx ex) where TEx : Exception {
-    return input;
-  }
-
-  private Unit RethrowHandler<TEx>(Unit input, TEx ex) where TEx : Exception {
-    ExceptionDispatchInfo.Capture(ex).Throw();
-    return default;
+    IExecutable<Unit, Unit> executable = Policy.Of<Unit>()
+      .Fallback((Unit _, InvalidOperationException ex) => {
+        ExceptionDispatchInfo.Capture(ex).Throw();
+        return default;
+      })
+      .Apply(Executable.Create<Unit, Unit>(_ => throw new InvalidOperationException()));
+    Assert.Throws<InvalidOperationException>(() => executable.Execute(default));
   }
 
 }

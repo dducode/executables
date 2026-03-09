@@ -1,6 +1,7 @@
 using Interactions.Context;
 using Interactions.Core;
 using Interactions.Guards;
+using Interactions.Policies;
 using JetBrains.Annotations;
 using Xunit.Abstractions;
 
@@ -15,22 +16,18 @@ public class InteractionContextTest(ITestOutputHelper output) {
   [InlineData(true, false)]
   [InlineData(false, false)]
   public void SwitchGuardByFeatureFlags(bool isDebug, bool userIsAdmin) {
-    Policy<Unit, Unit> guard = Policy<Unit, Unit>.Guard(() => {
-      IReadonlyContext context = InteractionContext.Current;
-      output.WriteLine($"Context: {{{context:v}}}");
-      return context.Get<User>().IsAdmin;
-    }, "Access denied");
-
-    Policy<Unit, Unit> policy = Policy<Unit, Unit>.Optional(() => {
-      IReadonlyContext context = InteractionContext.Current;
-      output.WriteLine($"Context: {{{context:v}}}");
-      return !context.Get<FeatureFlags>().IsDebug;
-    }, guard);
+    IExecutable<Unit, Unit> executable = Policy.Of<Unit>()
+      .Guard(() => {
+        IReadonlyContext context = InteractionContext.Current;
+        output.WriteLine($"Context: {{{context:v}}}");
+        return context.Get<FeatureFlags>().IsDebug || context.Get<User>().IsAdmin;
+      }, "Access denied")
+      .Apply(Executable.Identity());
 
     if (isDebug || userIsAdmin)
-      policy.Invoke(default, Executable.Identity(), InitContext);
+      executable.Execute(default, InitContext);
     else
-      Assert.Throws<AccessDeniedException>(() => policy.Invoke(default, Executable.Identity(), InitContext));
+      Assert.Throws<AccessDeniedException>(() => executable.Execute(default, InitContext));
     return;
 
     void InitContext(InteractionContext context) {

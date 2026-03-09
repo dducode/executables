@@ -1,4 +1,5 @@
 using Interactions.Core;
+using Interactions.Core.Executables;
 using Interactions.Policies;
 using JetBrains.Annotations;
 
@@ -9,38 +10,37 @@ public class PreventReentrancePolicyTest {
 
   [Fact]
   public void SequentialExecute() {
-    Policy<Unit, Unit> policy = Policy<Unit, Unit>.PreventReentrance();
+    IExecutable<Unit, Unit> executable = Policy.Of<Unit>().PreventReentrance().Apply(Executable.Identity());
 
-    policy.Invoke(default, Executable.Identity());
-    policy.Invoke(default, Executable.Identity());
+    executable.Execute(default);
+    executable.Execute(default);
   }
 
   [Fact]
   public void NestedExecution() {
-    Policy<Unit, Unit> policy = Policy<Unit, Unit>.PreventReentrance();
-
-    policy.Invoke(default, Executable.Create((Unit _) => {
-      Assert.Throws<ReentranceException>(() => policy.Invoke(default, Executable.Identity()));
-    }));
+    var query = new Query<Unit, Unit>();
+    IExecutable<Unit, Unit> executable = Policy.Of<Unit>().PreventReentrance().Apply(query);
+    query.Handle(Handler.Create(void () => executable.Execute()));
+    Assert.Throws<ReentranceException>(() => executable.Execute(default));
   }
 
   [Fact]
   public void ParallelSequentialExecute() {
-    Policy<Unit, Unit> policy = Policy<Unit, Unit>.PreventReentrance();
+    IExecutable<Unit, Unit> executable = Policy.Of<Unit>().PreventReentrance().Apply(Executable.Identity());
 
     Parallel.For(0, 10, _ => {
-      policy.Invoke(default, Executable.Identity());
-      policy.Invoke(default, Executable.Identity());
+      executable.Execute(default);
+      executable.Execute(default);
     });
   }
 
   [Fact]
   public void ParallelNestedExecution() {
-    Policy<Unit, Unit> policy = Policy<Unit, Unit>.PreventReentrance();
+    var query = new Query<Unit, Unit>();
+    IExecutable<Unit, Unit> executable = Policy.Of<Unit>().PreventReentrance().Apply(query);
+    query.Handle(Handler.Create(void () => executable.Execute()));
 
-    Parallel.For(0, 10, _ => policy.Invoke(default, Executable.Create((Unit _) => {
-      Assert.Throws<ReentranceException>(() => policy.Invoke(default, Executable.Identity()));
-    })));
+    Parallel.For(0, 10, _ => Assert.Throws<ReentranceException>(() => executable.Execute(default)));
   }
 
 }

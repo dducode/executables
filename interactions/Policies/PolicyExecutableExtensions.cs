@@ -7,17 +7,17 @@ namespace Interactions.Policies;
 public static class PolicyExecutableExtensions {
 
   [Pure]
-  public static IExecutable<T1, T2> WithPolicy<T1, T2>(this IExecutable<T1, T2> executable, Policy<T1, T2> policy) {
-    executable.ThrowIfNullReference();
-    ExceptionsHelper.ThrowIfNull(policy, nameof(policy));
-    return new PolicyExecutable<T1, T2>(executable, policy);
+  public static IExecutable<T1, T2> Apply<T1, T2>(this Policy<T1, T2> policy, IExecutable<T1, T2> executable) {
+    policy.ThrowIfNullReference();
+    ExceptionsHelper.ThrowIfNull(executable, nameof(executable));
+    return new ExecutablePolicy<T1, T2>(executable, policy);
   }
 
   [Pure]
-  public static IAsyncExecutable<T1, T2> WithPolicy<T1, T2>(this IAsyncExecutable<T1, T2> executable, AsyncPolicy<T1, T2> policy) {
-    executable.ThrowIfNullReference();
-    ExceptionsHelper.ThrowIfNull(policy, nameof(policy));
-    return new AsyncPolicyExecutable<T1, T2>(executable, policy);
+  public static IAsyncExecutable<T1, T2> Apply<T1, T2>(this AsyncPolicy<T1, T2> policy, IAsyncExecutable<T1, T2> executable) {
+    policy.ThrowIfNullReference();
+    ExceptionsHelper.ThrowIfNull(executable, nameof(executable));
+    return new AsyncExecutablePolicy<T1, T2>(executable, policy);
   }
 
 }

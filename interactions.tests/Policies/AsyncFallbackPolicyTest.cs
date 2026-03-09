@@ -11,46 +11,47 @@ public class AsyncFallbackPolicyTest {
 
   [Fact]
   public async Task RegularExecution() {
-    AsyncPolicy<Unit, Unit> policy = AsyncPolicy<Unit, Unit>.Fallback<InvalidOperationException>(FallbackHandler);
-    await policy.Invoke(default, Executable.Identity().ToAsyncExecutable(), CancellationToken.None);
+    IAsyncExecutable<Unit, Unit> executable = AsyncPolicy
+      .Of<Unit>()
+      .Fallback((Unit _, InvalidOperationException _) => default)
+      .Apply(Executable.Identity().ToAsyncExecutable());
+
+    await executable.Execute(default, CancellationToken.None);
   }
 
   [Fact]
   public async Task Cancel() {
     var cts = new CancellationTokenSource();
-    AsyncPolicy<Unit, Unit> policy = AsyncPolicy<Unit, Unit>.Fallback<InvalidOperationException>(FallbackHandler);
+    IAsyncExecutable<Unit, Unit> executable = AsyncPolicy
+      .Of<Unit>()
+      .Fallback((Unit _, InvalidOperationException _) => default)
+      .Apply(Executable.Identity().ToAsyncExecutable());
 
     await cts.CancelAsync();
-    await Assert.ThrowsAsync<OperationCanceledException>(async () => await policy.Invoke(default, Executable.Identity().ToAsyncExecutable(), cts.Token));
+    await Assert.ThrowsAsync<OperationCanceledException>(async () => await executable.Execute(default, cts.Token));
   }
 
   [Fact]
   public async Task ReturnFallbackOnException() {
-    AsyncPolicy<int, int> policy = AsyncPolicy<int, int>.Fallback<InvalidOperationException>(FallbackHandler);
-    Assert.Equal(10, await policy.Invoke(10, FailWait<int, int>(), CancellationToken.None));
+    IAsyncExecutable<int, int> executable = AsyncPolicy
+      .Of<int>()
+      .Fallback((int input, InvalidOperationException _) => input)
+      .Apply(Executable.Create<int, int>(_ => throw new InvalidOperationException()).ToAsyncExecutable());
+
+    Assert.Equal(10, await executable.Execute(10, CancellationToken.None));
   }
 
   [Fact]
   public async Task ThrowExceptionFromFallbackHandler() {
-    AsyncPolicy<Unit, Unit> policy = AsyncPolicy<Unit, Unit>.Fallback<InvalidOperationException>(RethrowHandler);
-    await Assert.ThrowsAsync<InvalidOperationException>(async () => await policy.Invoke(default, FailWait<Unit, Unit>(), CancellationToken.None));
-  }
+    IAsyncExecutable<Unit, Unit> executable = AsyncPolicy
+      .Of<Unit>()
+      .Fallback((Unit _, InvalidOperationException ex) => {
+        ExceptionDispatchInfo.Capture(ex).Throw();
+        return default;
+      })
+      .Apply(Executable.Create<Unit, Unit>(_ => throw new InvalidOperationException()).ToAsyncExecutable());
 
-  private Unit FallbackHandler<TEx>(Unit input, TEx ex) where TEx : Exception {
-    return default;
-  }
-
-  private int FallbackHandler<TEx>(int input, TEx ex) where TEx : Exception {
-    return input;
-  }
-
-  private Unit RethrowHandler<TEx>(Unit input, TEx ex) where TEx : Exception {
-    ExceptionDispatchInfo.Capture(ex).Throw();
-    return default;
-  }
-
-  private IAsyncExecutable<T1, T2> FailWait<T1, T2>() {
-    return AsyncExecutable.Create<T1, T2>((_, _) => throw new InvalidOperationException());
+    await Assert.ThrowsAsync<InvalidOperationException>(async () => await executable.Execute(default, CancellationToken.None));
   }
 
 }

@@ -13,7 +13,7 @@ public class ValidationPolicyTest {
     var query = new Query<string, string>();
 
     using IDisposable handle = query.Handle(Handler.Create((string request) => $"response: {request}"));
-    IExecutable<string, string> invokedQuery = query.WithPolicy(Policy<string, string>.ValidateInput(Validator.NotEmptyString));
+    IExecutable<string, string> invokedQuery = Policy.Of<string>().ValidateInput(Validator.NotEmptyString).Apply(query);
 
     Assert.Throws<InvalidInputException>(() => invokedQuery.Execute(string.Empty));
     Assert.Equal("response: request", invokedQuery.Execute("request"));
