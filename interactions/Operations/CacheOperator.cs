@@ -3,7 +3,7 @@ using Interactions.Policies;
 
 namespace Interactions.Operations;
 
-internal sealed class MemoizationOperator<T1, T2>(ICacheStorage<T1, T2> storage) : BehaviorOperator<T1, T2> {
+internal sealed class CacheOperator<T1, T2>(ICacheStorage<T1, T2> storage) : BehaviorOperator<T1, T2> {
 
   private readonly object _lock = new();
 

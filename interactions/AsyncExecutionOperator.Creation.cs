@@ -9,9 +9,9 @@ namespace Interactions;
 public static class AsyncExecutionOperator {
 
   [Pure]
-  public static AsyncBehaviorOperator<T1, T2> Memoize<T1, T2>(ICacheStorage<T1, T2> storage) {
+  public static AsyncBehaviorOperator<T1, T2> Cache<T1, T2>(ICacheStorage<T1, T2> storage) {
     ExceptionsHelper.ThrowIfNull(storage, nameof(storage));
-    return new AsyncMemoizationOperator<T1, T2>(storage);
+    return new AsyncCacheOperator<T1, T2>(storage);
   }
 
   [Pure]

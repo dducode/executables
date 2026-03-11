@@ -3,7 +3,7 @@ using Interactions.Policies;
 
 namespace Interactions;
 
-public class AsyncMemoizationOperator<T1, T2>(ICacheStorage<T1, T2> storage) : AsyncBehaviorOperator<T1, T2> {
+public class AsyncCacheOperator<T1, T2>(ICacheStorage<T1, T2> storage) : AsyncBehaviorOperator<T1, T2> {
 
   private readonly object _lock = new();
 

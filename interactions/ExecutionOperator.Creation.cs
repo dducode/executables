@@ -14,9 +14,9 @@ public static class ExecutionOperator {
   }
 
   [Pure]
-  public static BehaviorOperator<T1, T2> Memoize<T1, T2>(ICacheStorage<T1, T2> storage) {
+  public static BehaviorOperator<T1, T2> Cache<T1, T2>(ICacheStorage<T1, T2> storage) {
     ExceptionsHelper.ThrowIfNull(storage, nameof(storage));
-    return new MemoizationOperator<T1, T2>(storage);
+    return new CacheOperator<T1, T2>(storage);
   }
 
   [Pure]
