@@ -15,4 +15,15 @@ internal sealed class AsyncAnonymousDisposeHandler<T1, T2>(AsyncHandler<T1, T2> 
     }
   }
 
+#if !NETFRAMEWORK
+  protected override async ValueTask AsyncDisposeCore() {
+    try {
+      dispose();
+    }
+    finally {
+      await inner.DisposeAsync();
+    }
+  }
+#endif
+
 }

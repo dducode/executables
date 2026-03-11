@@ -1,20 +1,10 @@
 using Interactions.Core;
-using Interactions.Core.Providers;
-using Interactions.Core.Resolvers;
 using Interactions.Fallbacks;
 using Interactions.RetryRules;
 
 namespace Interactions.Policies;
 
 public static partial class PolicyBuilderExtensions {
-
-  public static AsyncPolicyBuilder<T1, T2> Dynamic<T1, T2>(this AsyncPolicyBuilder<T1, T2> builder, Func<AsyncPolicy<T1, T2>> provider) {
-    return builder.Dynamic(Provider.Create(provider));
-  }
-
-  public static AsyncPolicyBuilder<T1, T2> Lazy<T1, T2>(this AsyncPolicyBuilder<T1, T2> builder, Func<AsyncPolicy<T1, T2>> resolver) {
-    return builder.Lazy(Resolver.Create(resolver));
-  }
 
   /// <summary>
   /// Creates an asynchronous retry policy from a delegate rule.

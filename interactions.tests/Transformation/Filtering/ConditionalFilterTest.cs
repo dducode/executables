@@ -1,11 +1,12 @@
 using AutoFixture;
-using Interactions.Transformation.Filtering;
+using Interactions.Core;
+using Interactions.Filtering;
 using JetBrains.Annotations;
 using static Interactions.Validator;
 
 namespace Interactions.Tests.Transformation.Filtering;
 
-[TestSubject(typeof(ConditionalFilter<>))]
+[TestSubject(typeof(IExecutable<,>))]
 public class ConditionalFilterTest {
 
   [Fact]
@@ -13,10 +14,10 @@ public class ConditionalFilterTest {
     var fixture = new Fixture();
     var random = new Random(42);
     var list = new List<string>(fixture.CreateMany<string>(random.Next(10, 30)));
-    Filter<string> filter = Filter.Where(StringLength(LessThan(5)));
+    IFilter<string> filter = Filter.Where(StringLength(LessThan(5)));
 
     int expected = list.Count(s => s.Length < 5);
-    IEnumerable<string> result = filter.Transform(list);
+    IEnumerable<string> result = filter.Execute(list);
 
     Assert.Equal(expected, result.Count());
   }

@@ -1,6 +1,7 @@
 using System.Diagnostics.Contracts;
 using Interactions.Core;
 using Interactions.Core.Internal;
+using Interactions.Operations;
 
 namespace Interactions.Pipelines;
 
@@ -39,7 +40,7 @@ public class AsyncPipelineBuilder<T1, T2, T3, T4> {
   [Pure]
   public virtual IAsyncExecutable<T1, T4> End(IAsyncExecutable<T2, T3> executable) {
     ExceptionsHelper.ThrowIfNull(executable, nameof(executable));
-    return new AsyncMiddlewareExecutable<T1, T2, T3, T4>(_middleware, executable);
+    return new AsyncExecutableOperator<T1, T2, T3, T4>(_middleware, executable);
   }
 
 }

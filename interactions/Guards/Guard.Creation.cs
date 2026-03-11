@@ -1,7 +1,5 @@
 using System.Diagnostics.Contracts;
 using Interactions.Core.Internal;
-using Interactions.Core.Providers;
-using Interactions.Core.Resolvers;
 
 namespace Interactions.Guards;
 
@@ -14,28 +12,6 @@ public abstract partial class Guard {
   [Pure]
   public static Guard Identity() {
     return IdentityGuard.Instance;
-  }
-
-  [Pure]
-  public static Guard Dynamic(IProvider<Guard> provider) {
-    ExceptionsHelper.ThrowIfNull(provider, nameof(provider));
-    return new DynamicGuard(provider);
-  }
-
-  [Pure]
-  public static Guard Dynamic(Func<Guard> provider) {
-    return Dynamic(Provider.Create(provider));
-  }
-
-  [Pure]
-  public static Guard Lazy(IResolver<Guard> resolver) {
-    ExceptionsHelper.ThrowIfNull(resolver, nameof(resolver));
-    return new LazyGuard(resolver);
-  }
-
-  [Pure]
-  public static Guard Lazy(Func<Guard> resolver) {
-    return Lazy(Resolver.Create(resolver));
   }
 
   /// <summary>

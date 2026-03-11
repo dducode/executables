@@ -1,5 +1,3 @@
-using System.Runtime.CompilerServices;
-
 namespace Interactions.Validation;
 
 internal sealed class IdentityValidator<T> : Validator<T> {
@@ -9,7 +7,6 @@ internal sealed class IdentityValidator<T> : Validator<T> {
 
   private IdentityValidator() { }
 
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public override bool IsValid(T value) {
     return true;
   }

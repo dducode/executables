@@ -1,11 +1,9 @@
 using System.Diagnostics.Contracts;
-using Interactions.Analytics;
 using Interactions.Core;
 using Interactions.Core.Internal;
-using Interactions.Core.Providers;
-using Interactions.Core.Resolvers;
 using Interactions.Fallbacks;
 using Interactions.Guards;
+using Interactions.Operations;
 using Interactions.RetryRules;
 using Interactions.Validation;
 
@@ -23,16 +21,6 @@ public class AsyncPolicyBuilder<T1, T2> {
   /// <returns>Policy instance that does not alter invocation behavior.</returns>
   public AsyncPolicyBuilder<T1, T2> Identity() {
     return Add(AsyncIdentityPolicy<T1, T2>.Instance);
-  }
-
-  public AsyncPolicyBuilder<T1, T2> Dynamic(IProvider<AsyncPolicy<T1, T2>> provider) {
-    ExceptionsHelper.ThrowIfNull(provider, nameof(provider));
-    return Add(new AsyncDynamicPolicy<T1, T2>(provider));
-  }
-
-  public AsyncPolicyBuilder<T1, T2> Lazy(IResolver<AsyncPolicy<T1, T2>> resolver) {
-    ExceptionsHelper.ThrowIfNull(resolver, nameof(resolver));
-    return Add(new AsyncLazyPolicy<T1, T2>(resolver));
   }
 
   /// <summary>
@@ -69,17 +57,6 @@ public class AsyncPolicyBuilder<T1, T2> {
   }
 
   /// <summary>
-  /// Creates a policy that reports invocation metrics.
-  /// </summary>
-  /// <param name="metrics">Metrics sink used to record invocation data.</param>
-  /// <param name="tag">Optional logical tag used to group emitted metrics.</param>
-  /// <returns>Metrics policy.</returns>
-  public AsyncPolicyBuilder<T1, T2> Metrics(IMetrics<T1, T2> metrics, string tag = null) {
-    ExceptionsHelper.ThrowIfNull(metrics, nameof(metrics));
-    return Add(new AsyncMetricsPolicy<T1, T2>(metrics, tag));
-  }
-
-  /// <summary>
   /// Creates a policy that blocks invocation when the guard denies access.
   /// </summary>
   /// <param name="guard">Guard that controls whether invocation is allowed.</param>
@@ -87,16 +64,6 @@ public class AsyncPolicyBuilder<T1, T2> {
   public AsyncPolicyBuilder<T1, T2> Guard(Guard guard) {
     ExceptionsHelper.ThrowIfNull(guard, nameof(guard));
     return Add(new AsyncGuardPolicy<T1, T2>(guard));
-  }
-
-  /// <summary>
-  /// Creates a policy that caches invocation results by input key.
-  /// </summary>
-  /// <param name="storage">Storage used to read and write cached values.</param>
-  /// <returns>Cache policy.</returns>
-  public AsyncPolicyBuilder<T1, T2> Cache(ICacheStorage<T1, T2> storage) {
-    ExceptionsHelper.ThrowIfNull(storage, nameof(storage));
-    return Add(new AsyncCachePolicy<T1, T2>(storage));
   }
 
   public AsyncPolicyBuilder<T1, T2> PreventReentrance() {
@@ -124,7 +91,7 @@ public class AsyncPolicyBuilder<T1, T2> {
     return _policies
       .AsEnumerable()
       .Reverse()
-      .Aggregate(executable, (current, policy) => new AsyncExecutablePolicy<T1, T2>(policy, current));
+      .Aggregate(executable, (current, policy) => new AsyncExecutableOperator<T1, T1, T2, T2>(policy, current));
   }
 
 }

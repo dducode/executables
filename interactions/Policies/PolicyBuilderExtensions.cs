@@ -1,19 +1,9 @@
 using Interactions.Core;
-using Interactions.Core.Providers;
-using Interactions.Core.Resolvers;
 using Interactions.Fallbacks;
 
 namespace Interactions.Policies;
 
 public static partial class PolicyBuilderExtensions {
-
-  public static PolicyBuilder<T1, T2> Dynamic<T1, T2>(this PolicyBuilder<T1, T2> builder, Func<Policy<T1, T2>> provider) {
-    return builder.Dynamic(Provider.Create(provider));
-  }
-
-  public static PolicyBuilder<T1, T2> Lazy<T1, T2>(this PolicyBuilder<T1, T2> builder, Func<Policy<T1, T2>> resolver) {
-    return builder.Lazy(Resolver.Create(resolver));
-  }
 
   /// <summary>
   /// Creates a policy that validates only invocation input.

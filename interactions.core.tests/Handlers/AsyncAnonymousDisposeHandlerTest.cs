@@ -25,4 +25,16 @@ public class AsyncAnonymousDisposeHandlerTest {
     Assert.True(inner.Disposed);
   }
 
+  [Fact]
+  public async Task AsyncDisposeHandler() {
+    var disposed = false;
+    AsyncHandler<Unit, Unit> inner = Executable.Identity().AsHandler().ToAsyncHandler();
+    AsyncHandler<Unit, Unit> handler = inner.OnDispose(() => disposed = true);
+
+    await handler.DisposeAsync();
+
+    Assert.True(disposed);
+    Assert.True(inner.Disposed);
+  }
+
 }

@@ -1,17 +1,18 @@
-using Interactions.Transformation.Filtering;
+using Interactions.Core;
+using Interactions.Filtering;
 using JetBrains.Annotations;
 
 namespace Interactions.Tests.Transformation.Filtering;
 
-[TestSubject(typeof(UniqueFilter<>))]
+[TestSubject(typeof(IExecutable<,>))]
 public class UniqueFilterTest {
 
   [Fact]
   public void SelectUniqueNumbersTest() {
     var list = new List<int> { 1, 1, 2, 3, 3 };
-    Filter<int> filter = Filter.Distinct<int>();
+    IFilter<int> filter = Filter.Distinct<int>();
 
-    Assert.Equal(3, filter.Transform(list).Count());
+    Assert.Equal(3, filter.Execute(list).Count());
   }
 
 }

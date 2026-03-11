@@ -1,46 +1,23 @@
 using System.Diagnostics.Contracts;
 using System.Text.RegularExpressions;
 using Interactions.Core.Internal;
-using Interactions.Core.Providers;
-using Interactions.Core.Resolvers;
 using Interactions.Validation;
 
 namespace Interactions;
 
 public static class Validator {
 
-  [Pure] public static Validator<int> ZeroEqual { get; } = Equal(0);
-  [Pure] public static Validator<int> ZeroNotEqual { get; } = NotEqual(0);
+  public static Validator<int> ZeroEqual { get; } = Equal(0);
+  public static Validator<int> ZeroNotEqual { get; } = NotEqual(0);
+  public static Validator<int> MoreThanZero { get; } = MoreThan(0);
+  public static Validator<int> LessThanZeroOrEqual { get; } = LessThanOrEqual(0);
 
-  [Pure]
   public static Validator<string> NotEmptyString { get; } = NotNull<string>().And(StringLength(MoreThan(0)))
     .OverrideMessage("String cannot be null or empty");
 
   [Pure]
   public static Validator<T> Identity<T>() {
     return IdentityValidator<T>.Instance;
-  }
-
-  [Pure]
-  public static Validator<T> Dynamic<T>(IProvider<Validator<T>> provider) {
-    ExceptionsHelper.ThrowIfNull(provider, nameof(provider));
-    return new DynamicValidator<T>(provider);
-  }
-
-  [Pure]
-  public static Validator<T> Dynamic<T>(Func<Validator<T>> provider) {
-    return Dynamic(Provider.Create(provider));
-  }
-
-  [Pure]
-  public static Validator<T> Lazy<T>(IResolver<Validator<T>> resolver) {
-    ExceptionsHelper.ThrowIfNull(resolver, nameof(resolver));
-    return new LazyValidator<T>(resolver);
-  }
-
-  [Pure]
-  public static Validator<T> Lazy<T>(Func<Validator<T>> provider) {
-    return Lazy(Resolver.Create(provider));
   }
 
   [Pure]
@@ -143,7 +120,6 @@ public static class Validator {
     return new AnonymousValidator<T>(validation, errorMessage);
   }
 
-  [Pure]
   private static Validator<T> InRangeCore<T>(T min, T max, bool rightInclusive = false, IComparer<T> c = null, IEqualityComparer<T> ec = null) {
     return MoreThan(min, c).Or(Equal(min, ec)).And(rightInclusive ? LessThan(max, c).Or(Equal(max, ec)) : LessThan(max, c));
   }

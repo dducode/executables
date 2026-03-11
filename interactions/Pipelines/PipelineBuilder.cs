@@ -1,6 +1,7 @@
 using System.Diagnostics.Contracts;
 using Interactions.Core;
 using Interactions.Core.Internal;
+using Interactions.Operations;
 
 namespace Interactions.Pipelines;
 
@@ -39,7 +40,7 @@ public class PipelineBuilder<T1, T2, T3, T4> {
   [Pure]
   public virtual IExecutable<T1, T4> End(IExecutable<T2, T3> executable) {
     ExceptionsHelper.ThrowIfNull(executable, nameof(executable));
-    return new MiddlewareExecutable<T1, T2, T3, T4>(_middleware, executable);
+    return new ExecutableOperator<T1, T2, T3, T4>(_middleware, executable);
   }
 
 }

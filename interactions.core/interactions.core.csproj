@@ -18,7 +18,6 @@
         <PackageReleaseNotes>
             executable and handleable interfaces extracted;
             event handling changed;
-            new handlers added: lazy, dynamic, automatically disposed;
             bugs fixed
         </PackageReleaseNotes>
 

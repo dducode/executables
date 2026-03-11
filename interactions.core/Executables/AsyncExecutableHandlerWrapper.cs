@@ -6,4 +6,14 @@ internal sealed class AsyncExecutableHandlerWrapper<T1, T2>(IAsyncExecutable<T1,
     return inner.Execute(input, token);
   }
 
+  protected override void DisposeCore() {
+    (inner as IDisposable)?.Dispose();
+  }
+
+#if !NETFRAMEWORK
+  protected override ValueTask AsyncDisposeCore() {
+    return (inner as IAsyncDisposable)?.DisposeAsync() ?? default;
+  }
+#endif
+
 }

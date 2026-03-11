@@ -6,4 +6,8 @@ internal sealed class ExecutableHandlerWrapper<T1, T2>(IExecutable<T1, T2> inner
     return inner.Execute(input);
   }
 
+  protected override void DisposeCore() {
+    (inner as IDisposable)?.Dispose();
+  }
+
 }

@@ -1,11 +1,9 @@
 using System.Diagnostics.Contracts;
-using Interactions.Analytics;
 using Interactions.Core;
 using Interactions.Core.Internal;
-using Interactions.Core.Providers;
-using Interactions.Core.Resolvers;
 using Interactions.Fallbacks;
 using Interactions.Guards;
+using Interactions.Operations;
 using Interactions.Validation;
 
 namespace Interactions.Policies;
@@ -24,16 +22,6 @@ public class PolicyBuilder<T1, T2> {
     return Add(IdentityPolicy<T1, T2>.Instance);
   }
 
-  public PolicyBuilder<T1, T2> Dynamic(IProvider<Policy<T1, T2>> provider) {
-    ExceptionsHelper.ThrowIfNull(provider, nameof(provider));
-    return Add(new DynamicPolicy<T1, T2>(provider));
-  }
-
-  public PolicyBuilder<T1, T2> Lazy(IResolver<Policy<T1, T2>> resolver) {
-    ExceptionsHelper.ThrowIfNull(resolver, nameof(resolver));
-    return Add(new LazyPolicy<T1, T2>(resolver));
-  }
-
   /// <summary>
   /// Creates a policy that validates input before invocation and output after invocation.
   /// </summary>
@@ -47,17 +35,6 @@ public class PolicyBuilder<T1, T2> {
   }
 
   /// <summary>
-  /// Creates a policy that reports invocation metrics.
-  /// </summary>
-  /// <param name="metrics">Metrics sink used to record invocation data.</param>
-  /// <param name="tag">Optional logical tag used to group emitted metrics.</param>
-  /// <returns>Metrics policy.</returns>
-  public PolicyBuilder<T1, T2> Metrics(IMetrics<T1, T2> metrics, string tag = null) {
-    ExceptionsHelper.ThrowIfNull(metrics, nameof(metrics));
-    return Add(new MetricsPolicy<T1, T2>(metrics, tag));
-  }
-
-  /// <summary>
   /// Creates a policy that blocks invocation when the guard denies access.
   /// </summary>
   /// <param name="guard">Guard that controls whether invocation is allowed.</param>
@@ -65,16 +42,6 @@ public class PolicyBuilder<T1, T2> {
   public PolicyBuilder<T1, T2> Guard(Guard guard) {
     ExceptionsHelper.ThrowIfNull(guard, nameof(guard));
     return Add(new GuardPolicy<T1, T2>(guard));
-  }
-
-  /// <summary>
-  /// Creates a policy that caches invocation results by input key.
-  /// </summary>
-  /// <param name="storage">Storage used to read and write cached values.</param>
-  /// <returns>Cache policy.</returns>
-  public PolicyBuilder<T1, T2> Cache(ICacheStorage<T1, T2> storage) {
-    ExceptionsHelper.ThrowIfNull(storage, nameof(storage));
-    return Add(new CachePolicy<T1, T2>(storage));
   }
 
   public PolicyBuilder<T1, T2> PreventReentrance() {
@@ -102,7 +69,7 @@ public class PolicyBuilder<T1, T2> {
     return _policies
       .AsEnumerable()
       .Reverse()
-      .Aggregate(executable, (current, policy) => new ExecutablePolicy<T1, T2>(policy, current));
+      .Aggregate(executable, (current, policy) => new ExecutableOperator<T1, T1, T2, T2>(policy, current));
   }
 
 }
