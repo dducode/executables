@@ -25,13 +25,12 @@ internal sealed class AsyncMetricsOperator<T1, T2>(IMetrics<T1, T2> metrics, str
       catch (Exception e) {
         sw.Stop();
         metrics.Failure(tag, e);
-        throw;
-      }
-      finally {
         metrics.Latency(tag, sw.Elapsed);
+        throw;
       }
 
       metrics.Success(tag, result);
+      metrics.Latency(tag, sw.Elapsed);
       return result;
     }
     finally {
