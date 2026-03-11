@@ -56,6 +56,14 @@ public static class InteractionContextExtensions {
     return context.GetOrDefaultLocal(Key<T>(), defaultValue);
   }
 
+  public static bool ContainsKey<T>(this IReadonlyContext context, T key) {
+    return context.TryGet<T>(key, out _);
+  }
+
+  public static bool ContainsKey<T>(this IReadonlyContext context) {
+    return context.TryGet<T>(Key<T>(), out _);
+  }
+
   private static object Key<T>() {
     return typeof(T);
   }
