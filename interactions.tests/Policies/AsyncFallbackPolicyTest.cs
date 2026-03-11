@@ -1,6 +1,7 @@
 using System.Runtime.ExceptionServices;
 using Interactions.Core;
 using Interactions.Core.Executables;
+using Interactions.Operations;
 using Interactions.Policies;
 using JetBrains.Annotations;
 
@@ -12,8 +13,7 @@ public class AsyncFallbackPolicyTest {
   [Fact]
   public async Task RegularExecution() {
     IAsyncExecutable<Unit, Unit> executable = AsyncPolicy
-      .Of<Unit>()
-      .Fallback((Unit _, InvalidOperationException _) => default)
+      .Fallback((Unit _, InvalidOperationException _) => default(Unit))
       .Apply(Executable.Identity().ToAsyncExecutable());
 
     await executable.Execute(default, CancellationToken.None);
@@ -23,8 +23,7 @@ public class AsyncFallbackPolicyTest {
   public async Task Cancel() {
     var cts = new CancellationTokenSource();
     IAsyncExecutable<Unit, Unit> executable = AsyncPolicy
-      .Of<Unit>()
-      .Fallback((Unit _, InvalidOperationException _) => default)
+      .Fallback((Unit _, InvalidOperationException _) => default(Unit))
       .Apply(Executable.Identity().ToAsyncExecutable());
 
     await cts.CancelAsync();
@@ -34,7 +33,6 @@ public class AsyncFallbackPolicyTest {
   [Fact]
   public async Task ReturnFallbackOnException() {
     IAsyncExecutable<int, int> executable = AsyncPolicy
-      .Of<int>()
       .Fallback((int input, InvalidOperationException _) => input)
       .Apply(Executable.Create<int, int>(_ => throw new InvalidOperationException()).ToAsyncExecutable());
 
@@ -44,10 +42,9 @@ public class AsyncFallbackPolicyTest {
   [Fact]
   public async Task ThrowExceptionFromFallbackHandler() {
     IAsyncExecutable<Unit, Unit> executable = AsyncPolicy
-      .Of<Unit>()
       .Fallback((Unit _, InvalidOperationException ex) => {
         ExceptionDispatchInfo.Capture(ex).Throw();
-        return default;
+        return default(Unit);
       })
       .Apply(Executable.Create<Unit, Unit>(_ => throw new InvalidOperationException()).ToAsyncExecutable());
 

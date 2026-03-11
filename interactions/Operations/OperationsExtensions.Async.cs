@@ -15,4 +15,11 @@ public static partial class OperationsExtensions {
     return new AsyncExecutableOperator<T1, T2, T3, T4>(executionOperator, executable);
   }
 
+  [Pure]
+  public static IAsyncExecutable<T1, T4> Apply<T1, T2, T3, T4>(
+    this AsyncExecutionOperator<T1, T2, T3, T4> executionOperator,
+    IAsyncExecutable<T2, T3> executable) {
+    return executable.Apply(executionOperator);
+  }
+
 }

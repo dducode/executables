@@ -1,7 +1,7 @@
 using Interactions.Context;
 using Interactions.Core;
 using Interactions.Guards;
-using Interactions.Policies;
+using Interactions.Operations;
 using JetBrains.Annotations;
 using Xunit.Abstractions;
 
@@ -16,8 +16,8 @@ public class InteractionContextTest(ITestOutputHelper output) {
   [InlineData(true, false)]
   [InlineData(false, false)]
   public void SwitchGuardByFeatureFlags(bool isDebug, bool userIsAdmin) {
-    IExecutable<Unit, Unit> executable = Policy.Of<Unit>()
-      .Guard(() => {
+    IExecutable<Unit, Unit> executable = Policy
+      .Guard<Unit>(() => {
         IReadonlyContext context = InteractionContext.Current;
         output.WriteLine($"Context: {{{context:v}}}");
         return context.Get<FeatureFlags>().IsDebug || context.Get<User>().IsAdmin;

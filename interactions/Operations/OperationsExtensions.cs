@@ -13,4 +13,9 @@ public static partial class OperationsExtensions {
     return new ExecutableOperator<T1, T2, T3, T4>(executionOperator, executable);
   }
 
+  [Pure]
+  public static IExecutable<T1, T4> Apply<T1, T2, T3, T4>(this ExecutionOperator<T1, T2, T3, T4> executionOperator, IExecutable<T2, T3> executable) {
+    return executable.Apply(executionOperator);
+  }
+
 }

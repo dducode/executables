@@ -1,6 +1,6 @@
 using Interactions.Core;
 using Interactions.Core.Executables;
-using Interactions.Policies;
+using Interactions.Operations;
 using Interactions.Validation;
 using JetBrains.Annotations;
 
@@ -14,7 +14,7 @@ public class ValidationPolicyTest {
     var query = new Query<string, string>();
 
     using IDisposable handle = query.Handle(Executable.Create((string request) => $"response: {request}").AsHandler());
-    IExecutable<string, string> invokedQuery = Policy.Of<string>().ValidateInput(Validator.NotEmptyString).Apply(query);
+    IExecutable<string, string> invokedQuery = Policy.ValidateInput<string, string>(Validator.NotEmptyString).Apply(query);
 
     Assert.Throws<InvalidInputException>(() => invokedQuery.Execute(string.Empty));
     Assert.Equal("response: request", invokedQuery.Execute("request"));

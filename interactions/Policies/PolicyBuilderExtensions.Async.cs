@@ -14,7 +14,6 @@ public static partial class PolicyBuilderExtensions {
   /// Delegate that receives current failed-attempt count and exception instance,
   /// and returns <see langword="true"/> to continue retrying.
   /// </param>
-  /// <returns>Retry policy that handles <typeparamref name="TEx"/> failures.</returns>
   public static AsyncPolicyBuilder<T1, T2> Retry<T1, T2, TEx>(this AsyncPolicyBuilder<T1, T2> builder, AsyncFunc<int, TEx, bool> rule) where TEx : Exception {
     return builder.Retry(RetryRule.Create(rule));
   }
@@ -23,7 +22,6 @@ public static partial class PolicyBuilderExtensions {
   /// Creates a policy that validates only invocation input.
   /// </summary>
   /// <param name="inputValidator">Validator for invocation input.</param>
-  /// <returns>Validation policy for input with identity output validation.</returns>
   public static AsyncPolicyBuilder<T1, T2> ValidateInput<T1, T2>(this AsyncPolicyBuilder<T1, T2> builder, Validator<T1> inputValidator) {
     return builder.Validate(inputValidator, Validator.Identity<T2>());
   }
@@ -32,7 +30,6 @@ public static partial class PolicyBuilderExtensions {
   /// Creates a policy that validates only invocation output.
   /// </summary>
   /// <param name="outputValidator">Validator for invocation result.</param>
-  /// <returns>Validation policy for output with identity input validation.</returns>
   public static AsyncPolicyBuilder<T1, T2> ValidateOutput<T1, T2>(this AsyncPolicyBuilder<T1, T2> builder, Validator<T2> outputValidator) {
     return builder.Validate(Validator.Identity<T1>(), outputValidator);
   }
@@ -42,7 +39,6 @@ public static partial class PolicyBuilderExtensions {
   /// </summary>
   /// <param name="inputValidator">Predicate that returns <see langword="true"/> for valid input.</param>
   /// <param name="errorMessage">Message used when validation fails.</param>
-  /// <returns>Validation policy for invocation input.</returns>
   public static AsyncPolicyBuilder<T1, T2> ValidateInput<T1, T2>(
     this AsyncPolicyBuilder<T1, T2> builder,
     Func<T1, bool> inputValidator,
@@ -55,7 +51,6 @@ public static partial class PolicyBuilderExtensions {
   /// </summary>
   /// <param name="outputValidator">Predicate that returns <see langword="true"/> for valid output.</param>
   /// <param name="errorMessage">Message used when validation fails.</param>
-  /// <returns>Validation policy for invocation output.</returns>
   public static AsyncPolicyBuilder<T1, T2> ValidateOutput<T1, T2>(
     this AsyncPolicyBuilder<T1, T2> builder,
     Func<T2, bool> outputValidator,
@@ -68,7 +63,6 @@ public static partial class PolicyBuilderExtensions {
   /// </summary>
   /// <param name="guard">Predicate that returns <see langword="true"/> when invocation is allowed.</param>
   /// <param name="errorMessage">Message used when guard denies access.</param>
-  /// <returns>Guard policy.</returns>
   public static AsyncPolicyBuilder<T1, T2> Guard<T1, T2>(this AsyncPolicyBuilder<T1, T2> builder, Func<bool> guard, string errorMessage) {
     return builder.Guard(Guards.Guard.Create(guard, errorMessage));
   }
