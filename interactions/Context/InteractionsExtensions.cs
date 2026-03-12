@@ -22,4 +22,21 @@ public static partial class InteractionsExtensions {
     }
   }
 
+  public static void Execute<T>(this IExecutable<T> executable, T input, Action<InteractionContext> init) {
+    executable.ThrowIfNullReference();
+    ExceptionsHelper.ThrowIfNull(init, nameof(init));
+
+    IReadonlyContext previous = InteractionContext.Current;
+    using var current = new InteractionContext(previous);
+    init(current);
+    InteractionContext.Current = current;
+
+    try {
+      executable.Execute(input);
+    }
+    finally {
+      InteractionContext.Current = previous;
+    }
+  }
+
 }

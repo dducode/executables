@@ -29,7 +29,10 @@ public static class Branch<T> {
   }
 
   public static BranchBuilder<T, Unit> If(Func<bool> condition, Action<T> action) {
-    return If(condition, Executable.Create(action));
+    return If(condition, Executable.Create((T input) => {
+      action(input);
+      return default(Unit);
+    }));
   }
 
   public static BranchBuilder<Unit, T> If(Func<bool> condition, IExecutable<Unit, T> handler) {
@@ -45,7 +48,10 @@ public static class Branch<T> {
   }
 
   public static AsyncBranchBuilder<T, Unit> If(Func<bool> condition, AsyncAction<T> action) {
-    return If(condition, AsyncExecutable.Create(action));
+    return If(condition, AsyncExecutable.Create(async (T input, CancellationToken token) => {
+      await action(input, token);
+      return default(Unit);
+    }));
   }
 
   public static AsyncBranchBuilder<Unit, T> If(Func<bool> condition, IAsyncExecutable<Unit, T> handler) {
@@ -65,7 +71,10 @@ public static class Branch {
   }
 
   public static BranchBuilder<Unit, Unit> If(Func<bool> condition, Action action) {
-    return If(condition, Executable.Create(action));
+    return If(condition, Executable.Create((Unit _) => {
+      action();
+      return default(Unit);
+    }));
   }
 
   public static AsyncBranchBuilder<Unit, Unit> If(Func<bool> condition, IAsyncExecutable<Unit, Unit> handler) {
@@ -73,7 +82,10 @@ public static class Branch {
   }
 
   public static AsyncBranchBuilder<Unit, Unit> If(Func<bool> condition, AsyncAction action) {
-    return If(condition, AsyncExecutable.Create(action));
+    return If(condition, AsyncExecutable.Create(async (Unit _, CancellationToken token) => {
+      await action(token);
+      return default(Unit);
+    }));
   }
 
 }

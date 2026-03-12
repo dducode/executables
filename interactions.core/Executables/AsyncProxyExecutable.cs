@@ -8,3 +8,13 @@ internal sealed class AsyncProxyExecutable<T1, T2>(IExecutable<T1, T2> inner) : 
   }
 
 }
+
+internal sealed class AsyncProxyExecutable<T>(IExecutable<T> inner) : IAsyncExecutable<T> {
+
+  public ValueTask Execute(T input, CancellationToken token = default) {
+    token.ThrowIfCancellationRequested();
+    inner.Execute(input);
+    return new ValueTask(Task.CompletedTask);
+  }
+
+}

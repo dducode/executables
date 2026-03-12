@@ -31,6 +31,27 @@ public static partial class ExecutablesExtensions {
   }
 
   [Pure]
+  public static IAsyncExecutable<T1> Then<T1, T2>(this IAsyncExecutable<T1, T2> first, IAsyncExecutable<T2> second) {
+    first.ThrowIfNullReference();
+    ExceptionsHelper.ThrowIfNull(second, nameof(second));
+    return new AsyncTerminateExecutable<T1, T2>(first, second);
+  }
+
+  [Pure]
+  public static IAsyncExecutable<T1> Then<T1, T2>(this IAsyncExecutable<T1, T2> executable, AsyncAction<T2> next) {
+    return executable.Then(AsyncExecutable.Create(next));
+  }
+
+  [Pure]
+  public static IAsyncExecutable<T1> Then<T1, T2>(this IAsyncExecutable<T1, T2> first, IExecutable<T2> second) {
+    return first.Then(second.ToAsyncExecutable());
+  }
+
+  public static IAsyncExecutable<T1> Then<T1, T2>(this IAsyncExecutable<T1, T2> executable, Action<T2> next) {
+    return executable.Then(Executable.Create(next));
+  }
+
+  [Pure]
   public static IAsyncExecutable<T1, (T4, T5)> Then<T1, T2, T3, T4, T5>(
     this IAsyncExecutable<T1, (T2, T3)> fork,
     IAsyncExecutable<T2, T4> first,

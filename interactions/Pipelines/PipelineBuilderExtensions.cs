@@ -1,4 +1,6 @@
+using System.Diagnostics.Contracts;
 using Interactions.Core;
+using Interactions.Core.Executables;
 using Interactions.Core.Internal;
 
 namespace Interactions.Pipelines;
@@ -307,20 +309,52 @@ public static partial class PipelineBuilderExtensions {
     }));
   }
 
+  [Pure]
   public static IExecutable<T1, T4> End<T1, T2, T3, T4>(this PipelineBuilder<T1, T2, T3, T4> builder, Func<T2, T3> func) {
     return builder.End(Executable.Create(func));
   }
 
+  [Pure]
   public static IExecutable<T1, T3> End<T1, T2, T3>(this PipelineBuilder<T1, Unit, T2, T3> builder, Func<T2> func) {
     return builder.End(Executable.Create(func));
   }
 
-  public static IExecutable<T1, T3> End<T1, T2, T3>(this PipelineBuilder<T1, T2, Unit, T3> builder, Action<T2> func) {
-    return builder.End(Executable.Create(func));
+  [Pure]
+  public static IExecutable<T1, T3> End<T1, T2, T3>(this PipelineBuilder<T1, T2, Unit, T3> builder, Action<T2> action) {
+    ExceptionsHelper.ThrowIfNull(action, nameof(action));
+    return builder.End(Executable.Create((T2 arg) => {
+      action(arg);
+      return default(Unit);
+    }));
   }
 
-  public static IExecutable<T1, T3> End<T1, T3>(this PipelineBuilder<T1, Unit, Unit, T3> builder, Action func) {
-    return builder.End(Executable.Create(func));
+  [Pure]
+  public static IExecutable<T1, T2> End<T1, T2>(this PipelineBuilder<T1, Unit, Unit, T2> builder, Action action) {
+    ExceptionsHelper.ThrowIfNull(action, nameof(action));
+    return builder.End(Executable.Create((Unit _) => {
+      action();
+      return default(Unit);
+    }));
+  }
+
+  [Pure]
+  public static IExecutable<T1> End<T1, T2, T3>(this PipelineBuilder<T1, T2, T3, Unit> builder, Func<T2, T3> func) {
+    return builder.End(Executable.Create(func)).SkipReturnValue();
+  }
+
+  [Pure]
+  public static IExecutable<T1> End<T1, T2>(this PipelineBuilder<T1, Unit, T2, Unit> builder, Func<T2> func) {
+    return builder.End(Executable.Create(func)).SkipReturnValue();
+  }
+
+  [Pure]
+  public static IExecutable<T1> End<T1, T2>(this PipelineBuilder<T1, T2, Unit, Unit> builder, Action<T2> action) {
+    return builder.End<T1, T2, Unit>(action).SkipReturnValue();
+  }
+
+  [Pure]
+  public static IExecutable<T> End<T>(this PipelineBuilder<T, Unit, Unit, Unit> builder, Action action) {
+    return builder.End<T, Unit>(action).SkipReturnValue();
   }
 
 }

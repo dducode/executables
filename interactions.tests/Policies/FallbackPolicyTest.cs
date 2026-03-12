@@ -11,7 +11,7 @@ public class FallbackPolicyTest {
 
   [Fact]
   public void RegularExecution() {
-    IExecutable<Unit, Unit> executable = Policy.Fallback((Unit _, InvalidOperationException _) => default(Unit)).Apply(Executable.Identity());
+    IExecutable<Unit> executable = Policy.Fallback((Unit _, InvalidOperationException _) => default(Unit)).Apply(Executable.Identity());
     executable.Execute(default);
   }
 
@@ -25,7 +25,7 @@ public class FallbackPolicyTest {
 
   [Fact]
   public void ThrowExceptionFromFallbackHandler() {
-    IExecutable<Unit, Unit> executable = Policy
+    IExecutable<Unit> executable = Policy
       .Fallback((Unit _, InvalidOperationException ex) => {
         ExceptionDispatchInfo.Capture(ex).Throw();
         return default(Unit);

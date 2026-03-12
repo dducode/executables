@@ -1,4 +1,6 @@
+using System.Diagnostics.Contracts;
 using Interactions.Core;
+using Interactions.Core.Executables;
 using Interactions.Core.Internal;
 
 namespace Interactions.Pipelines;
@@ -313,20 +315,50 @@ public static partial class PipelineBuilderExtensions {
     }));
   }
 
+  [Pure]
   public static IAsyncExecutable<T1, T4> End<T1, T2, T3, T4>(this AsyncPipelineBuilder<T1, T2, T3, T4> builder, AsyncFunc<T2, T3> func) {
     return builder.End(AsyncExecutable.Create(func));
   }
 
+  [Pure]
   public static IAsyncExecutable<T1, T3> End<T1, T2, T3>(this AsyncPipelineBuilder<T1, Unit, T2, T3> builder, AsyncFunc<T2> func) {
     return builder.End(AsyncExecutable.Create(func));
   }
 
-  public static IAsyncExecutable<T1, T3> End<T1, T2, T3>(this AsyncPipelineBuilder<T1, T2, Unit, T3> builder, AsyncAction<T2> func) {
-    return builder.End(AsyncExecutable.Create(func));
+  [Pure]
+  public static IAsyncExecutable<T1, T3> End<T1, T2, T3>(this AsyncPipelineBuilder<T1, T2, Unit, T3> builder, AsyncAction<T2> action) {
+    return builder.End(AsyncExecutable.Create(async (T2 input, CancellationToken token) => {
+      await action(input, token);
+      return default(Unit);
+    }));
   }
 
-  public static IAsyncExecutable<T1, T3> End<T1, T3>(this AsyncPipelineBuilder<T1, Unit, Unit, T3> builder, AsyncAction func) {
-    return builder.End(AsyncExecutable.Create(func));
+  [Pure]
+  public static IAsyncExecutable<T1, T2> End<T1, T2>(this AsyncPipelineBuilder<T1, Unit, Unit, T2> builder, AsyncAction action) {
+    return builder.End(AsyncExecutable.Create(async (Unit _, CancellationToken token) => {
+      await action(token);
+      return default(Unit);
+    }));
+  }
+
+  [Pure]
+  public static IAsyncExecutable<T1> End<T1, T2, T3>(this AsyncPipelineBuilder<T1, T2, T3, Unit> builder, AsyncFunc<T2, T3> func) {
+    return builder.End(AsyncExecutable.Create(func)).SkipReturnValue();
+  }
+
+  [Pure]
+  public static IAsyncExecutable<T1> End<T1, T2>(this AsyncPipelineBuilder<T1, Unit, T2, Unit> builder, AsyncFunc<T2> func) {
+    return builder.End(AsyncExecutable.Create(func)).SkipReturnValue();
+  }
+
+  [Pure]
+  public static IAsyncExecutable<T1> End<T1, T2>(this AsyncPipelineBuilder<T1, T2, Unit, Unit> builder, AsyncAction<T2> action) {
+    return builder.End<T1, T2, Unit>(action).SkipReturnValue();
+  }
+
+  [Pure]
+  public static IAsyncExecutable<T> End<T>(this AsyncPipelineBuilder<T, Unit, Unit, Unit> builder, AsyncAction action) {
+    return builder.End<T, Unit>(action).SkipReturnValue();
   }
 
 }

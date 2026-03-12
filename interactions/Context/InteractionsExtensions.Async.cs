@@ -26,4 +26,25 @@ public static partial class InteractionsExtensions {
     }
   }
 
+  public static async ValueTask Execute<T>(
+    this IAsyncExecutable<T> executable,
+    T input,
+    Action<InteractionContext> init,
+    CancellationToken token = default) {
+    executable.ThrowIfNullReference();
+    ExceptionsHelper.ThrowIfNull(init, nameof(init));
+
+    IReadonlyContext previous = InteractionContext.Current;
+    using var current = new InteractionContext(previous);
+    init(current);
+    InteractionContext.Current = current;
+
+    try {
+      await executable.Execute(input, token);
+    }
+    finally {
+      InteractionContext.Current = previous;
+    }
+  }
+
 }

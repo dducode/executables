@@ -14,11 +14,17 @@ public static partial class BranchBuilderExtensions {
   }
 
   public static BranchBuilder<T, Unit> ElseIf<T>(this BranchBuilder<T, Unit> builder, Func<bool> condition, Action<T> action) {
-    return builder.ElseIf(condition, Executable.Create(action));
+    return builder.ElseIf(condition, Executable.Create((T input) => {
+      action(input);
+      return default(Unit);
+    }));
   }
 
   public static BranchBuilder<Unit, Unit> ElseIf(this BranchBuilder<Unit, Unit> builder, Func<bool> condition, Action action) {
-    return builder.ElseIf(condition, Executable.Create(action));
+    return builder.ElseIf(condition, Executable.Create((Unit _) => {
+      action();
+      return default(Unit);
+    }));
   }
 
   [Pure]
@@ -33,12 +39,18 @@ public static partial class BranchBuilderExtensions {
 
   [Pure]
   public static IExecutable<T, Unit> Else<T>(this BranchBuilder<T, Unit> builder, Action<T> action) {
-    return builder.Else(Executable.Create(action));
+    return builder.Else(Executable.Create((T input) => {
+      action(input);
+      return default(Unit);
+    }));
   }
 
   [Pure]
   public static IExecutable<Unit, Unit> Else(this BranchBuilder<Unit, Unit> builder, Action action) {
-    return builder.Else(Executable.Create(action));
+    return builder.Else(Executable.Create((Unit _) => {
+      action();
+      return default(Unit);
+    }));
   }
 
 }

@@ -11,3 +11,12 @@ internal sealed class ExecutableHandlerWrapper<T1, T2>(IExecutable<T1, T2> inner
   }
 
 }
+
+internal sealed class ExecutableHandlerWrapper<T>(IExecutable<T> inner) : Handler<T, Unit> {
+
+  protected override Unit ExecuteCore(T input) {
+    inner.Execute(input);
+    return default;
+  }
+
+}

@@ -40,7 +40,7 @@ public class ExecutableOperatorTest(ITestOutputHelper output) {
     var secondEnd = false;
     var thirdEnd = false;
 
-    IExecutable<Unit, Unit> executable = Pipeline
+    IExecutable<Unit> executable = Pipeline
       .Use(next => {
         output.WriteLine("Start first");
         firstStarted = true;
@@ -57,11 +57,11 @@ public class ExecutableOperatorTest(ITestOutputHelper output) {
         output.WriteLine("End second");
         secondEnd = true;
       })
-      .End(Executable.Create(() => {
+      .End(() => {
         Assert.True(secondStarted);
         output.WriteLine("Finish");
         thirdEnd = true;
-      }));
+      });
 
     executable.Execute();
   }

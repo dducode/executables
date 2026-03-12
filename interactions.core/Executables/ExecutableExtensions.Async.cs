@@ -9,6 +9,10 @@ public static partial class ExecutableExtensions {
     return executable.Execute(default, token);
   }
 
+  public static ValueTask Execute(this IAsyncExecutable<Unit> executable, CancellationToken token = default) {
+    return executable.Execute(default, token);
+  }
+
   public static async ValueTask<Result<T2>> TryExecute<T1, T2>(this IAsyncExecutable<T1, T2> executable, T1 input, CancellationToken token = default) {
     try {
       return await executable.Execute(input, token);
@@ -26,6 +30,18 @@ public static partial class ExecutableExtensions {
   public static AsyncHandler<T1, T2> AsHandler<T1, T2>(this IAsyncExecutable<T1, T2> executable) {
     executable.ThrowIfNullReference();
     return new AsyncExecutableHandlerWrapper<T1, T2>(executable);
+  }
+
+  [Pure]
+  public static AsyncHandler<T, Unit> AsHandler<T>(this IAsyncExecutable<T> executable) {
+    executable.ThrowIfNullReference();
+    return new AsyncExecutableHandlerWrapper<T>(executable);
+  }
+
+  [Pure]
+  public static IAsyncExecutable<T> SkipReturnValue<T>(this IAsyncExecutable<T, Unit> executable) {
+    executable.ThrowIfNullReference();
+    return new AsyncVoidExecutable<T>(executable);
   }
 
 }

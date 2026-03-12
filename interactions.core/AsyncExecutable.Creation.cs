@@ -15,7 +15,7 @@ public static class AsyncExecutable {
   [Pure]
   public static IAsyncExecutable<T1, T2> Create<T1, T2>(AsyncFunc<T1, T2> func) {
     ExceptionsHelper.ThrowIfNull(func, nameof(func));
-    return new AsyncAnonymousExecutable<T1, T2>(func);
+    return new ExecutableAsyncFunc<T1, T2>(func);
   }
 
   /// <summary>
@@ -26,7 +26,7 @@ public static class AsyncExecutable {
   [Pure]
   public static IAsyncExecutable<Unit, T> Create<T>(AsyncFunc<T> func) {
     ExceptionsHelper.ThrowIfNull(func, nameof(func));
-    return new AsyncAnonymousExecutable<Unit, T>((_, token) => func(token));
+    return new ExecutableAsyncFunc<T>(func);
   }
 
   /// <summary>
@@ -35,12 +35,9 @@ public static class AsyncExecutable {
   /// <typeparam name="T">Input type.</typeparam>
   /// <param name="action">Async action used for execution.</param>
   [Pure]
-  public static IAsyncExecutable<T, Unit> Create<T>(AsyncAction<T> action) {
+  public static IAsyncExecutable<T> Create<T>(AsyncAction<T> action) {
     ExceptionsHelper.ThrowIfNull(action, nameof(action));
-    return new AsyncAnonymousExecutable<T, Unit>(async (input, token) => {
-      await action(input, token);
-      return default;
-    });
+    return new ExecutableAsyncAction<T>(action);
   }
 
   /// <summary>
@@ -48,12 +45,9 @@ public static class AsyncExecutable {
   /// </summary>
   /// <param name="action">Async action used for execution.</param>
   [Pure]
-  public static IAsyncExecutable<Unit, Unit> Create(AsyncAction action) {
+  public static IAsyncExecutable<Unit> Create(AsyncAction action) {
     ExceptionsHelper.ThrowIfNull(action, nameof(action));
-    return new AsyncAnonymousExecutable<Unit, Unit>(async (_, token) => {
-      await action(token);
-      return default;
-    });
+    return new ExecutableAsyncAction(action);
   }
 
 }

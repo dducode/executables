@@ -17,3 +17,12 @@ internal sealed class AsyncExecutableHandlerWrapper<T1, T2>(IAsyncExecutable<T1,
 #endif
 
 }
+
+internal sealed class AsyncExecutableHandlerWrapper<T>(IAsyncExecutable<T> inner) : AsyncHandler<T, Unit> {
+
+  protected override async ValueTask<Unit> ExecuteCore(T input, CancellationToken token = default) {
+    await inner.Execute(input, token);
+    return default;
+  }
+
+}
