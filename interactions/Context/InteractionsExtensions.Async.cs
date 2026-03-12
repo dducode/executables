@@ -47,4 +47,12 @@ public static partial class InteractionsExtensions {
     }
   }
 
+  public static ValueTask<T> Execute<T>(this IAsyncExecutable<Unit, T> executable, Action<InteractionContext> init, CancellationToken token = default) {
+    return executable.Execute(default, init, token);
+  }
+
+  public static ValueTask Execute(this IAsyncExecutable<Unit> executable, Action<InteractionContext> init, CancellationToken token = default) {
+    return executable.Execute(default, init, token);
+  }
+
 }

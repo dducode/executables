@@ -39,4 +39,12 @@ public static partial class InteractionsExtensions {
     }
   }
 
+  public static T Execute<T>(this IExecutable<Unit, T> executable, Action<InteractionContext> init) {
+    return executable.Execute(default, init);
+  }
+
+  public static void Execute(this IExecutable<Unit> executable, Action<InteractionContext> init) {
+    executable.Execute(default, init);
+  }
+
 }
