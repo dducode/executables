@@ -8,15 +8,15 @@ public struct Publishing<T>(T arg, List<ISubscriber<T>> subscribers) : IEnumerab
 
   public readonly T arg = arg;
 
-  private long _reversed;
+  private bool _reversed;
 
   public Publishing<T> Reverse() {
-    Interlocked.Exchange(ref _reversed, ~Interlocked.Read(ref _reversed));
+    _reversed = !_reversed;
     return this;
   }
 
   public Enumerator GetEnumerator() {
-    return new Enumerator(subscribers, _reversed != 0);
+    return new Enumerator(subscribers, _reversed);
   }
 
   IEnumerator<ISubscriber<T>> IEnumerable<ISubscriber<T>>.GetEnumerator() {
@@ -37,15 +37,15 @@ public struct Publishing<T>(T arg, List<ISubscriber<T>> subscribers) : IEnumerab
 
     public bool MoveNext() {
       if (!reversed)
-        return Interlocked.Increment(ref _index) < subscribers.Count;
-      return Interlocked.Decrement(ref _index) >= 0;
+        return ++_index < subscribers.Count;
+      return --_index >= 0;
     }
 
     public void Reset() {
       if (!reversed)
-        Interlocked.Exchange(ref _index, -1);
+        _index = -1;
       else
-        Interlocked.Exchange(ref _index, subscribers.Count);
+        _index = subscribers.Count;
     }
 
     public void Dispose() {
