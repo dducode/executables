@@ -23,6 +23,13 @@ public static partial class ExecutableEnumerableExtensions {
   }
 
   [Pure]
+  public static ExecutableArray<T1, T2> ForEach<T1, T2>(this IExecutable<T1, T2> executable, T1[] array) {
+    executable.ThrowIfNullReference();
+    ExceptionsHelper.ThrowIfNull(array, nameof(array));
+    return new ExecutableArray<T1, T2>(executable, array);
+  }
+
+  [Pure]
   public static ExecutableHashSet<T1, T2> ForEach<T1, T2>(this IExecutable<T1, T2> executable, HashSet<T1> hashSet) {
     executable.ThrowIfNullReference();
     ExceptionsHelper.ThrowIfNull(hashSet, nameof(hashSet));
