@@ -9,7 +9,7 @@ public class SplitConcatStringsTransformerTest {
   [Theory]
   [InlineData(new[] { "test", "test", "test" }, "test, test, test")]
   public void SplitTest(string[] expected, string input) {
-    IExecutable<string, string[]> transformer = Transformer.Split(", ");
+    IExecutable<string, string[]> transformer = Collections.Split(", ");
     Assert.Equal(expected, transformer.Execute(input));
   }
 

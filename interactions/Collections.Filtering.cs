@@ -2,10 +2,11 @@ using System.Diagnostics.Contracts;
 using Interactions.Core;
 using Interactions.Core.Internal;
 using Interactions.Executables;
+using Interactions.Filtering;
 
-namespace Interactions.Filtering;
+namespace Interactions;
 
-public static class Filter {
+public static partial class Collections {
 
   [Pure]
   public static IFilter<T> Where<T>(Validator<T> validator) {

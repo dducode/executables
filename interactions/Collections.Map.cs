@@ -4,7 +4,7 @@ using Interactions.Core.Internal;
 
 namespace Interactions;
 
-public static class Transformer {
+public static partial class Collections {
 
   [Pure]
   public static IExecutable<IEnumerable<T>, T> Aggregate<T>(Func<T, T, T> accumulate) {

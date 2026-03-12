@@ -10,7 +10,7 @@ public class AggregatorTest {
   [Fact]
   public void AddingNumbersTest() {
     var fixture = new Fixture();
-    IExecutable<IEnumerable<int>, int> transformer = Transformer.Aggregate<int>((first, second) => first + second);
+    IExecutable<IEnumerable<int>, int> transformer = Collections.Aggregate<int>((first, second) => first + second);
     var list = new List<int>(fixture.CreateMany<int>(10));
     int expected = list.Sum();
 

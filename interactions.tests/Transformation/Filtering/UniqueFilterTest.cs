@@ -10,7 +10,7 @@ public class UniqueFilterTest {
   [Fact]
   public void SelectUniqueNumbersTest() {
     var list = new List<int> { 1, 1, 2, 3, 3 };
-    IFilter<int> filter = Filter.Distinct<int>();
+    IFilter<int> filter = Collections.Distinct<int>();
 
     Assert.Equal(3, filter.Execute(list).Count());
   }

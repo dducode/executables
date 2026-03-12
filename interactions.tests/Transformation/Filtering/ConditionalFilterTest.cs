@@ -14,7 +14,7 @@ public class ConditionalFilterTest {
     var fixture = new Fixture();
     var random = new Random(42);
     var list = new List<string>(fixture.CreateMany<string>(random.Next(10, 30)));
-    IFilter<string> filter = Filter.Where(StringLength(LessThan(5)));
+    IFilter<string> filter = Collections.Where(StringLength(LessThan(5)));
 
     int expected = list.Count(s => s.Length < 5);
     IEnumerable<string> result = filter.Execute(list);

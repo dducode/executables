@@ -10,7 +10,7 @@ public class CompositeFilterTest {
   [Fact]
   public void SelectSingleNumberTest() {
     var list = new List<int> { -1, 0, 2, 2, 2, 3, 4, 10, 10, 26, 30 };
-    IFilter<int> filter = Filter.Skip<int>(2).Distinct().Where(Validator.InRange(5, 20));
+    IFilter<int> filter = Collections.Skip<int>(2).Distinct().Where(Validator.InRange(5, 20));
 
     Assert.Single(filter.Execute(list));
   }

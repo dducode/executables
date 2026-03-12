@@ -1,7 +1,6 @@
 using Interactions.Core;
 using Interactions.Core.Executables;
 using Interactions.Executables;
-using Interactions.Filtering;
 using Interactions.Operations;
 using JetBrains.Annotations;
 using Xunit.Abstractions;
@@ -26,8 +25,8 @@ public class ExecutableOperatorTest(ITestOutputHelper output) {
   public void FilterListTest() {
     IExecutable<IEnumerable<string>, string> filter = Executable
       .Identity<string>()
-      .InMap(Executable.Create((IEnumerable<string> enumerable) => enumerable.First()))
-      .InFilter(Filter.Where(StringLength(MoreThan(2))));
+      .InMap(Collections.First<string>())
+      .InFilter(Collections.Where(StringLength(MoreThan(2))));
 
     Assert.Equal("input", filter.Execute(new List<string> { string.Empty, "10", "input" }));
   }
