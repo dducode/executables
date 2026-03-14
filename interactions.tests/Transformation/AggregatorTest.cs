@@ -1,7 +1,7 @@
 using AutoFixture;
 using Interactions.Core;
 using Interactions.Core.Executables;
-using Interactions.LINQ;
+using Interactions.Linq;
 using JetBrains.Annotations;
 
 namespace Interactions.Tests.Transformation;

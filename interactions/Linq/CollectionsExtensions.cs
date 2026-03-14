@@ -3,7 +3,7 @@ using Interactions.Core;
 using Interactions.Core.Internal;
 using Interactions.Executables;
 
-namespace Interactions.LINQ;
+namespace Interactions.Linq;
 
 public static class CollectionsExtensions {
 
