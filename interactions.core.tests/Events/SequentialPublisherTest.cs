@@ -1,5 +1,4 @@
 using Interactions.Core.Events;
-using Interactions.Core.Executables;
 using Interactions.Core.Tests.Utils;
 using JetBrains.Annotations;
 using Xunit.Abstractions;
@@ -24,7 +23,7 @@ public class SequentialPublisherTest(ITestOutputHelper output) {
       e.Subscribe(subscriber);
     e.Handle(EventPublisher.Sequential(order));
 
-    e.Execute();
+    e.Publish();
     Assert.All(subscribers, subscriber => Assert.True(subscriber.Received));
   }
 
@@ -41,7 +40,7 @@ public class SequentialPublisherTest(ITestOutputHelper output) {
       e.Subscribe(subscriber);
     e.Handle(EventPublisher.Sequential());
 
-    Assert.Throws<InvalidOperationException>(() => e.Execute());
+    Assert.Throws<InvalidOperationException>(() => e.Publish());
     Assert.All(subscribers, subscriber => Assert.True(subscriber.Received));
   }
 
@@ -60,7 +59,7 @@ public class SequentialPublisherTest(ITestOutputHelper output) {
       e.Subscribe(subscriber);
     e.Handle(EventPublisher.Sequential());
 
-    Assert.Throws<AggregateException>(() => e.Execute());
+    Assert.Throws<AggregateException>(() => e.Publish());
     Assert.All(subscribers, subscriber => Assert.True(subscriber.Received));
   }
 

@@ -1,5 +1,7 @@
 using Interactions.Branches;
 using Interactions.Core;
+using Interactions.Core.Executables;
+using Interactions.Core.Queries;
 using JetBrains.Annotations;
 
 namespace Interactions.Tests.Branches;
@@ -13,13 +15,14 @@ public class BranchBuilderTest {
   [InlineData(2, 2)]
   [InlineData(3, -1)]
   public void LinearBranch(int state, int expected) {
-    IExecutable<Unit, int> handler = Branch<int>
+    IQuery<Unit, int> query = Branch<int>
       .If(() => state == 0, () => 0)
       .ElseIf(() => state == 1, () => 1)
       .ElseIf(() => state == 2, () => 2)
-      .Else(() => -1);
+      .Else(() => -1)
+      .AsQuery();
 
-    Assert.Equal(expected, handler.Execute(default));
+    Assert.Equal(expected, query.Send());
   }
 
   [Theory]
@@ -28,16 +31,16 @@ public class BranchBuilderTest {
   [InlineData(false, true, 2)]
   [InlineData(false, false, 3)]
   public void NestedBranch(bool topConditional, bool nestedConditional, int expected) {
-    IExecutable<Unit, int> executable = Branch<int>
+    IQuery<Unit, int> query = Branch<int>
       .If(() => topConditional, Branch<int>
         .If(() => nestedConditional, () => 0)
         .Else(() => 1)
       ).Else(Branch<int>
         .If(() => nestedConditional, () => 2)
         .Else(() => 3)
-      );
+      ).AsQuery();
 
-    Assert.Equal(expected, executable.Execute(default));
+    Assert.Equal(expected, query.Send());
   }
 
   [Fact]

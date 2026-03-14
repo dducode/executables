@@ -4,7 +4,7 @@ using Interactions.Handlers;
 
 namespace Interactions.Commands;
 
-internal sealed class ContextualCommand<TInput, TChange> : ICommand<TInput>, IUndoRedo, IDisposable {
+internal sealed class ContextualCommand<TInput, TChange> : ICommand<TInput>, IExecutor<TInput, bool>, IUndoRedo, IDisposable {
 
   private readonly CommandContext _context;
   private readonly History<TChange> _history;
@@ -21,9 +21,13 @@ internal sealed class ContextualCommand<TInput, TChange> : ICommand<TInput>, IUn
     ThrowIfDisposed();
 
     Debug.Assert(_handler != null);
-    _history.Write(_handler.Execute(input));
+    _history.Write(_handler.Handle(input));
     _context.Push(this);
     return true;
+  }
+
+  public IExecutor<TInput, bool> GetExecutor() {
+    return this;
   }
 
   public bool Undo() {

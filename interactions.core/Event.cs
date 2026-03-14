@@ -6,6 +6,7 @@ namespace Interactions.Core;
 
 public interface IEvent<T> : IExecutable<T, Unit> {
 
+  void Publish(T input);
   IDisposable Subscribe(ISubscriber<T> subscriber);
 
 }
@@ -15,21 +16,28 @@ public class Event<T> : Handleable<Publishing<T>, Unit>, IEvent<T> {
   private readonly HashSet<ISubscriber<T>> _subscribers = [];
   private readonly object _lock = new();
 
-  public Unit Execute(T input) {
+  public void Publish(T input) {
     List<ISubscriber<T>> subscribers = Pool<List<ISubscriber<T>>>.Get();
     using var handle = new ListHandle<ISubscriber<T>>(subscribers);
 
     lock (_lock) {
       if (_subscribers.Count == 0)
-        return default;
+        return;
       subscribers.AddRange(_subscribers);
     }
 
     Handler<Publishing<T>, Unit> handler = Handler;
     if (handler == null)
       throw new MissingHandlerException("Cannot handle event");
-    handler.Execute(new Publishing<T>(input, subscribers));
-    return default;
+    handler.Handle(new Publishing<T>(input, subscribers));
+  }
+
+  public Executor GetExecutor() {
+    return new Executor(this);
+  }
+
+  IExecutor<T, Unit> IExecutable<T, Unit>.GetExecutor() {
+    return GetExecutor();
   }
 
   public IDisposable Subscribe(ISubscriber<T> subscriber) {
@@ -45,6 +53,15 @@ public class Event<T> : Handleable<Publishing<T>, Unit>, IEvent<T> {
   private void RemoveSubscriber(ISubscriber<T> subscriber) {
     lock (_lock)
       _subscribers.Remove(subscriber);
+  }
+
+  public readonly struct Executor(IEvent<T> e) : IExecutor<T, Unit> {
+
+    public Unit Execute(T input) {
+      e.Publish(input);
+      return default;
+    }
+
   }
 
   private class SubscriberNode(Event<T> parent, ISubscriber<T> subscriber) : IDisposable {

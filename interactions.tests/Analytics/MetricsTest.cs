@@ -1,6 +1,7 @@
 using AutoFixture;
 using Interactions.Analytics;
 using Interactions.Core;
+using Interactions.Core.Executables;
 using Interactions.Operations;
 using Interactions.Validation;
 using JetBrains.Annotations;
@@ -20,10 +21,12 @@ public class MetricsTest(ITestOutputHelper outputHelper) {
       latency: latency => outputHelper.WriteLine($"{nameof(latency)}: {latency.Ticks}\n"))
     );
 
-    IExecutable<int, TimeSpan> executable = Executable.Create((int seconds) => TimeSpan.FromSeconds(seconds)).Apply(metrics);
+    IQuery<int, TimeSpan> query = Executable.Create((int seconds) => TimeSpan.FromSeconds(seconds))
+      .Apply(metrics)
+      .AsQuery();
 
     for (var i = 0; i < 5; i++)
-      executable.Execute(fixture.Create<int>());
+      query.Send(fixture.Create<int>());
   }
 
   [Fact]
@@ -35,12 +38,13 @@ public class MetricsTest(ITestOutputHelper outputHelper) {
       latency => outputHelper.WriteLine($"{nameof(latency)}: {latency.Ticks}\n"))
     );
 
-    IExecutable<int, TimeSpan> executable = Executable.Create((int seconds) => TimeSpan.FromSeconds(seconds))
+    IQuery<int, TimeSpan> query = Executable.Create((int seconds) => TimeSpan.FromSeconds(seconds))
       .Apply(Policy.ValidateInput<int, TimeSpan>(Validator.MoreThanZero))
-      .Apply(metrics);
+      .Apply(metrics)
+      .AsQuery();
 
-    executable.Execute(10);
-    Assert.Throws<InvalidInputException>(() => executable.Execute(-10));
+    query.Send(10);
+    Assert.Throws<InvalidInputException>(() => query.Send(-10));
   }
 
 }

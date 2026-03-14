@@ -35,7 +35,7 @@ public static class AsyncExecutable {
   /// <typeparam name="T">Input type.</typeparam>
   /// <param name="action">Async action used for execution.</param>
   [Pure]
-  public static IAsyncExecutable<T> Create<T>(AsyncAction<T> action) {
+  public static IAsyncExecutable<T, Unit> Create<T>(AsyncAction<T> action) {
     ExceptionsHelper.ThrowIfNull(action, nameof(action));
     return new ExecutableAsyncAction<T>(action);
   }
@@ -45,7 +45,7 @@ public static class AsyncExecutable {
   /// </summary>
   /// <param name="action">Async action used for execution.</param>
   [Pure]
-  public static IAsyncExecutable<Unit> Create(AsyncAction action) {
+  public static IAsyncExecutable<Unit, Unit> Create(AsyncAction action) {
     ExceptionsHelper.ThrowIfNull(action, nameof(action));
     return new ExecutableAsyncAction(action);
   }

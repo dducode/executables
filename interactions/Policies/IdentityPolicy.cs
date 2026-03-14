@@ -8,8 +8,8 @@ internal sealed class IdentityPolicy<T1, T2> : Policy<T1, T2> {
 
   private IdentityPolicy() { }
 
-  public override T2 Invoke(T1 input, IExecutable<T1, T2> executable) {
-    return executable.Execute(input);
+  public override T2 Invoke(T1 input, IExecutor<T1, T2> executor) {
+    return executor.Execute(input);
   }
 
 }

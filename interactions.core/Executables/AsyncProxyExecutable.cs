@@ -2,19 +2,11 @@ namespace Interactions.Core.Executables;
 
 internal sealed class AsyncProxyExecutable<T1, T2>(IExecutable<T1, T2> inner) : IAsyncExecutable<T1, T2> {
 
+  private readonly IExecutor<T1, T2> _inner = inner.GetExecutor();
+
   public ValueTask<T2> Execute(T1 input, CancellationToken token = default) {
     token.ThrowIfCancellationRequested();
-    return new ValueTask<T2>(inner.Execute(input));
-  }
-
-}
-
-internal sealed class AsyncProxyExecutable<T>(IExecutable<T> inner) : IAsyncExecutable<T> {
-
-  public ValueTask Execute(T input, CancellationToken token = default) {
-    token.ThrowIfCancellationRequested();
-    inner.Execute(input);
-    return new ValueTask(Task.CompletedTask);
+    return new ValueTask<T2>(_inner.Execute(input));
   }
 
 }

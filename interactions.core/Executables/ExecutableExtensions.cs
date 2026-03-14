@@ -5,25 +5,25 @@ namespace Interactions.Core.Executables;
 
 public static partial class ExecutableExtensions {
 
-  public static T Execute<T>(this IExecutable<Unit, T> executable) {
-    return executable.Execute(default);
+  public static T Execute<T>(this IExecutor<Unit, T> executor) {
+    return executor.Execute(default);
   }
 
-  public static void Execute(this IExecutable<Unit> executable) {
-    executable.Execute(default);
+  public static void Execute(this IExecutor<Unit, Unit> executor) {
+    executor.Execute(default);
   }
 
-  public static Result<T2> TryExecute<T1, T2>(this IExecutable<T1, T2> executable, T1 input) {
+  public static Result<T2> TryExecute<T1, T2>(this IExecutor<T1, T2> executor, T1 input) {
     try {
-      return executable.Execute(input);
+      return executor.Execute(input);
     }
     catch (MissingHandlerException e) {
       return Result<T2>.FromException(e);
     }
   }
 
-  public static Result<T> TryExecute<T>(this IExecutable<Unit, T> executable) {
-    return executable.TryExecute(default);
+  public static Result<T> TryExecute<T>(this IExecutor<Unit, T> executor) {
+    return executor.TryExecute(default);
   }
 
   [Pure]
@@ -33,27 +33,21 @@ public static partial class ExecutableExtensions {
   }
 
   [Pure]
-  public static IAsyncExecutable<T> ToAsyncExecutable<T>(this IExecutable<T> inner) {
-    inner.ThrowIfNullReference();
-    return new AsyncProxyExecutable<T>(inner);
-  }
-
-  [Pure]
   public static Handler<T1, T2> AsHandler<T1, T2>(this IExecutable<T1, T2> executable) {
     executable.ThrowIfNullReference();
-    return new ExecutableHandlerWrapper<T1, T2>(executable);
+    return new ExecutableHandler<T1, T2>(executable);
   }
 
   [Pure]
-  public static Handler<T, Unit> AsHandler<T>(this IExecutable<T> executable) {
+  public static IQuery<T1, T2> AsQuery<T1, T2>(this IExecutable<T1, T2> executable) {
     executable.ThrowIfNullReference();
-    return new ExecutableHandlerWrapper<T>(executable);
+    return new ExecutableQuery<T1, T2>(executable);
   }
 
   [Pure]
-  public static IExecutable<T> SkipReturnValue<T>(this IExecutable<T, Unit> executable) {
+  public static ICommand<T> AsCommand<T>(this IExecutable<T, bool> executable) {
     executable.ThrowIfNullReference();
-    return new VoidExecutable<T>(executable);
+    return new ExecutableCommand<T>(executable);
   }
 
 }

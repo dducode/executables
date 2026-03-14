@@ -3,7 +3,7 @@ namespace Interactions.Core.Handlers;
 internal sealed class AsyncProxyHandler<T1, T2>(Handler<T1, T2> inner) : AsyncHandler<T1, T2> {
 
   protected override ValueTask<T2> ExecuteCore(T1 input, CancellationToken token = default) {
-    return new ValueTask<T2>(inner.Execute(input));
+    return new ValueTask<T2>(inner.Handle(input));
   }
 
   protected override void DisposeCore() {

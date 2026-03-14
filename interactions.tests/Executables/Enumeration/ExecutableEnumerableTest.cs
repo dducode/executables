@@ -1,5 +1,6 @@
 using AutoFixture;
 using Interactions.Core;
+using Interactions.Core.Executables;
 using Interactions.Executables.Enumeration;
 using JetBrains.Annotations;
 using Xunit.Abstractions;
@@ -17,8 +18,8 @@ public class ExecutableEnumerableTest(ITestOutputHelper output) {
     for (var i = 0; i < list.Capacity; i++)
       list.Add(fixture.Create<int>());
 
-    IExecutable<int, TimeSpan> executable = Executable.Create((int seconds) => TimeSpan.FromSeconds(seconds));
-    foreach (TimeSpan time in executable.ForEach(list))
+    IQuery<int, TimeSpan> query = Executable.Create((int seconds) => TimeSpan.FromSeconds(seconds)).AsQuery();
+    foreach (TimeSpan time in query.ForEach(list))
       output.WriteLine($"Time: {time}");
   }
 
@@ -30,8 +31,8 @@ public class ExecutableEnumerableTest(ITestOutputHelper output) {
     for (var i = 0; i < list.Capacity; i++)
       list.Add(fixture.Create<int>());
 
-    IExecutable<int, TimeSpan> executable = Executable.Create((int seconds) => TimeSpan.FromSeconds(seconds));
-    Parallel.ForEach(executable.ForEach(list), time => output.WriteLine($"Time: {time}"));
+    IQuery<int, TimeSpan> query = Executable.Create((int seconds) => TimeSpan.FromSeconds(seconds)).AsQuery();
+    Parallel.ForEach(query.ForEach(list), time => output.WriteLine($"Time: {time}"));
   }
 
   [Fact]
@@ -42,8 +43,8 @@ public class ExecutableEnumerableTest(ITestOutputHelper output) {
     for (var i = 0; i < array.Length; i++)
       array[i] = fixture.Create<int>();
 
-    IExecutable<int, TimeSpan> executable = Executable.Create((int seconds) => TimeSpan.FromSeconds(seconds));
-    foreach (TimeSpan time in executable.ForEach(array))
+    IQuery<int, TimeSpan> query = Executable.Create((int seconds) => TimeSpan.FromSeconds(seconds)).AsQuery();
+    foreach (TimeSpan time in query.ForEach(array))
       output.WriteLine($"Time: {time}");
   }
 
@@ -55,8 +56,8 @@ public class ExecutableEnumerableTest(ITestOutputHelper output) {
     for (var i = 0; i < array.Length; i++)
       array[i] = fixture.Create<int>();
 
-    IExecutable<int, TimeSpan> executable = Executable.Create((int seconds) => TimeSpan.FromSeconds(seconds));
-    Parallel.ForEach(executable.ForEach(array), time => output.WriteLine($"Time: {time}"));
+    IQuery<int, TimeSpan> query = Executable.Create((int seconds) => TimeSpan.FromSeconds(seconds)).AsQuery();
+    Parallel.ForEach(query.ForEach(array), time => output.WriteLine($"Time: {time}"));
   }
 
 }

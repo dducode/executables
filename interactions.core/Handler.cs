@@ -6,13 +6,19 @@ public abstract partial class Handler<T1, T2> : IExecutable<T1, T2>, IDisposable
 
   private int _disposed;
 
-  public T2 Execute(T1 input) {
+  public T2 Handle(T1 input) {
     if (Disposed)
       throw new HandlerDisposedException(GetType().Name);
-    return ExecuteCore(input);
+    return HandleCore(input);
   }
 
-  protected abstract T2 ExecuteCore(T1 input);
+  public Executor GetExecutor() {
+    return new Executor(this);
+  }
+
+  IExecutor<T1, T2> IExecutable<T1, T2>.GetExecutor() {
+    return GetExecutor();
+  }
 
   public void Dispose() {
     if (Interlocked.Exchange(ref _disposed, 1) != 0)
@@ -20,6 +26,15 @@ public abstract partial class Handler<T1, T2> : IExecutable<T1, T2>, IDisposable
     DisposeCore();
   }
 
+  protected abstract T2 HandleCore(T1 input);
   protected virtual void DisposeCore() { }
+
+  public readonly struct Executor(Handler<T1, T2> handler) : IExecutor<T1, T2> {
+
+    public T2 Execute(T1 input) {
+      return handler.Handle(input);
+    }
+
+  }
 
 }

@@ -6,13 +6,13 @@ namespace Interactions.Core.Events;
 
 internal sealed class ParallelPublisher<T>(ParallelOptions options) : Handler<Publishing<T>, Unit> {
 
-  protected override Unit ExecuteCore(Publishing<T> publishing) {
+  protected override Unit HandleCore(Publishing<T> publishing) {
     ConcurrentQueue<Exception> exceptions = Pool<ConcurrentQueue<Exception>>.Get();
 
     try {
       Parallel.ForEach(publishing, options, subscriber => {
         try {
-          subscriber.Execute(publishing.arg);
+          subscriber.Receive(publishing.arg);
         }
         catch (Exception e) {
           exceptions.Enqueue(e);

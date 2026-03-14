@@ -4,8 +4,8 @@ namespace Interactions.Policies;
 
 internal sealed class ThreadPoolPolicy<T> : Policy<T, Unit> {
 
-  public override Unit Invoke(T input, IExecutable<T, Unit> executable) {
-    ThreadPool.QueueUserWorkItem(_ => executable.Execute(input));
+  public override Unit Invoke(T input, IExecutor<T, Unit> executor) {
+    ThreadPool.QueueUserWorkItem(_ => executor.Execute(input));
     return default;
   }
 

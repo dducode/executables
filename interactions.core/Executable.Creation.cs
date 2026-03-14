@@ -50,7 +50,7 @@ public static class Executable {
   /// <typeparam name="T">Input type.</typeparam>
   /// <param name="action">Action used for execution.</param>
   [Pure]
-  public static IExecutable<T> Create<T>(Action<T> action) {
+  public static IExecutable<T, Unit> Create<T>(Action<T> action) {
     ExceptionsHelper.ThrowIfNull(action, nameof(action));
     return new ExecutableAction<T>(action);
   }
@@ -60,7 +60,7 @@ public static class Executable {
   /// </summary>
   /// <param name="action">Action used for execution.</param>
   [Pure]
-  public static IExecutable<Unit> Create(Action action) {
+  public static IExecutable<Unit, Unit> Create(Action action) {
     ExceptionsHelper.ThrowIfNull(action, nameof(action));
     return new ExecutableAction(action);
   }

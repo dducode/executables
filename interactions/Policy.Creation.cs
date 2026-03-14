@@ -119,7 +119,7 @@ public static class Policy {
     return Fallback(FallbackHandler.Create(fallback));
   }
 
-  public static Policy<T1, T2> Create<T1, T2>(Func<T1, IExecutable<T1, T2>, T2> policy) {
+  public static Policy<T1, T2> Create<T1, T2>(Func<T1, IExecutor<T1, T2>, T2> policy) {
     ExceptionsHelper.ThrowIfNull(policy, nameof(policy));
     return new AnonymousPolicy<T1, T2>(policy);
   }

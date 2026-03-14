@@ -1,5 +1,4 @@
 using Interactions.Core.Events;
-using Interactions.Core.Executables;
 using Interactions.Core.Lifecycle;
 using Interactions.Core.Subscribers;
 using Interactions.Core.Tests.Utils;
@@ -12,14 +11,14 @@ public class EventTest {
 
   [Fact]
   public void PublishWithoutSubscribers() {
-    new Event<Unit>().Execute();
+    new Event<Unit>().Publish();
   }
 
   [Fact]
   public void PublishWithOnceSubscriberAndWithoutHandler() {
     var e = new Event<Unit>();
     e.Subscribe(() => { });
-    Assert.Throws<MissingHandlerException>(() => e.Execute());
+    Assert.Throws<MissingHandlerException>(() => e.Publish());
   }
 
   [Fact]
@@ -46,14 +45,14 @@ public class EventTest {
     e.Handle(EventPublisher.Sequential());
 
     disposableBag.Dispose();
-    e.Execute();
+    e.Publish();
     Assert.All(subscribers, subscriber => Assert.False(subscriber.Received));
   }
 
   [Fact]
   public void Resubscription() {
     var e = new Event<Unit>();
-    ISubscriber<Unit> subscriber = Subscriber.Create<Unit>(_ => { });
+    ISubscriber<Unit> subscriber = Subscriber.Create(() => { });
     e.Subscribe(() => { });
     e.Subscribe(subscriber);
     Assert.Throws<InvalidOperationException>(() => e.Subscribe(subscriber));
@@ -68,7 +67,7 @@ public class EventTest {
 
     IEnumerable<Task> publishTasks = Enumerable.Repeat(Task.Run(async () => {
       while (!cts.Token.IsCancellationRequested) {
-        e.Execute();
+        e.Publish();
         await Task.Delay(1);
       }
     }), 10);

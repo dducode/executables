@@ -1,18 +1,19 @@
 using Interactions.Core;
-using Interactions.Filtering;
+using Interactions.Core.Executables;
+using Interactions.LINQ;
 using JetBrains.Annotations;
 
 namespace Interactions.Tests.Transformation.Filtering;
 
-[TestSubject(typeof(IExecutable<,>))]
+[TestSubject(typeof(Collections))]
 public class CompositeFilterTest {
 
   [Fact]
   public void SelectSingleNumberTest() {
     var list = new List<int> { -1, 0, 2, 2, 2, 3, 4, 10, 10, 26, 30 };
-    IFilter<int> filter = Collections.Skip<int>(2).Distinct().Where(Validator.InRange(5, 20));
+    IQuery<IEnumerable<int>, IEnumerable<int>> query = Collections.Skip<int>(2).Distinct().Where(Validator.InRange(5, 20)).AsQuery();
 
-    Assert.Single(filter.Execute(list));
+    Assert.Single(query.Send(list));
   }
 
 }

@@ -14,7 +14,7 @@ public static class Subscriber {
   [Pure]
   public static ISubscriber<Unit> Create(Action action) {
     ExceptionsHelper.ThrowIfNull(action, nameof(action));
-    return new AnonymousSubscriber<Unit>(_ => action());
+    return new AnonymousSubscriber(action);
   }
 
 }

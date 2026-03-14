@@ -9,7 +9,7 @@ internal sealed class MetricsOperator<T1, T2>(IMetrics<T1, T2> metrics, string t
 
   private readonly ConcurrentStack<Stopwatch> _stopwatches = new();
 
-  public override T2 Invoke(T1 input, IExecutable<T1, T2> next) {
+  public override T2 Invoke(T1 input, IExecutor<T1, T2> executor) {
     if (!_stopwatches.TryPop(out Stopwatch sw))
       sw = new Stopwatch();
 
@@ -19,7 +19,7 @@ internal sealed class MetricsOperator<T1, T2>(IMetrics<T1, T2> metrics, string t
 
       try {
         sw.Start();
-        result = next.Execute(input);
+        result = executor.Execute(input);
         sw.Stop();
       }
       catch (Exception e) {

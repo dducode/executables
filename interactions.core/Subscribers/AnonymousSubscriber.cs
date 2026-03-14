@@ -1,9 +1,34 @@
 namespace Interactions.Core.Subscribers;
 
-internal sealed class AnonymousSubscriber<T>(Action<T> action) : ISubscriber<T> {
+internal sealed class AnonymousSubscriber<T>(Action<T> action) : ISubscriber<T>, IExecutor<T, Unit> {
 
-  public Unit Execute(T arg) {
-    action(arg);
+  public void Receive(T input) {
+    action(input);
+  }
+
+  public IExecutor<T, Unit> GetExecutor() {
+    return this;
+  }
+
+  Unit IExecutor<T, Unit>.Execute(T arg) {
+    Receive(arg);
+    return default;
+  }
+
+}
+
+internal sealed class AnonymousSubscriber(Action action) : ISubscriber<Unit>, IExecutor<Unit, Unit> {
+
+  public void Receive(Unit input) {
+    action();
+  }
+
+  public IExecutor<Unit, Unit> GetExecutor() {
+    return this;
+  }
+
+  Unit IExecutor<Unit, Unit>.Execute(Unit arg) {
+    Receive(arg);
     return default;
   }
 

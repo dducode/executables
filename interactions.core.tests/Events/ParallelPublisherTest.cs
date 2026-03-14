@@ -1,5 +1,4 @@
 using Interactions.Core.Events;
-using Interactions.Core.Executables;
 using Interactions.Core.Tests.Utils;
 using JetBrains.Annotations;
 using Xunit.Abstractions;
@@ -22,7 +21,7 @@ public class ParallelPublisherTest(ITestOutputHelper output) {
       e.Subscribe(subscriber);
     e.Handle(EventPublisher.Parallel());
 
-    e.Execute();
+    e.Publish();
     Assert.All(subscribers, subscriber => Assert.True(subscriber.Received));
   }
 
@@ -39,7 +38,7 @@ public class ParallelPublisherTest(ITestOutputHelper output) {
       e.Subscribe(subscriber);
     e.Handle(EventPublisher.Parallel());
 
-    Assert.Throws<InvalidOperationException>(() => e.Execute());
+    Assert.Throws<InvalidOperationException>(() => e.Publish());
     Assert.All(subscribers, subscriber => Assert.True(subscriber.Received));
   }
 
@@ -58,7 +57,7 @@ public class ParallelPublisherTest(ITestOutputHelper output) {
       e.Subscribe(subscriber);
     e.Handle(EventPublisher.Parallel());
 
-    Assert.Throws<AggregateException>(() => e.Execute());
+    Assert.Throws<AggregateException>(() => e.Publish());
     Assert.All(subscribers, subscriber => Assert.True(subscriber.Received));
   }
 

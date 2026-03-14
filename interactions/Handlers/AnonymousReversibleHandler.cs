@@ -2,7 +2,7 @@ namespace Interactions.Handlers;
 
 internal sealed class AnonymousReversibleHandler<T1, T2>(Func<T1, T2> execution, Action<T2> undo, Action<T2> redo) : ReversibleHandler<T1, T2> {
 
-  protected override T2 ExecuteCore(T1 input) {
+  protected override T2 HandleCore(T1 input) {
     return execution(input);
   }
 

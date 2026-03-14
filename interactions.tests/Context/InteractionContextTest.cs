@@ -1,5 +1,8 @@
 using Interactions.Context;
 using Interactions.Core;
+using Interactions.Core.Executables;
+using Interactions.Executables;
+using Interactions.Queries;
 using JetBrains.Annotations;
 using Xunit.Abstractions;
 
@@ -10,15 +13,15 @@ public class InteractionContextTest(ITestOutputHelper output) {
 
   [Fact]
   public void SimpleCall() {
-    IExecutable<Unit> executable = Executable.Create(() => Assert.True(InteractionContext.Current.ContainsKey<string>()));
+    IQuery<Unit, Unit> query = Executable.Create(() => Assert.True(InteractionContext.Current.ContainsKey<string>())).AsQuery();
     Assert.Null(InteractionContext.Current);
-    executable.Execute(context => context.Set("test"));
+    query.Send(context => context.Set("test"));
     Assert.Null(InteractionContext.Current);
   }
 
   [Fact]
   public async Task AsyncCall() {
-    IAsyncExecutable<Unit> executable = AsyncExecutable.Create(async _ => {
+    IAsyncExecutable<Unit, Unit> executable = AsyncExecutable.Create(async _ => {
       await Task.Yield();
       Assert.True(InteractionContext.Current.ContainsKey<string>());
     });
@@ -31,26 +34,26 @@ public class InteractionContextTest(ITestOutputHelper output) {
 
   [Fact]
   public void NestedCall() {
-    IExecutable<Unit> inner = Executable.Create(() => Assert.True(InteractionContext.Current.ContainsKey("nested")));
-    IExecutable<Unit> executable = Executable.Create(() => {
+    IQuery<Unit, Unit> inner = Executable.Create(() => Assert.True(InteractionContext.Current.ContainsKey("nested"))).AsQuery();
+    IQuery<Unit, Unit> query = Executable.Create(() => {
       Assert.True(InteractionContext.Current.ContainsKey("test"));
-      inner.Execute(context => context.Set("nested", string.Empty));
+      inner.Send(context => context.Set("nested", string.Empty));
       Assert.False(InteractionContext.Current.ContainsKey("nested"));
-    });
+    }).AsQuery();
 
     Assert.Null(InteractionContext.Current);
-    executable.Execute(context => context.Set("test", string.Empty));
+    query.Send(context => context.Set("test", string.Empty));
     Assert.Null(InteractionContext.Current);
   }
 
   [Fact]
   public async Task NestedAsyncCall() {
-    IAsyncExecutable<Unit> inner = AsyncExecutable.Create(async _ => {
+    IAsyncExecutable<Unit, Unit> inner = AsyncExecutable.Create(async _ => {
       await Task.Yield();
       Assert.True(InteractionContext.Current.ContainsKey("nested"));
     });
 
-    IAsyncExecutable<Unit> executable = AsyncExecutable.Create(async token => {
+    IAsyncExecutable<Unit, Unit> executable = AsyncExecutable.Create(async token => {
       Assert.True(InteractionContext.Current.ContainsKey("test"));
       await inner.Execute(context => context.Set("nested", string.Empty), token);
       Assert.False(InteractionContext.Current.ContainsKey("nested"));
@@ -64,19 +67,19 @@ public class InteractionContextTest(ITestOutputHelper output) {
 
   [Fact]
   public async Task NestedAsyncParallelCalls() {
-    IAsyncExecutable<Unit> firstInner = AsyncExecutable.Create(async _ => {
+    IAsyncExecutable<Unit, Unit> firstInner = AsyncExecutable.Create(async _ => {
       await Task.Yield();
       Assert.True(InteractionContext.Current.ContainsKey("firstNested"));
       Assert.False(InteractionContext.Current.ContainsKey("secondNested"));
     });
 
-    IAsyncExecutable<Unit> secondInner = AsyncExecutable.Create(async _ => {
+    IAsyncExecutable<Unit, Unit> secondInner = AsyncExecutable.Create(async _ => {
       await Task.Yield();
       Assert.True(InteractionContext.Current.ContainsKey("secondNested"));
       Assert.False(InteractionContext.Current.ContainsKey("firstNested"));
     });
 
-    IAsyncExecutable<Unit> executable = AsyncExecutable.Create(async token => {
+    IAsyncExecutable<Unit, Unit> executable = AsyncExecutable.Create(async token => {
       Assert.True(InteractionContext.Current.ContainsKey("test"));
       ValueTask t1 = firstInner.Execute(context => context.Set("firstNested", string.Empty), token);
       ValueTask t2 = secondInner.Execute(context => context.Set("secondNested", string.Empty), token);
@@ -93,13 +96,13 @@ public class InteractionContextTest(ITestOutputHelper output) {
 
   [Fact]
   public void PrintHierarchy() {
-    IExecutable<Unit> deepInner = Executable.Create(() => output.WriteLine($"{InteractionContext.Current:v}"));
-    IExecutable<Unit> inner = Executable.Create(() => deepInner.Execute(default, context => context.Name = nameof(deepInner)));
-    IExecutable<Unit> executable = Executable.Create(() => inner.Execute(default, context => context.Name = nameof(inner)));
+    IQuery<Unit, Unit> deepInner = Executable.Create(() => output.WriteLine($"{InteractionContext.Current:v}")).AsQuery();
+    IQuery<Unit, Unit> inner = Executable.Create(() => deepInner.Send(context => context.Name = nameof(deepInner))).AsQuery();
+    IQuery<Unit, Unit> query = Executable.Create(() => inner.Send(context => context.Name = nameof(inner))).AsQuery();
 
-    executable.Execute(context => context.Name = nameof(executable));
+    query.Send(context => context.Name = nameof(query));
     output.WriteLine("");
-    executable.Execute(context => context.Name = nameof(executable));
+    query.Send(context => context.Name = nameof(query));
   }
 
 }

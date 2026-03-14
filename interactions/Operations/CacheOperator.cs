@@ -7,12 +7,12 @@ internal sealed class CacheOperator<T1, T2>(ICacheStorage<T1, T2> storage) : Beh
 
   private readonly object _lock = new();
 
-  public override T2 Invoke(T1 input, IExecutable<T1, T2> next) {
+  public override T2 Invoke(T1 input, IExecutor<T1, T2> executor) {
     lock (_lock)
       if (storage.TryGetValue(input, out T2 cached))
         return cached;
 
-    T2 output = next.Execute(input);
+    T2 output = executor.Execute(input);
     lock (_lock)
       storage.Add(input, output);
     return output;

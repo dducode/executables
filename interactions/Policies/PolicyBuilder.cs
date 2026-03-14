@@ -53,7 +53,7 @@ public class PolicyBuilder<T1, T2> {
     return Add(new FallbackPolicy<T1, T2, TEx>(fallback));
   }
 
-  public PolicyBuilder<T1, T2> Create(Func<T1, IExecutable<T1, T2>, T2> policy) {
+  public PolicyBuilder<T1, T2> Create(Func<T1, IExecutor<T1, T2>, T2> policy) {
     ExceptionsHelper.ThrowIfNull(policy, nameof(policy));
     return Add(new AnonymousPolicy<T1, T2>(policy));
   }

@@ -11,7 +11,7 @@ public class AsyncPreventReentrancePolicyTest {
 
   [Fact]
   public async Task SequentialExecute() {
-    IAsyncExecutable<Unit> executable = AsyncPolicy.PreventReentrance<Unit>().Apply(Executable.Identity().ToAsyncExecutable());
+    IAsyncExecutable<Unit, Unit> executable = AsyncPolicy.PreventReentrance<Unit>().Apply(Executable.Identity().ToAsyncExecutable());
 
     await executable.Execute(default, CancellationToken.None);
     await executable.Execute(default, CancellationToken.None);
@@ -19,7 +19,7 @@ public class AsyncPreventReentrancePolicyTest {
 
   [Fact]
   public async Task Cancel() {
-    IAsyncExecutable<Unit> executable = AsyncPolicy.PreventReentrance<Unit>().Apply(Executable.Identity().ToAsyncExecutable());
+    IAsyncExecutable<Unit, Unit> executable = AsyncPolicy.PreventReentrance<Unit>().Apply(Executable.Identity().ToAsyncExecutable());
     var cts = new CancellationTokenSource();
 
     await cts.CancelAsync();
@@ -28,17 +28,17 @@ public class AsyncPreventReentrancePolicyTest {
 
   [Fact]
   public async Task MultiplyExecute() {
-    IAsyncExecutable<Unit> executable = AsyncPolicy.PreventReentrance<Unit>().Apply(Executable.Identity().ToAsyncExecutable());
+    IAsyncExecutable<Unit, Unit> executable = AsyncPolicy.PreventReentrance<Unit>().Apply(Executable.Identity().ToAsyncExecutable());
 
-    ValueTask first = executable.Execute(default, CancellationToken.None);
-    ValueTask second = executable.Execute(default, CancellationToken.None);
+    ValueTask<Unit> first = executable.Execute(default, CancellationToken.None);
+    ValueTask<Unit> second = executable.Execute(default, CancellationToken.None);
     await Task.WhenAll(first.AsTask(), second.AsTask());
   }
 
   [Fact]
   public async Task NestedExecution() {
     var query = new AsyncQuery<Unit, Unit>();
-    IAsyncExecutable<Unit> executable = AsyncPolicy.PreventReentrance<Unit>().Apply(query);
+    IAsyncExecutable<Unit, Unit> executable = AsyncPolicy.PreventReentrance<Unit>().Apply(query);
     query.Handle(AsyncExecutable.Create(async token => await executable.Execute(token)).AsHandler());
 
     await Assert.ThrowsAsync<ReentranceException>(async () => await query.Execute(default, CancellationToken.None));
@@ -46,7 +46,7 @@ public class AsyncPreventReentrancePolicyTest {
 
   [Fact]
   public async Task ParallelSequentialExecute() {
-    IAsyncExecutable<Unit> executable = AsyncPolicy.PreventReentrance<Unit>().Apply(Executable.Identity().ToAsyncExecutable());
+    IAsyncExecutable<Unit, Unit> executable = AsyncPolicy.PreventReentrance<Unit>().Apply(Executable.Identity().ToAsyncExecutable());
 
     await Parallel.ForAsync(0, 10, async (_, token) => {
       await executable.Execute(default, token);
@@ -56,11 +56,11 @@ public class AsyncPreventReentrancePolicyTest {
 
   [Fact]
   public async Task ParallelMultiplyExecute() {
-    IAsyncExecutable<Unit> executable = AsyncPolicy.PreventReentrance<Unit>().Apply(Executable.Identity().ToAsyncExecutable());
+    IAsyncExecutable<Unit, Unit> executable = AsyncPolicy.PreventReentrance<Unit>().Apply(Executable.Identity().ToAsyncExecutable());
 
     await Parallel.ForAsync(0, 10, async (_, token) => {
-      ValueTask first = executable.Execute(default, token);
-      ValueTask second = executable.Execute(default, token);
+      ValueTask<Unit> first = executable.Execute(default, token);
+      ValueTask<Unit> second = executable.Execute(default, token);
       await Task.WhenAll(first.AsTask(), second.AsTask());
     });
   }
@@ -68,7 +68,7 @@ public class AsyncPreventReentrancePolicyTest {
   [Fact]
   public async Task ParallelNestedExecution() {
     var query = new AsyncQuery<Unit, Unit>();
-    IAsyncExecutable<Unit> executable = AsyncPolicy.PreventReentrance<Unit>().Apply(query);
+    IAsyncExecutable<Unit, Unit> executable = AsyncPolicy.PreventReentrance<Unit>().Apply(query);
     query.Handle(AsyncExecutable.Create(async token => await executable.Execute(token)).AsHandler());
 
     await Parallel.ForAsync(0, 10, async (_, token) => {
@@ -79,7 +79,7 @@ public class AsyncPreventReentrancePolicyTest {
   [Fact]
   public async Task NestedParallelExecute() {
     var query = new AsyncQuery<Unit, Unit>();
-    IAsyncExecutable<Unit> executable = AsyncPolicy.PreventReentrance<Unit>().Apply(query);
+    IAsyncExecutable<Unit, Unit> executable = AsyncPolicy.PreventReentrance<Unit>().Apply(query);
     query.Handle(AsyncExecutable.Create(async token => {
       await Parallel.ForAsync(0, 10, token, async (_, t) => await executable.Execute(t));
     }).AsHandler());

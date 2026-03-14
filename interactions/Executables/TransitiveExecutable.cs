@@ -2,9 +2,13 @@ using Interactions.Core;
 
 namespace Interactions.Executables;
 
-internal sealed class TransitiveExecutable<T>(Action<T> action) : IExecutable<T, T> {
+internal sealed class TransitiveExecutable<T>(Action<T> action) : IExecutable<T, T>, IExecutor<T, T> {
 
-  public T Execute(T input) {
+  public IExecutor<T, T> GetExecutor() {
+    return this;
+  }
+
+  T IExecutor<T, T>.Execute(T input) {
     action(input);
     return input;
   }

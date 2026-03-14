@@ -5,10 +5,17 @@ namespace Interactions.Branches;
 internal sealed class ConditionalExecutable<T1, T2>(
   Func<bool> condition,
   IExecutable<T1, T2> ifExecutable,
-  IExecutable<T1, T2> elseExecutable) : IExecutable<T1, T2> {
+  IExecutable<T1, T2> elseExecutable) : IExecutable<T1, T2>, IExecutor<T1, T2> {
 
-  public T2 Execute(T1 input) {
-    return condition() ? ifExecutable.Execute(input) : elseExecutable.Execute(input);
+  private readonly IExecutor<T1, T2> _ifExecutor = ifExecutable.GetExecutor();
+  private readonly IExecutor<T1, T2> _elseExecutor = elseExecutable.GetExecutor();
+
+  public IExecutor<T1, T2> GetExecutor() {
+    return this;
+  }
+
+  T2 IExecutor<T1, T2>.Execute(T1 input) {
+    return condition() ? _ifExecutor.Execute(input) : _elseExecutor.Execute(input);
   }
 
 }

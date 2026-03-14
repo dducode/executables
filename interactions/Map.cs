@@ -6,8 +6,11 @@ public class Map<T1, T2, T3, T4>(IExecutable<T1, T2> incoming, IExecutable<T3, T
 
   internal static Map<T1, T1, T2, T2> Identity { get; } = new(Executable.Identity<T1>(), Executable.Identity<T2>());
 
-  public override T4 Invoke(T1 input, IExecutable<T2, T3> next) {
-    return outgoing.Execute(next.Execute(incoming.Execute(input)));
+  private readonly IExecutor<T1, T2> _incoming = incoming.GetExecutor();
+  private readonly IExecutor<T3, T4> _outgoing = outgoing.GetExecutor();
+
+  public override T4 Invoke(T1 input, IExecutor<T2, T3> executor) {
+    return _outgoing.Execute(executor.Execute(_incoming.Execute(input)));
   }
 
 }

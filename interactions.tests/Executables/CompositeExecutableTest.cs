@@ -1,5 +1,6 @@
 using AutoFixture;
 using Interactions.Core;
+using Interactions.Core.Executables;
 using Interactions.Executables;
 using JetBrains.Annotations;
 
@@ -28,13 +29,14 @@ public class CompositeExecutableTest {
       }
     });
 
-    IExecutable<int, decimal> executable = Executable
+    IQuery<int, decimal> query = Executable
       .Create<int, Player>(id => storage.Get(id))
       .Then(player => player.data)
-      .Then(data => data.money);
+      .Then(data => data.money)
+      .AsQuery();
 
-    Assert.Equal(firstPlayerMoney, executable.Execute(0));
-    Assert.Equal(secondPlayerMoney, executable.Execute(1));
+    Assert.Equal(firstPlayerMoney, query.Send(0));
+    Assert.Equal(secondPlayerMoney, query.Send(1));
   }
 
 }

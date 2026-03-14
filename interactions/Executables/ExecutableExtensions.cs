@@ -2,12 +2,11 @@ using System.Diagnostics.Contracts;
 using Interactions.Core;
 using Interactions.Core.Executables;
 using Interactions.Core.Internal;
-using Interactions.Filtering;
 using Interactions.Operations;
 
 namespace Interactions.Executables;
 
-public static partial class ExecutablesExtensions {
+public static partial class ExecutableExtensions {
 
   [Pure]
   public static IExecutable<T1, T3> Then<T1, T2, T3>(this IExecutable<T1, T2> first, IExecutable<T2, T3> second) {
@@ -32,48 +31,15 @@ public static partial class ExecutablesExtensions {
   }
 
   [Pure]
-  public static IExecutable<T1> Then<T1, T2>(this IExecutable<T1, T2> first, IExecutable<T2> second) {
-    first.ThrowIfNullReference();
-    ExceptionsHelper.ThrowIfNull(second, nameof(second));
-    return new TerminateExecutable<T1, T2>(first, second);
-  }
-
-  [Pure]
-  public static IExecutable<T1> Then<T1, T2>(this IExecutable<T1, T2> executable, Action<T2> next) {
-    return executable.Then(Executable.Create(next));
-  }
-
-  [Pure]
-  public static IAsyncExecutable<T1> Then<T1, T2>(this IExecutable<T1, T2> first, IAsyncExecutable<T2> second) {
-    return first.ToAsyncExecutable().Then(second);
-  }
-
-  [Pure]
-  public static IAsyncExecutable<T1> Then<T1, T2>(this IExecutable<T1, T2> executable, AsyncAction<T2> next) {
-    return executable.ToAsyncExecutable().Then(AsyncExecutable.Create(next));
-  }
-
-  [Pure]
   public static IExecutable<T1, T3> Return<T1, T2, T3>(this IExecutable<T1, T2> executable, T3 constValue) {
     return executable.Then(new ConstantValueExecutable<T2, T3>(constValue));
-  }
-
-  [Pure]
-  public static IExecutable<T1, T3> Bind<T1, T2, T3>(this IExecutable<T1, T2> executable, IExecutable<T2, IExecutable<T2, T3>> continuation) {
-    ExceptionsHelper.ThrowIfNull(continuation, nameof(continuation));
-    return executable.Then(new ContinuationExecutable<T2, T3>(continuation));
-  }
-
-  [Pure]
-  public static IExecutable<T1, T3> Bind<T1, T2, T3>(this IExecutable<T1, T2> executable, Func<T2, IExecutable<T2, T3>> continuation) {
-    return executable.Bind(Executable.Create(continuation));
   }
 
   [Pure]
   public static IExecutable<T1, (T2, T3)> Fork<T1, T2, T3>(this IExecutable<T1, T2> first, IExecutable<T1, T3> second) {
     first.ThrowIfNullReference();
     ExceptionsHelper.ThrowIfNull(second, nameof(second));
-    return Executable.Create((T1 x) => (first.Execute(x), second.Execute(x)));
+    return new ForkExecutable<T1, T2, T3>(first, second);
   }
 
   [Pure]
@@ -89,7 +55,7 @@ public static partial class ExecutablesExtensions {
   [Pure]
   public static IExecutable<T1, (TNew, T3)> First<T1, T2, T3, TNew>(this IExecutable<T1, (T2, T3)> fork, IExecutable<T2, TNew> map) {
     ExceptionsHelper.ThrowIfNull(map, nameof(map));
-    return fork.Then(x => (map.Execute(x.Item1), x.Item2));
+    return fork.Then(new FirstMapExecutable<T2, T3, TNew>(map));
   }
 
   [Pure]
@@ -100,7 +66,7 @@ public static partial class ExecutablesExtensions {
   [Pure]
   public static IExecutable<T1, (T2, TNew)> Second<T1, T2, T3, TNew>(this IExecutable<T1, (T2, T3)> fork, IExecutable<T3, TNew> map) {
     ExceptionsHelper.ThrowIfNull(map, nameof(map));
-    return fork.Then(x => (x.Item1, map.Execute(x.Item2)));
+    return fork.Then(new SecondMapExecutable<T2, T3, TNew>(map));
   }
 
   [Pure]
@@ -159,12 +125,6 @@ public static partial class ExecutablesExtensions {
   public static IAsyncExecutable<T1, T2> Tap<T1, T2>(this IExecutable<T1, T2> executable, AsyncAction<T2> action) {
     ExceptionsHelper.ThrowIfNull(action, nameof(action));
     return executable.Then(new AsyncTransitiveExecutable<T2>(action));
-  }
-
-  [Pure]
-  public static IFilter<T> AsFilter<T>(this IExecutable<IEnumerable<T>, IEnumerable<T>> executable) {
-    executable.ThrowIfNullReference();
-    return new Filter<T>(executable);
   }
 
 }

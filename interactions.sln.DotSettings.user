@@ -200,6 +200,8 @@
       &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Context.InteractionContextTest.NestedAsyncCall&lt;/TestId&gt;&#xD;
       &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Context.InteractionContextTest.SimpleCall&lt;/TestId&gt;&#xD;
       &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Context.InteractionContextTest.NestedAsyncParallelCalls&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Validation.ValidationPolicyTest.ValidateRequestTest&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Transformation.Filtering.CompositeFilterTest.SelectSingleNumberTest&lt;/TestId&gt;&#xD;
     &lt;/TestAncestor&gt;&#xD;
     &lt;Project Location="C:\.NETProjects\interactions\interactions.core.tests" Presentation="&amp;lt;interactions.core.tests&amp;gt;" /&gt;&#xD;
   &lt;/Or&gt;&#xD;

@@ -8,8 +8,8 @@ internal sealed class IdentityOperator<T1, T2> : ExecutionOperator<T1, T1, T2, T
 
   private IdentityOperator() { }
 
-  public override T2 Invoke(T1 input, IExecutable<T1, T2> next) {
-    return next.Execute(input);
+  public override T2 Invoke(T1 input, IExecutor<T1, T2> executor) {
+    return executor.Execute(input);
   }
 
 }

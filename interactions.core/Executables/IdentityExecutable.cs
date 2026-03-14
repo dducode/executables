@@ -1,12 +1,16 @@
 namespace Interactions.Core.Executables;
 
-internal sealed class IdentityExecutable<T> : IExecutable<T, T> {
+internal sealed class IdentityExecutable<T> : IExecutable<T, T>, IExecutor<T, T> {
 
   internal static IdentityExecutable<T> Instance { get; } = new();
 
   private IdentityExecutable() { }
 
-  public T Execute(T input) {
+  public IExecutor<T, T> GetExecutor() {
+    return this;
+  }
+
+  T IExecutor<T, T>.Execute(T input) {
     return input;
   }
 

@@ -3,10 +3,10 @@ using Interactions.Core;
 
 namespace Interactions.Executables.Enumeration;
 
-public readonly struct ExecutableStack<T1, T2>(IExecutable<T1, T2> executable, Stack<T1> source) : IEnumerable<T2> {
+public readonly struct ExecutableStack<T1, T2>(IQuery<T1, T2> query, Stack<T1> source) : IEnumerable<T2> {
 
   public StackExecutor<T1, T2> GetEnumerator() {
-    return new StackExecutor<T1, T2>(executable, source.GetEnumerator());
+    return new StackExecutor<T1, T2>(query, source.GetEnumerator());
   }
 
   IEnumerator<T2> IEnumerable<T2>.GetEnumerator() {

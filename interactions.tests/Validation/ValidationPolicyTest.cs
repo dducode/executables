@@ -14,10 +14,13 @@ public class ValidationPolicyTest {
     var query = new Query<string, string>();
 
     using IDisposable handle = query.Handle(Executable.Create((string request) => $"response: {request}").AsHandler());
-    IExecutable<string, string> invokedQuery = Policy.ValidateInput<string, string>(Validator.NotEmptyString).Apply(query);
+    IQuery<string, string> invokedQuery = Policy
+      .ValidateInput<string, string>(Validator.NotEmptyString)
+      .Apply(query)
+      .AsQuery();
 
-    Assert.Throws<InvalidInputException>(() => invokedQuery.Execute(string.Empty));
-    Assert.Equal("response: request", invokedQuery.Execute("request"));
+    Assert.Throws<InvalidInputException>(() => invokedQuery.Send(string.Empty));
+    Assert.Equal("response: request", invokedQuery.Send("request"));
   }
 
 }

@@ -3,7 +3,7 @@ using Interactions.Core;
 
 namespace Interactions.Executables.Enumeration;
 
-public struct HashSetExecutor<T1, T2>(IExecutable<T1, T2> executable, HashSet<T1>.Enumerator source) : IEnumerator<T2> {
+public struct HashSetExecutor<T1, T2>(IQuery<T1, T2> query, HashSet<T1>.Enumerator source) : IEnumerator<T2> {
 
   private HashSet<T1>.Enumerator _source = source;
 
@@ -13,7 +13,7 @@ public struct HashSetExecutor<T1, T2>(IExecutable<T1, T2> executable, HashSet<T1
   public bool MoveNext() {
     if (!_source.MoveNext())
       return false;
-    Current = executable.Execute(_source.Current);
+    Current = query.Send(_source.Current);
     return true;
   }
 

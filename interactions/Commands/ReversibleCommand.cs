@@ -9,7 +9,8 @@ namespace Interactions.Commands;
 /// </summary>
 /// <typeparam name="TInput">Input type</typeparam>
 /// <typeparam name="TChange">Previous state for revert</typeparam>
-public sealed class ReversibleCommand<TInput, TChange> : IHandleable<TInput, TChange, ReversibleHandler<TInput, TChange>>, ICommand<TInput>, IUndoRedo {
+public sealed class ReversibleCommand<TInput, TChange> : IHandleable<TInput, TChange, ReversibleHandler<TInput, TChange>>, ICommand<TInput>,
+  IExecutor<TInput, bool>, IUndoRedo {
 
   private readonly History<TChange> _history;
   private readonly int _historyMaxSize;
@@ -34,6 +35,10 @@ public sealed class ReversibleCommand<TInput, TChange> : IHandleable<TInput, TCh
     if (_history.Count == _historyMaxSize)
       _history.Clear(_clearedElements);
     return true;
+  }
+
+  public IExecutor<TInput, bool> GetExecutor() {
+    return this;
   }
 
   public bool Undo() {
@@ -74,7 +79,7 @@ public sealed class ReversibleCommand<TInput, TChange> : IHandleable<TInput, TCh
   private class HandlerNode(ReversibleCommand<TInput, TChange> parent, ReversibleHandler<TInput, TChange> handler) : IDisposable {
 
     public TChange ExecuteCommand(TInput input) {
-      return handler.Execute(input);
+      return handler.Handle(input);
     }
 
     public void Undo(TChange state) {

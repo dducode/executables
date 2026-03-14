@@ -6,7 +6,7 @@ using Interactions.Operations;
 
 namespace Interactions.Executables;
 
-public static partial class ExecutablesExtensions {
+public static partial class ExecutableExtensions {
 
   [Pure]
   public static IAsyncExecutable<T1, T3> Then<T1, T2, T3>(this IAsyncExecutable<T1, T2> first, IAsyncExecutable<T2, T3> second) {
@@ -31,27 +31,6 @@ public static partial class ExecutablesExtensions {
   }
 
   [Pure]
-  public static IAsyncExecutable<T1> Then<T1, T2>(this IAsyncExecutable<T1, T2> first, IAsyncExecutable<T2> second) {
-    first.ThrowIfNullReference();
-    ExceptionsHelper.ThrowIfNull(second, nameof(second));
-    return new AsyncTerminateExecutable<T1, T2>(first, second);
-  }
-
-  [Pure]
-  public static IAsyncExecutable<T1> Then<T1, T2>(this IAsyncExecutable<T1, T2> executable, AsyncAction<T2> next) {
-    return executable.Then(AsyncExecutable.Create(next));
-  }
-
-  [Pure]
-  public static IAsyncExecutable<T1> Then<T1, T2>(this IAsyncExecutable<T1, T2> first, IExecutable<T2> second) {
-    return first.Then(second.ToAsyncExecutable());
-  }
-
-  public static IAsyncExecutable<T1> Then<T1, T2>(this IAsyncExecutable<T1, T2> executable, Action<T2> next) {
-    return executable.Then(Executable.Create(next));
-  }
-
-  [Pure]
   public static IAsyncExecutable<T1, (T4, T5)> Then<T1, T2, T3, T4, T5>(
     this IAsyncExecutable<T1, (T2, T3)> fork,
     IAsyncExecutable<T2, T4> first,
@@ -65,21 +44,6 @@ public static partial class ExecutablesExtensions {
         return (t1.Result, t2.Result);
       })
     );
-  }
-
-  [Pure]
-  public static IAsyncExecutable<T1, T3> Bind<T1, T2, T3>(
-    this IAsyncExecutable<T1, T2> executable,
-    IExecutable<T2, IAsyncExecutable<T2, T3>> continuation) {
-    ExceptionsHelper.ThrowIfNull(continuation, nameof(continuation));
-    return executable.Then(new AsyncContinuationExecutable<T2, T3>(continuation));
-  }
-
-  [Pure]
-  public static IAsyncExecutable<T1, T3> Bind<T1, T2, T3>(
-    this IAsyncExecutable<T1, T2> executable,
-    Func<T2, IAsyncExecutable<T2, T3>> continuation) {
-    return executable.Bind(Executable.Create(continuation));
   }
 
   [Pure]

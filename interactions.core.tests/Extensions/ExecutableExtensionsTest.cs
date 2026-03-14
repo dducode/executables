@@ -1,5 +1,6 @@
 using Interactions.Core.Executables;
 using Interactions.Core.Handlers;
+using Interactions.Core.Queries;
 using Interactions.Core.Tests.Utils;
 using JetBrains.Annotations;
 
@@ -16,7 +17,7 @@ public class ExecutableExtensionsTest {
     var query = new Query<int, string>();
     query.Handle(TestHandler.ToStringHandler<int>());
 
-    Result<string> result = query.TryExecute(value);
+    Result<string> result = query.TrySend(value);
     Assert.True(result.IsSuccess);
     Assert.Equal(expected, result.Value);
   }
@@ -25,7 +26,7 @@ public class ExecutableExtensionsTest {
   public void TryExecuteQueryWithoutHandler() {
     var query = new Query<Unit, Unit>();
 
-    Result<Unit> result = query.TryExecute();
+    Result<Unit> result = query.TrySend();
     Assert.True(result.IsFailure);
     Assert.True(result.Exception is MissingHandlerException);
   }

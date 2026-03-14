@@ -12,7 +12,7 @@ public class AsyncFallbackPolicyTest {
 
   [Fact]
   public async Task RegularExecution() {
-    IAsyncExecutable<Unit> executable = AsyncPolicy
+    IAsyncExecutable<Unit, Unit> executable = AsyncPolicy
       .Fallback((Unit _, InvalidOperationException _) => default(Unit))
       .Apply(Executable.Identity().ToAsyncExecutable());
 
@@ -22,7 +22,7 @@ public class AsyncFallbackPolicyTest {
   [Fact]
   public async Task Cancel() {
     var cts = new CancellationTokenSource();
-    IAsyncExecutable<Unit> executable = AsyncPolicy
+    IAsyncExecutable<Unit, Unit> executable = AsyncPolicy
       .Fallback((Unit _, InvalidOperationException _) => default(Unit))
       .Apply(Executable.Identity().ToAsyncExecutable());
 
@@ -41,7 +41,7 @@ public class AsyncFallbackPolicyTest {
 
   [Fact]
   public async Task ThrowExceptionFromFallbackHandler() {
-    IAsyncExecutable<Unit> executable = AsyncPolicy
+    IAsyncExecutable<Unit, Unit> executable = AsyncPolicy
       .Fallback((Unit _, InvalidOperationException ex) => {
         ExceptionDispatchInfo.Capture(ex).Throw();
         return default(Unit);

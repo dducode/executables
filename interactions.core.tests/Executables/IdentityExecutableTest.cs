@@ -11,8 +11,8 @@ public class IdentityExecutableTest {
   [InlineData(1e-10f, 1e-10f)]
   [InlineData(true, true)]
   public void ReturnIdentityValue<T>(T expected, T actual) {
-    IExecutable<T, T> executable = Executable.Identity<T>();
-    Assert.Equal(expected, executable.Execute(actual));
+    IExecutor<T, T> executor = Executable.Identity<T>().GetExecutor();
+    Assert.Equal(expected, executor.Execute(actual));
   }
 
 }

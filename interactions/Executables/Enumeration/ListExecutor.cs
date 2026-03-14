@@ -3,7 +3,7 @@ using Interactions.Core;
 
 namespace Interactions.Executables.Enumeration;
 
-public struct ListExecutor<T1, T2>(IExecutable<T1, T2> executable, List<T1>.Enumerator source) : IEnumerator<T2> {
+public struct ListExecutor<T1, T2>(IQuery<T1, T2> query, List<T1>.Enumerator source) : IEnumerator<T2> {
 
   private List<T1>.Enumerator _source = source;
 
@@ -13,7 +13,7 @@ public struct ListExecutor<T1, T2>(IExecutable<T1, T2> executable, List<T1>.Enum
   public bool MoveNext() {
     if (!_source.MoveNext())
       return false;
-    Current = executable.Execute(_source.Current);
+    Current = query.Send(_source.Current);
     return true;
   }
 
