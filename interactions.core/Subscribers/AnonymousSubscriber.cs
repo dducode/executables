@@ -6,7 +6,7 @@ internal sealed class AnonymousSubscriber<T>(Action<T> action) : ISubscriber<T>,
     action(input);
   }
 
-  public IExecutor<T, Unit> GetExecutor() {
+  IExecutor<T, Unit> IExecutable<T, Unit>.GetExecutor() {
     return this;
   }
 
@@ -23,7 +23,7 @@ internal sealed class AnonymousSubscriber(Action action) : ISubscriber<Unit>, IE
     action();
   }
 
-  public IExecutor<Unit, Unit> GetExecutor() {
+  IExecutor<Unit, Unit> IExecutable<Unit, Unit>.GetExecutor() {
     return this;
   }
 

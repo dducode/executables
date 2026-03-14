@@ -8,7 +8,7 @@ internal sealed class ExecutableOperator<T1, T2, T3, T4>(
 
   private readonly IExecutor<T2, T3> _executor = executable.GetExecutor();
 
-  public IExecutor<T1, T4> GetExecutor() {
+  IExecutor<T1, T4> IExecutable<T1, T4>.GetExecutor() {
     return this;
   }
 

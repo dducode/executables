@@ -6,7 +6,7 @@ internal sealed class IdentityExecutable<T> : IExecutable<T, T>, IExecutor<T, T>
 
   private IdentityExecutable() { }
 
-  public IExecutor<T, T> GetExecutor() {
+  IExecutor<T, T> IExecutable<T, T>.GetExecutor() {
     return this;
   }
 

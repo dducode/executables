@@ -1,5 +1,6 @@
 using Interactions.Core.Executables;
 using Interactions.Core.Handlers;
+using Interactions.Core.Queries;
 using Interactions.Core.Tests.Utils;
 using JetBrains.Annotations;
 
@@ -15,7 +16,7 @@ public class AsyncQueryTest {
   private async Task GetStringRepresentation<T>(string expected, T value) {
     var query = new AsyncQuery<T, string>();
     query.Handle(TestHandler.ToStringHandler<T>().ToAsyncHandler());
-    Assert.Equal(expected, await query.Execute(value));
+    Assert.Equal(expected, await query.Send(value));
   }
 
   [Fact]
@@ -24,17 +25,17 @@ public class AsyncQueryTest {
     var query = new AsyncQuery<Unit, Unit>();
     query.Handle(Executable.Identity().AsHandler().ToAsyncHandler());
     await cts.CancelAsync();
-    await Assert.ThrowsAsync<OperationCanceledException>(async () => await query.Execute(default, cts.Token));
+    await Assert.ThrowsAsync<OperationCanceledException>(async () => await query.Send(default, cts.Token));
   }
 
   [Fact]
   public async Task SendWithoutHandler() {
     var query = new AsyncQuery<Unit, Unit>();
-    await Assert.ThrowsAsync<MissingHandlerException>(async () => await query.Execute(default));
+    await Assert.ThrowsAsync<MissingHandlerException>(async () => await query.Send());
     IDisposable handle = query.Handle(Executable.Identity().AsHandler().ToAsyncHandler());
-    await query.Execute(default);
+    await query.Send();
     handle.Dispose();
-    await Assert.ThrowsAsync<MissingHandlerException>(async () => await query.Execute(default));
+    await Assert.ThrowsAsync<MissingHandlerException>(async () => await query.Send());
   }
 
   [Fact]

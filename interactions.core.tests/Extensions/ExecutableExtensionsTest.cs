@@ -39,7 +39,7 @@ public class ExecutableExtensionsTest {
     var query = new AsyncQuery<int, string>();
     query.Handle(TestHandler.ToStringHandler<int>().ToAsyncHandler());
 
-    Result<string> result = await query.TryExecute(value);
+    Result<string> result = await query.TrySend(value);
     Assert.True(result.IsSuccess);
     Assert.Equal(expected, result.Value);
   }
@@ -48,7 +48,7 @@ public class ExecutableExtensionsTest {
   public async Task TryExecuteAsyncQueryWithoutHandler() {
     var query = new AsyncQuery<Unit, Unit>();
 
-    Result<Unit> result = await query.TryExecute();
+    Result<Unit> result = await query.TrySend();
     Assert.True(result.IsFailure);
     Assert.True(result.Exception is MissingHandlerException);
   }
@@ -60,7 +60,7 @@ public class ExecutableExtensionsTest {
     query.Handle(Executable.Identity().AsHandler().ToAsyncHandler());
 
     await cts.CancelAsync();
-    Result<Unit> result = await query.TryExecute(cts.Token);
+    Result<Unit> result = await query.TrySend(cts.Token);
     Assert.True(result.IsFailure);
     Assert.True(result.Exception is OperationCanceledException);
   }

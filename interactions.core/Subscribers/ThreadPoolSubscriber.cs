@@ -6,7 +6,7 @@ internal sealed class ThreadPoolSubscriber<T>(ISubscriber<T> inner) : ISubscribe
     ThreadPool.QueueUserWorkItem(_ => inner.Receive(input));
   }
 
-  public IExecutor<T, Unit> GetExecutor() {
+  IExecutor<T, Unit> IExecutable<T, Unit>.GetExecutor() {
     return this;
   }
 

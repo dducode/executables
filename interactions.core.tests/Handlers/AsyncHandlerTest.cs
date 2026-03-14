@@ -19,7 +19,7 @@ public class AsyncHandlerTest {
     var cts = new CancellationTokenSource();
     AsyncHandler<Unit, Unit> handler = Executable.Identity().AsHandler().ToAsyncHandler();
     await cts.CancelAsync();
-    await Assert.ThrowsAsync<OperationCanceledException>(async () => await handler.Execute(default, cts.Token));
+    await Assert.ThrowsAsync<OperationCanceledException>(async () => await handler.Handle(default, cts.Token));
   }
 
 }

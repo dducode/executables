@@ -11,7 +11,7 @@ internal sealed class OnceSubscriber<T>(ISubscriber<T> inner, IDisposable handle
     }
   }
 
-  public IExecutor<T, Unit> GetExecutor() {
+  IExecutor<T, Unit> IExecutable<T, Unit>.GetExecutor() {
     return this;
   }
 

@@ -4,7 +4,7 @@ namespace Interactions.Executables;
 
 internal sealed class ConstantValueExecutable<T1, T2>(T2 value) : IExecutable<T1, T2>, IExecutor<T1, T2> {
 
-  public IExecutor<T1, T2> GetExecutor() {
+  IExecutor<T1, T2> IExecutable<T1, T2>.GetExecutor() {
     return this;
   }
 

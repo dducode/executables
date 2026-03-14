@@ -37,42 +37,19 @@ public static partial class ExecutableExtensions {
     IAsyncExecutable<T3, T5> second) {
     ExceptionsHelper.ThrowIfNull(first, nameof(first));
     ExceptionsHelper.ThrowIfNull(second, nameof(second));
-    return fork.Then(AsyncExecutable.Create(async ((T2, T3) input, CancellationToken token) => {
-        Task<T4> t1 = first.Execute(input.Item1, token).AsTask();
-        Task<T5> t2 = second.Execute(input.Item2, token).AsTask();
-        await Task.WhenAll(t1, t2);
-        return (t1.Result, t2.Result);
-      })
-    );
+    return fork.Then(new ParallelExecutable<T2, T3, T4, T5>(first, second));
   }
 
   [Pure]
   public static IAsyncExecutable<T1, (T2, T3)> Fork<T1, T2, T3>(this IAsyncExecutable<T1, T2> first, IAsyncExecutable<T1, T3> second) {
     first.ThrowIfNullReference();
     ExceptionsHelper.ThrowIfNull(second, nameof(second));
-    return AsyncExecutable.Create(async (T1 input, CancellationToken token) => (await first.Execute(input, token), await second.Execute(input, token)));
+    return new AsyncForkExecutable<T1, T2, T3>(first, second);
   }
 
   [Pure]
   public static IAsyncExecutable<T1, (T2, T3)> Fork<T1, T2, T3>(this IAsyncExecutable<T1, T2> first, AsyncFunc<T1, T3> second) {
     return first.Fork(AsyncExecutable.Create(second));
-  }
-
-  [Pure]
-  public static IAsyncExecutable<T1, (T2, T3)> ForkParallel<T1, T2, T3>(this IAsyncExecutable<T1, T2> first, IAsyncExecutable<T1, T3> second) {
-    first.ThrowIfNullReference();
-    ExceptionsHelper.ThrowIfNull(second, nameof(second));
-    return AsyncExecutable.Create(async (T1 input, CancellationToken token) => {
-      Task<T2> t1 = first.Execute(input, token).AsTask();
-      Task<T3> t2 = second.Execute(input, token).AsTask();
-      await Task.WhenAll(t1, t2);
-      return (t1.Result, t2.Result);
-    });
-  }
-
-  [Pure]
-  public static IAsyncExecutable<T1, (T2, T3)> ForkParallel<T1, T2, T3>(this IAsyncExecutable<T1, T2> first, AsyncFunc<T1, T3> second) {
-    return first.ForkParallel(AsyncExecutable.Create(second));
   }
 
   [Pure]
@@ -83,7 +60,7 @@ public static partial class ExecutableExtensions {
   [Pure]
   public static IAsyncExecutable<T1, (TNew, T3)> First<T1, T2, T3, TNew>(this IAsyncExecutable<T1, (T2, T3)> fork, IAsyncExecutable<T2, TNew> map) {
     ExceptionsHelper.ThrowIfNull(map, nameof(map));
-    return fork.Then(async (input, token) => (await map.Execute(input.Item1, token), input.Item2));
+    return fork.Then(new AsyncFirstMapExecutable<T2, T3, TNew>(map));
   }
 
   [Pure]
@@ -94,7 +71,7 @@ public static partial class ExecutableExtensions {
   [Pure]
   public static IAsyncExecutable<T1, (T2, TNew)> Second<T1, T2, T3, TNew>(this IAsyncExecutable<T1, (T2, T3)> fork, IAsyncExecutable<T3, TNew> map) {
     ExceptionsHelper.ThrowIfNull(map, nameof(map));
-    return fork.Then(async (input, token) => (input.Item1, await map.Execute(input.Item2, token)));
+    return fork.Then(new AsyncSecondMapExecutable<T2, T3, TNew>(map));
   }
 
   [Pure]

@@ -16,7 +16,7 @@ public class Event<T> : Handleable<Publishing<T>, Unit>, IEvent<T> {
   private readonly HashSet<ISubscriber<T>> _subscribers = [];
   private readonly object _lock = new();
 
-  public void Publish(T input) {
+  public virtual void Publish(T input) {
     List<ISubscriber<T>> subscribers = Pool<List<ISubscriber<T>>>.Get();
     using var handle = new ListHandle<ISubscriber<T>>(subscribers);
 

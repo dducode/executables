@@ -7,7 +7,7 @@ internal sealed class ForkExecutable<T1, T2, T3>(IExecutable<T1, T2> first, IExe
   private readonly IExecutor<T1, T2> _first = first.GetExecutor();
   private readonly IExecutor<T1, T3> _second = second.GetExecutor();
 
-  public IExecutor<T1, (T2, T3)> GetExecutor() {
+  IExecutor<T1, (T2, T3)> IExecutable<T1, (T2, T3)>.GetExecutor() {
     return this;
   }
 

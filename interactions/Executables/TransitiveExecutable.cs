@@ -4,7 +4,7 @@ namespace Interactions.Executables;
 
 internal sealed class TransitiveExecutable<T>(Action<T> action) : IExecutable<T, T>, IExecutor<T, T> {
 
-  public IExecutor<T, T> GetExecutor() {
+  IExecutor<T, T> IExecutable<T, T>.GetExecutor() {
     return this;
   }
 

@@ -1,20 +1,21 @@
 using Interactions.Core.Executables;
+using Interactions.Core.Queries;
 using JetBrains.Annotations;
 
 namespace Interactions.Core.Tests.Queries;
 
-[TestSubject(typeof(AsyncProxyExecutable<,>))]
-public class AsyncProxyExecutableTest {
+[TestSubject(typeof(AsyncProxyQuery<,>))]
+public class AsyncProxyQueryTest {
 
   [Fact]
   public async Task Cancel() {
     var cts = new CancellationTokenSource();
     var inner = new Query<Unit, Unit>();
-    IAsyncExecutable<Unit, Unit> query = inner.ToAsyncExecutable();
+    IAsyncQuery<Unit, Unit> query = inner.ToAsyncQuery();
 
     inner.Handle(Executable.Identity().AsHandler());
     await cts.CancelAsync();
-    await Assert.ThrowsAsync<OperationCanceledException>(async () => await query.Execute(default, cts.Token));
+    await Assert.ThrowsAsync<OperationCanceledException>(async () => await query.Send(cts.Token));
   }
 
 }

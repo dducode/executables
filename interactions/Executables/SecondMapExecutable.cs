@@ -6,7 +6,7 @@ internal sealed class SecondMapExecutable<T1, T2, TNew>(IExecutable<T2, TNew> ma
 
   private readonly IExecutor<T2, TNew> _map = map.GetExecutor();
 
-  public IExecutor<(T1, T2), (T1, TNew)> GetExecutor() {
+  IExecutor<(T1, T2), (T1, TNew)> IExecutable<(T1, T2), (T1, TNew)>.GetExecutor() {
     return this;
   }
 

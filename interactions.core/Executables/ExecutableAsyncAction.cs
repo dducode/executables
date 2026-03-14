@@ -1,17 +1,25 @@
 namespace Interactions.Core.Executables;
 
-internal sealed class ExecutableAsyncAction<T>(AsyncAction<T> action) : IAsyncExecutable<T, Unit> {
+internal sealed class ExecutableAsyncAction<T>(AsyncAction<T> action) : IAsyncExecutable<T, Unit>, IAsyncExecutor<T, Unit> {
 
-  public async ValueTask<Unit> Execute(T input, CancellationToken token = default) {
+  IAsyncExecutor<T, Unit> IAsyncExecutable<T, Unit>.GetExecutor() {
+    return this;
+  }
+
+  async ValueTask<Unit> IAsyncExecutor<T, Unit>.Execute(T input, CancellationToken token) {
     await action(input, token);
     return default;
   }
 
 }
 
-internal sealed class ExecutableAsyncAction(AsyncAction action) : IAsyncExecutable<Unit, Unit> {
+internal sealed class ExecutableAsyncAction(AsyncAction action) : IAsyncExecutable<Unit, Unit>, IAsyncExecutor<Unit, Unit> {
 
-  public async ValueTask<Unit> Execute(Unit input, CancellationToken token = default) {
+  IAsyncExecutor<Unit, Unit> IAsyncExecutable<Unit, Unit>.GetExecutor() {
+    return this;
+  }
+
+  async ValueTask<Unit> IAsyncExecutor<Unit, Unit>.Execute(Unit input, CancellationToken token) {
     await action(token);
     return default;
   }

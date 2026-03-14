@@ -7,7 +7,7 @@ namespace Interactions.Executables;
 public static partial class ExecutableExtensions {
 
   public static async ValueTask<T2> Execute<T1, T2>(
-    this IAsyncExecutable<T1, T2> executable,
+    this IAsyncExecutor<T1, T2> executable,
     T1 input,
     Action<InteractionContext> init,
     CancellationToken token = default) {
@@ -27,11 +27,11 @@ public static partial class ExecutableExtensions {
     }
   }
 
-  public static ValueTask<T> Execute<T>(this IAsyncExecutable<Unit, T> executable, Action<InteractionContext> init, CancellationToken token = default) {
+  public static ValueTask<T> Execute<T>(this IAsyncExecutor<Unit, T> executable, Action<InteractionContext> init, CancellationToken token = default) {
     return executable.Execute(default, init, token);
   }
 
-  public static async ValueTask Execute(this IAsyncExecutable<Unit, Unit> executable, Action<InteractionContext> init, CancellationToken token = default) {
+  public static async ValueTask Execute(this IAsyncExecutor<Unit, Unit> executable, Action<InteractionContext> init, CancellationToken token = default) {
     await executable.Execute(default, init, token);
   }
 

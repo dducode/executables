@@ -1,5 +1,6 @@
 using AutoFixture;
 using Interactions.Core;
+using Interactions.Core.Executables;
 using Interactions.Executables.Enumeration;
 using JetBrains.Annotations;
 using Xunit.Abstractions;
@@ -17,8 +18,11 @@ public class AsyncExecutableEnumerableTest(ITestOutputHelper output) {
     for (var i = 0; i < 5; i++)
       list.Add(fixture.Create<int>());
 
-    IAsyncExecutable<int, TimeSpan> executable = AsyncExecutable.Create((int num, CancellationToken _) => ValueTask.FromResult(TimeSpan.FromSeconds(num)));
-    await foreach (TimeSpan time in executable.ForEach(GetItems()))
+    IAsyncQuery<int, TimeSpan> query = AsyncExecutable
+      .Create((int num, CancellationToken _) => ValueTask.FromResult(TimeSpan.FromSeconds(num)))
+      .AsQuery();
+
+    await foreach (TimeSpan time in query.ForEach(GetItems()))
       output.WriteLine($"Time: {time}");
     return;
 

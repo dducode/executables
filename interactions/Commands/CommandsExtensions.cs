@@ -5,7 +5,7 @@ using Interactions.Core.Internal;
 
 namespace Interactions.Commands;
 
-public static class CommandsExtensions {
+public static partial class CommandsExtensions {
 
   [Pure]
   public static Command<T> Compose<T>(this Command<T> command, Command<T> other) {

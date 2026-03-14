@@ -1,6 +1,9 @@
+using System.Diagnostics.Contracts;
+using Interactions.Core.Internal;
+
 namespace Interactions.Core.Queries;
 
-public static class QueriesExtensions {
+public static partial class QueriesExtensions {
 
   public static T Send<T>(this IQuery<Unit, T> query) {
     return query.Send(default);
@@ -20,12 +23,13 @@ public static class QueriesExtensions {
   }
 
   public static Result<T> TrySend<T>(this IQuery<Unit, T> query) {
-    try {
-      return query.Send(default);
-    }
-    catch (MissingHandlerException e) {
-      return Result<T>.FromException(e);
-    }
+    return query.TrySend(default);
+  }
+
+  [Pure]
+  public static IAsyncQuery<T1, T2> ToAsyncQuery<T1, T2>(this IQuery<T1, T2> query) {
+    query.ThrowIfNullReference();
+    return new AsyncProxyQuery<T1, T2>(query);
   }
 
 }

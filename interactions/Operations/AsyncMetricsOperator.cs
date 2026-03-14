@@ -9,7 +9,7 @@ internal sealed class AsyncMetricsOperator<T1, T2>(IMetrics<T1, T2> metrics, str
 
   private readonly ConcurrentStack<Stopwatch> _stopwatches = new();
 
-  public override async ValueTask<T2> Invoke(T1 input, IAsyncExecutable<T1, T2> next, CancellationToken token = default) {
+  public override async ValueTask<T2> Invoke(T1 input, IAsyncExecutor<T1, T2> executor, CancellationToken token = default) {
     if (!_stopwatches.TryPop(out Stopwatch sw))
       sw = new Stopwatch();
 
@@ -19,7 +19,7 @@ internal sealed class AsyncMetricsOperator<T1, T2>(IMetrics<T1, T2> metrics, str
 
       try {
         sw.Start();
-        result = await next.Execute(input, token);
+        result = await executor.Execute(input, token);
         sw.Stop();
       }
       catch (Exception e) {

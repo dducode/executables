@@ -1,6 +1,7 @@
 using System.Runtime.ExceptionServices;
 using Interactions.Core;
 using Interactions.Core.Executables;
+using Interactions.Core.Queries;
 using Interactions.Operations;
 using Interactions.Policies;
 using JetBrains.Annotations;
@@ -12,43 +13,47 @@ public class AsyncFallbackPolicyTest {
 
   [Fact]
   public async Task RegularExecution() {
-    IAsyncExecutable<Unit, Unit> executable = AsyncPolicy
+    IAsyncQuery<Unit, Unit> query = AsyncPolicy
       .Fallback((Unit _, InvalidOperationException _) => default(Unit))
-      .Apply(Executable.Identity().ToAsyncExecutable());
+      .Apply(Executable.Identity().ToAsyncExecutable())
+      .AsQuery();
 
-    await executable.Execute(default, CancellationToken.None);
+    await query.Send();
   }
 
   [Fact]
   public async Task Cancel() {
     var cts = new CancellationTokenSource();
-    IAsyncExecutable<Unit, Unit> executable = AsyncPolicy
+    IAsyncQuery<Unit, Unit> query = AsyncPolicy
       .Fallback((Unit _, InvalidOperationException _) => default(Unit))
-      .Apply(Executable.Identity().ToAsyncExecutable());
+      .Apply(Executable.Identity().ToAsyncExecutable())
+      .AsQuery();
 
     await cts.CancelAsync();
-    await Assert.ThrowsAsync<OperationCanceledException>(async () => await executable.Execute(default, cts.Token));
+    await Assert.ThrowsAsync<OperationCanceledException>(async () => await query.Send(cts.Token));
   }
 
   [Fact]
   public async Task ReturnFallbackOnException() {
-    IAsyncExecutable<int, int> executable = AsyncPolicy
+    IAsyncQuery<int, int> query = AsyncPolicy
       .Fallback((int input, InvalidOperationException _) => input)
-      .Apply(Executable.Create<int, int>(_ => throw new InvalidOperationException()).ToAsyncExecutable());
+      .Apply(Executable.Create<int, int>(_ => throw new InvalidOperationException()).ToAsyncExecutable())
+      .AsQuery();
 
-    Assert.Equal(10, await executable.Execute(10, CancellationToken.None));
+    Assert.Equal(10, await query.Send(10));
   }
 
   [Fact]
   public async Task ThrowExceptionFromFallbackHandler() {
-    IAsyncExecutable<Unit, Unit> executable = AsyncPolicy
+    IAsyncQuery<Unit, Unit> query = AsyncPolicy
       .Fallback((Unit _, InvalidOperationException ex) => {
         ExceptionDispatchInfo.Capture(ex).Throw();
         return default(Unit);
       })
-      .Apply(Executable.Create<Unit, Unit>(_ => throw new InvalidOperationException()).ToAsyncExecutable());
+      .Apply(Executable.Create<Unit, Unit>(_ => throw new InvalidOperationException()).ToAsyncExecutable())
+      .AsQuery();
 
-    await Assert.ThrowsAsync<InvalidOperationException>(async () => await executable.Execute(default, CancellationToken.None));
+    await Assert.ThrowsAsync<InvalidOperationException>(async () => await query.Send());
   }
 
 }

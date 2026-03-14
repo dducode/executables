@@ -4,7 +4,7 @@ using Interactions.Core.Internal;
 
 namespace Interactions.Queries;
 
-public static class QueriesExtensions {
+public static partial class QueriesExtensions {
 
   public static T2 Send<T1, T2>(this IQuery<T1, T2> query, T1 request, Action<InteractionContext> init) {
     ExceptionsHelper.ThrowIfNull(init, nameof(init));

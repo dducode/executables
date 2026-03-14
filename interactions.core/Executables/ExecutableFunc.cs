@@ -2,7 +2,7 @@ namespace Interactions.Core.Executables;
 
 internal sealed class ExecutableFunc<T1, T2>(Func<T1, T2> func) : IExecutable<T1, T2>, IExecutor<T1, T2> {
 
-  public IExecutor<T1, T2> GetExecutor() {
+  IExecutor<T1, T2> IExecutable<T1, T2>.GetExecutor() {
     return this;
   }
 
@@ -14,7 +14,7 @@ internal sealed class ExecutableFunc<T1, T2>(Func<T1, T2> func) : IExecutable<T1
 
 internal sealed class ExecutableFunc<T>(Func<T> func) : IExecutable<Unit, T>, IExecutor<Unit, T> {
 
-  public IExecutor<Unit, T> GetExecutor() {
+  IExecutor<Unit, T> IExecutable<Unit, T>.GetExecutor() {
     return this;
   }
 

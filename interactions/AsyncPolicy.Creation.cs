@@ -159,7 +159,7 @@ public static class AsyncPolicy {
     return Fallback(FallbackHandler.Create(fallback));
   }
 
-  public static AsyncPolicy<T1, T2> Create<T1, T2>(AsyncFunc<T1, IAsyncExecutable<T1, T2>, T2> policy) {
+  public static AsyncPolicy<T1, T2> Create<T1, T2>(AsyncFunc<T1, IAsyncExecutor<T1, T2>, T2> policy) {
     ExceptionsHelper.ThrowIfNull(policy, nameof(policy));
     return new AsyncAnonymousPolicy<T1, T2>(policy);
   }

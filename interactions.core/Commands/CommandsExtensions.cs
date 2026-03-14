@@ -3,7 +3,7 @@ using Interactions.Core.Internal;
 
 namespace Interactions.Core.Commands;
 
-public static class CommandsExtensions {
+public static partial class CommandsExtensions {
 
   public static bool Execute(this ICommand<Unit> command) {
     return command.Execute(default);

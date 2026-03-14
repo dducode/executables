@@ -8,7 +8,7 @@ internal sealed class ExecutableQuery<T1, T2>(IExecutable<T1, T2> inner) : IQuer
     return _inner.Execute(input);
   }
 
-  public IExecutor<T1, T2> GetExecutor() {
+  IExecutor<T1, T2> IExecutable<T1, T2>.GetExecutor() {
     return this;
   }
 

@@ -8,7 +8,7 @@ internal sealed class ExecutableCommand<T>(IExecutable<T, bool> inner) : IComman
     return _inner.Execute(input);
   }
 
-  public IExecutor<T, bool> GetExecutor() {
+  IExecutor<T, bool> IExecutable<T, bool>.GetExecutor() {
     return this;
   }
 

@@ -1,7 +1,6 @@
 using Interactions.Context;
 using Interactions.Core;
 using Interactions.Core.Executables;
-using Interactions.Executables;
 using Interactions.Queries;
 using JetBrains.Annotations;
 using Xunit.Abstractions;
@@ -21,12 +20,12 @@ public class InteractionContextTest(ITestOutputHelper output) {
 
   [Fact]
   public async Task AsyncCall() {
-    IAsyncExecutable<Unit, Unit> executable = AsyncExecutable.Create(async _ => {
+    IAsyncQuery<Unit, Unit> query = AsyncExecutable.Create(async _ => {
       await Task.Yield();
       Assert.True(InteractionContext.Current.ContainsKey<string>());
-    });
+    }).AsQuery();
 
-    ValueTask task = executable.Execute(context => context.Set("test"));
+    ValueTask task = query.Send(context => context.Set("test"));
     Assert.Null(InteractionContext.Current);
     await task;
     Assert.Null(InteractionContext.Current);
@@ -48,18 +47,18 @@ public class InteractionContextTest(ITestOutputHelper output) {
 
   [Fact]
   public async Task NestedAsyncCall() {
-    IAsyncExecutable<Unit, Unit> inner = AsyncExecutable.Create(async _ => {
+    IAsyncQuery<Unit, Unit> inner = AsyncExecutable.Create(async _ => {
       await Task.Yield();
       Assert.True(InteractionContext.Current.ContainsKey("nested"));
-    });
+    }).AsQuery();
 
-    IAsyncExecutable<Unit, Unit> executable = AsyncExecutable.Create(async token => {
+    IAsyncQuery<Unit, Unit> query = AsyncExecutable.Create(async token => {
       Assert.True(InteractionContext.Current.ContainsKey("test"));
-      await inner.Execute(context => context.Set("nested", string.Empty), token);
+      await inner.Send(context => context.Set("nested", string.Empty), token);
       Assert.False(InteractionContext.Current.ContainsKey("nested"));
-    });
+    }).AsQuery();
 
-    ValueTask task = executable.Execute(context => context.Set("test", string.Empty));
+    ValueTask task = query.Send(context => context.Set("test", string.Empty));
     Assert.Null(InteractionContext.Current);
     await task;
     Assert.Null(InteractionContext.Current);
@@ -67,28 +66,28 @@ public class InteractionContextTest(ITestOutputHelper output) {
 
   [Fact]
   public async Task NestedAsyncParallelCalls() {
-    IAsyncExecutable<Unit, Unit> firstInner = AsyncExecutable.Create(async _ => {
+    IAsyncQuery<Unit, Unit> firstInner = AsyncExecutable.Create(async _ => {
       await Task.Yield();
       Assert.True(InteractionContext.Current.ContainsKey("firstNested"));
       Assert.False(InteractionContext.Current.ContainsKey("secondNested"));
-    });
+    }).AsQuery();
 
-    IAsyncExecutable<Unit, Unit> secondInner = AsyncExecutable.Create(async _ => {
+    IAsyncQuery<Unit, Unit> secondInner = AsyncExecutable.Create(async _ => {
       await Task.Yield();
       Assert.True(InteractionContext.Current.ContainsKey("secondNested"));
       Assert.False(InteractionContext.Current.ContainsKey("firstNested"));
-    });
+    }).AsQuery();
 
-    IAsyncExecutable<Unit, Unit> executable = AsyncExecutable.Create(async token => {
+    IAsyncQuery<Unit, Unit> query = AsyncExecutable.Create(async token => {
       Assert.True(InteractionContext.Current.ContainsKey("test"));
-      ValueTask t1 = firstInner.Execute(context => context.Set("firstNested", string.Empty), token);
-      ValueTask t2 = secondInner.Execute(context => context.Set("secondNested", string.Empty), token);
+      ValueTask t1 = firstInner.Send(context => context.Set("firstNested", string.Empty), token);
+      ValueTask t2 = secondInner.Send(context => context.Set("secondNested", string.Empty), token);
       await Task.WhenAll(t1.AsTask(), t2.AsTask());
       Assert.False(InteractionContext.Current.ContainsKey("firstNested"));
       Assert.False(InteractionContext.Current.ContainsKey("secondNested"));
-    });
+    }).AsQuery();
 
-    ValueTask task = executable.Execute(context => context.Set("test", string.Empty));
+    ValueTask task = query.Send(context => context.Set("test", string.Empty));
     Assert.Null(InteractionContext.Current);
     await task;
     Assert.Null(InteractionContext.Current);
