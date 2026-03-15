@@ -31,25 +31,26 @@ public static partial class ExecutableExtensions {
   }
 
   [Pure]
-  public static IAsyncExecutable<T1, (T4, T5)> Then<T1, T2, T3, T4, T5>(
-    this IAsyncExecutable<T1, (T2, T3)> fork,
-    IAsyncExecutable<T2, T4> first,
-    IAsyncExecutable<T3, T5> second) {
-    ExceptionsHelper.ThrowIfNull(first, nameof(first));
-    ExceptionsHelper.ThrowIfNull(second, nameof(second));
-    return fork.Then(new ParallelExecutable<T2, T3, T4, T5>(first, second));
+  public static IAsyncExecutable<T1, T3> Return<T1, T2, T3>(this IAsyncExecutable<T1, T2> executable, T3 constValue) {
+    return executable.Then(new ConstantValueExecutable<T2, T3>(constValue));
   }
 
   [Pure]
-  public static IAsyncExecutable<T1, (T2, T3)> Fork<T1, T2, T3>(this IAsyncExecutable<T1, T2> first, IAsyncExecutable<T1, T3> second) {
-    first.ThrowIfNullReference();
-    ExceptionsHelper.ThrowIfNull(second, nameof(second));
-    return new AsyncForkExecutable<T1, T2, T3>(first, second);
+  public static IAsyncExecutable<T1, (T3, T4)> Fork<T1, T2, T3, T4>(
+    this IAsyncExecutable<T1, T2> executable,
+    IAsyncExecutable<T2, T3> firstBranch,
+    IAsyncExecutable<T2, T4> secondBranch) {
+    ExceptionsHelper.ThrowIfNull(firstBranch, nameof(firstBranch));
+    ExceptionsHelper.ThrowIfNull(secondBranch, nameof(secondBranch));
+    return executable.Then(new AsyncForkExecutable<T2, T3, T4>(firstBranch, secondBranch));
   }
 
   [Pure]
-  public static IAsyncExecutable<T1, (T2, T3)> Fork<T1, T2, T3>(this IAsyncExecutable<T1, T2> first, AsyncFunc<T1, T3> second) {
-    return first.Fork(AsyncExecutable.Create(second));
+  public static IAsyncExecutable<T1, (T3, T4)> Fork<T1, T2, T3, T4>(
+    this IAsyncExecutable<T1, T2> executable,
+    AsyncFunc<T2, T3> firstBranch,
+    AsyncFunc<T2, T4> secondBranch) {
+    return executable.Fork(AsyncExecutable.Create(firstBranch), AsyncExecutable.Create(secondBranch));
   }
 
   [Pure]

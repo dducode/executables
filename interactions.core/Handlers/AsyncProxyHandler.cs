@@ -11,4 +11,11 @@ internal sealed class AsyncProxyHandler<T1, T2>(Handler<T1, T2> inner) : AsyncHa
     inner.Dispose();
   }
 
+#if !NETFRAMEWORK
+  protected override ValueTask AsyncDisposeCore() {
+    inner.Dispose();
+    return new ValueTask(Task.CompletedTask);
+  }
+#endif
+
 }

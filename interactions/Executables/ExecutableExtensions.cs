@@ -36,15 +36,18 @@ public static partial class ExecutableExtensions {
   }
 
   [Pure]
-  public static IExecutable<T1, (T2, T3)> Fork<T1, T2, T3>(this IExecutable<T1, T2> first, IExecutable<T1, T3> second) {
-    first.ThrowIfNullReference();
-    ExceptionsHelper.ThrowIfNull(second, nameof(second));
-    return new ForkExecutable<T1, T2, T3>(first, second);
+  public static IExecutable<T1, (T3, T4)> Fork<T1, T2, T3, T4>(
+    this IExecutable<T1, T2> executable,
+    IExecutable<T2, T3> firstBranch,
+    IExecutable<T2, T4> secondBranch) {
+    ExceptionsHelper.ThrowIfNull(firstBranch, nameof(firstBranch));
+    ExceptionsHelper.ThrowIfNull(secondBranch, nameof(secondBranch));
+    return executable.Then(new ForkExecutable<T2, T3, T4>(firstBranch, secondBranch));
   }
 
   [Pure]
-  public static IExecutable<T1, (T2, T3)> Fork<T1, T2, T3>(this IExecutable<T1, T2> first, Func<T1, T3> second) {
-    return first.Fork(Executable.Create(second));
+  public static IExecutable<T1, (T3, T4)> Fork<T1, T2, T3, T4>(this IExecutable<T1, T2> executable, Func<T2, T3> firstBranch, Func<T2, T4> secondBranch) {
+    return executable.Fork(Executable.Create(firstBranch), Executable.Create(secondBranch));
   }
 
   [Pure]
