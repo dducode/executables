@@ -19,6 +19,22 @@ public class InteractionContextTest(ITestOutputHelper output) {
   }
 
   [Fact]
+  public void ThrowFromInitCallback() {
+    IQuery<Unit, Unit> query = Executable.Create(() => Assert.Fail()).AsQuery();
+    Assert.Null(InteractionContext.Current);
+    Assert.Throws<InvalidOperationException>(() => query.Send(_ => throw new InvalidOperationException()));
+    Assert.Null(InteractionContext.Current);
+  }
+
+  [Fact]
+  public void ThrowFromQuery() {
+    IQuery<Unit, Unit> query = Executable.Create(() => throw new InvalidOperationException()).AsQuery();
+    Assert.Null(InteractionContext.Current);
+    Assert.Throws<InvalidOperationException>(() => query.Send(context => context.Set(string.Empty)));
+    Assert.Null(InteractionContext.Current);
+  }
+
+  [Fact]
   public async Task AsyncCall() {
     IAsyncQuery<Unit, Unit> query = AsyncExecutable.Create(async _ => {
       await Task.Yield();
@@ -100,7 +116,7 @@ public class InteractionContextTest(ITestOutputHelper output) {
     IQuery<Unit, Unit> query = Executable.Create(() => inner.Send(context => context.Name = nameof(inner))).AsQuery();
 
     query.Send(context => context.Name = nameof(query));
-    output.WriteLine("");
+    output.WriteLine(string.Empty);
     query.Send(context => context.Name = nameof(query));
   }
 
