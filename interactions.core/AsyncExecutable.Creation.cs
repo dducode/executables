@@ -6,6 +6,14 @@ namespace Interactions.Core;
 
 public static class AsyncExecutable {
 
+  public static IAsyncExecutable<T, T> Identity<T>() {
+    return AsyncIdentityExecutable<T>.Instance;
+  }
+
+  public static IAsyncExecutable<Unit, Unit> Identity() {
+    return Identity<Unit>();
+  }
+
   /// <summary>
   /// Creates an async executable from an async function.
   /// </summary>

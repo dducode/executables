@@ -102,6 +102,23 @@ public static partial class ExecutableExtensions {
   }
 
   [Pure]
+  public static IAsyncExecutable<T1, T3> Race<T1, T2, T3>(this IAsyncExecutable<T1, T2> executable, AsyncFunc<T2, T3> first, AsyncFunc<T2, T3> second) {
+    return executable.Race(AsyncExecutable.Create(first), AsyncExecutable.Create(second));
+  }
+
+  [Pure]
+  public static IAsyncExecutable<T1, T3> Race<T1, T2, T3>(this IAsyncExecutable<T1, T2> executable, params IAsyncExecutable<T2, T3>[] executables) {
+    return executables.Length > 1 ? executable.Then(new ManyRaceExecutable<T2, T3>(executables)) : throw new ArgumentOutOfRangeException(nameof(executables));
+  }
+
+  [Pure]
+  public static IAsyncExecutable<T1, T3> Race<T1, T2, T3>(this IAsyncExecutable<T1, T2> executable, params AsyncFunc<T2, T3>[] executables) {
+    return executables.Length > 1
+      ? executable.Race(executables.Select(AsyncExecutable.Create).ToArray())
+      : throw new ArgumentOutOfRangeException(nameof(executables));
+  }
+
+  [Pure]
   public static IAsyncExecutable<T1, T4> Map<T1, T2, T3, T4>(
     this IAsyncExecutable<T2, T3> executable,
     IExecutable<T1, T2> incoming,

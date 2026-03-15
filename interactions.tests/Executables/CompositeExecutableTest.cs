@@ -30,7 +30,7 @@ public class CompositeExecutableTest {
     });
 
     IQuery<int, decimal> query = Executable
-      .Create<int, Player>(id => storage.Get(id))
+      .Create((int id) => storage.Get(id))
       .Then(player => player.data)
       .Then(data => data.money)
       .AsQuery();
