@@ -91,6 +91,16 @@ public static partial class ExecutableExtensions {
   }
 
   [Pure]
+  public static IAsyncExecutable<T1, T3> Race<T1, T2, T3>(
+    this IAsyncExecutable<T1, T2> executable,
+    IAsyncExecutable<T2, T3> first,
+    IAsyncExecutable<T2, T3> second) {
+    ExceptionsHelper.ThrowIfNull(first, nameof(first));
+    ExceptionsHelper.ThrowIfNull(second, nameof(second));
+    return executable.Then(new RaceExecutable<T2, T3>(first, second));
+  }
+
+  [Pure]
   public static IAsyncExecutable<T1, T4> Map<T1, T2, T3, T4>(
     this IAsyncExecutable<T2, T3> executable,
     IExecutable<T1, T2> incoming,
