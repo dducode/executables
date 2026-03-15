@@ -16,12 +16,10 @@ public struct ArrayExecutor<T1, T2>(IQuery<T1, T2> query, T1[] source) : IEnumer
     return true;
   }
 
-  public void Reset() {
-    _index = -1;
+  void IEnumerator.Reset() {
+    throw new NotSupportedException();
   }
 
-  public void Dispose() {
-    Reset();
-  }
+  public void Dispose() { }
 
 }

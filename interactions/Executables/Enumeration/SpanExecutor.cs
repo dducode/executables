@@ -5,9 +5,8 @@ namespace Interactions.Executables.Enumeration;
 
 public ref struct SpanExecutor<T1, T2>(IQuery<T1, T2> query, Span<T1>.Enumerator source) {
 
-  private Span<T1>.Enumerator _source = source;
-
   public T2 Current { get; private set; }
+  private Span<T1>.Enumerator _source = source;
 
   public bool MoveNext() {
     if (!_source.MoveNext())

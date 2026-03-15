@@ -5,10 +5,9 @@ namespace Interactions.Executables.Enumeration;
 
 public struct StackExecutor<T1, T2>(IQuery<T1, T2> query, Stack<T1>.Enumerator source) : IEnumerator<T2> {
 
-  private Stack<T1>.Enumerator _source = source;
-
   public T2 Current { get; private set; }
   object IEnumerator.Current => Current;
+  private Stack<T1>.Enumerator _source = source;
 
   public bool MoveNext() {
     if (!_source.MoveNext())
@@ -17,8 +16,8 @@ public struct StackExecutor<T1, T2>(IQuery<T1, T2> query, Stack<T1>.Enumerator s
     return true;
   }
 
-  public void Reset() {
-    ((IEnumerator)_source).Reset();
+  void IEnumerator.Reset() {
+    throw new NotSupportedException();
   }
 
   public void Dispose() {

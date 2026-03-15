@@ -15,8 +15,8 @@ public struct EnumerableExecutor<T1, T2>(IQuery<T1, T2> query, IEnumerator<T1> s
     return true;
   }
 
-  public void Reset() {
-    source.Reset();
+  void IEnumerator.Reset() {
+    throw new NotSupportedException();
   }
 
   public void Dispose() {
