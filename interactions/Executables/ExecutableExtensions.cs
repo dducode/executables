@@ -12,6 +12,8 @@ public static partial class ExecutableExtensions {
   public static IExecutable<T1, T3> Then<T1, T2, T3>(this IExecutable<T1, T2> first, IExecutable<T2, T3> second) {
     first.ThrowIfNullReference();
     ExceptionsHelper.ThrowIfNull(second, nameof(second));
+    if (first is IdentityExecutable<T1>)
+      return (IExecutable<T1, T3>)second;
     return new CompositeExecutable<T1, T2, T3>(first, second);
   }
 

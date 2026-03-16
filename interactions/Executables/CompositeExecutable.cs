@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using Interactions.Core;
 
 namespace Interactions.Executables;
@@ -11,6 +12,7 @@ internal sealed class CompositeExecutable<T1, T2, T3>(IExecutable<T1, T2> first,
     return this;
   }
 
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   T3 IExecutor<T1, T3>.Execute(T1 input) {
     return _second.Execute(_first.Execute(input));
   }

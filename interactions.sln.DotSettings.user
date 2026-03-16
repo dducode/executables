@@ -161,7 +161,7 @@
     &lt;/TestAncestor&gt;&#xD;
   &lt;/Or&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=c554cf46_002D4698_002D456c_002D8ffd_002D8b1a5b2a5cac/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="SecondHandleableThrowsException" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=c554cf46_002D4698_002D456c_002D8ffd_002D8b1a5b2a5cac/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="SecondHandleableThrowsException" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;Or&gt;&#xD;
     &lt;TestAncestor&gt;&#xD;
       &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.MergedHandleableTest.SecondHandleableThrowsException&lt;/TestId&gt;&#xD;
@@ -207,11 +207,16 @@
       &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Linq.LinqExtensionsTest.SelectExpression&lt;/TestId&gt;&#xD;
       &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Linq.LinqExtensionsTest.SelectManyExpression&lt;/TestId&gt;&#xD;
       &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Executables.Enumeration.ManyExecutableEnumerableTest.EnumeratePlayersItems&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Executables.RaceExecutableTest.RaceWithOnceSynchronouslyTask&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Executables.RaceExecutableTest.SimpleRace&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Executables.RaceExecutableTest.ManyRace&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Executables.RaceExecutableTest.RaceWithLoserCancellation&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Executables.CompositeExecutableTest.ComposeWithIdentity&lt;/TestId&gt;&#xD;
     &lt;/TestAncestor&gt;&#xD;
     &lt;Project Location="C:\.NETProjects\interactions\interactions.core.tests" Presentation="&amp;lt;interactions.core.tests&amp;gt;" /&gt;&#xD;
   &lt;/Or&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=eb53d67b_002D0b0f_002D42e9_002D8e78_002Df87e6b7be184/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="PassNullProvider" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=eb53d67b_002D0b0f_002D42e9_002D8e78_002Df87e6b7be184/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="PassNullProvider" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;Or&gt;&#xD;
     &lt;Project Location="C:\.NETProjects\interactions\interactions.core.tests" Presentation="&amp;lt;interactions.core.tests&amp;gt;" /&gt;&#xD;
     &lt;TestAncestor&gt;&#xD;

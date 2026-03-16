@@ -12,8 +12,18 @@ internal sealed class AsyncCompositeExecutable<T1, T2, T3>(IAsyncExecutable<T1, 
     return this;
   }
 
-  async ValueTask<T3> IAsyncExecutor<T1, T3>.Execute(T1 input, CancellationToken token) {
-    return await _second.Execute(await _first.Execute(input, token), token);
+  ValueTask<T3> IAsyncExecutor<T1, T3>.Execute(T1 input, CancellationToken token) {
+    token.ThrowIfCancellationRequested();
+
+    ValueTask<T2> firstTask = _first.Execute(input, token);
+    if (firstTask.IsCompleted)
+      return _second.Execute(firstTask.Result, token);
+
+    return Await(firstTask, _second, token);
+  }
+
+  private static async ValueTask<T3> Await(ValueTask<T2> task, IAsyncExecutor<T2, T3> second, CancellationToken token) {
+    return await second.Execute(await task, token);
   }
 
 }

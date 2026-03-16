@@ -12,6 +12,8 @@ public static partial class ExecutableExtensions {
   public static IAsyncExecutable<T1, T3> Then<T1, T2, T3>(this IAsyncExecutable<T1, T2> first, IAsyncExecutable<T2, T3> second) {
     first.ThrowIfNullReference();
     ExceptionsHelper.ThrowIfNull(second, nameof(second));
+    if (first is AsyncIdentityExecutable<T1>)
+      return (IAsyncExecutable<T1, T3>)second;
     return new AsyncCompositeExecutable<T1, T2, T3>(first, second);
   }
 
@@ -92,32 +94,27 @@ public static partial class ExecutableExtensions {
   }
 
   [Pure]
-  public static IAsyncExecutable<T1, T3> Race<T1, T2, T3>(
-    this IAsyncExecutable<T1, T2> executable,
-    IAsyncExecutable<T2, T3> first,
-    IAsyncExecutable<T2, T3> second) {
-    ExceptionsHelper.ThrowIfNull(first, nameof(first));
-    ExceptionsHelper.ThrowIfNull(second, nameof(second));
-    return executable.Then(new RaceExecutable<T2, T3>(first, second));
-  }
-
-  [Pure]
-  public static IAsyncExecutable<T1, T3> Race<T1, T2, T3>(this IAsyncExecutable<T1, T2> executable, AsyncFunc<T2, T3> first, AsyncFunc<T2, T3> second) {
-    return executable.Race(AsyncExecutable.Create(first), AsyncExecutable.Create(second));
-  }
-
-  [Pure]
   public static IAsyncExecutable<T1, T3> Race<T1, T2, T3>(this IAsyncExecutable<T1, T2> executable, params IAsyncExecutable<T2, T3>[] executables) {
     ExceptionsHelper.ThrowIfNullOrEmpty(executables, nameof(executables));
-    return executables.Length > 1 ? executable.Then(new ManyRaceExecutable<T2, T3>(executables)) : executable.Then(executables[0]);
+    return executables.Length > 1 ? executable.Then(new RaceExecutable<T2, T3>(executables)) : executable.Then(executables[0]);
   }
 
   [Pure]
   public static IAsyncExecutable<T1, T3> Race<T1, T2, T3>(this IAsyncExecutable<T1, T2> executable, params AsyncFunc<T2, T3>[] executables) {
     ExceptionsHelper.ThrowIfNullOrEmpty(executables, nameof(executables));
-    return executables.Length > 1
-      ? executable.Race(executables.Select(AsyncExecutable.Create).ToArray())
-      : executable.Then(AsyncExecutable.Create(executables[0]));
+    return executables.Length > 1 ? executable.Race(executables.Select(AsyncExecutable.Create).ToArray()) : executable.Then(executables[0]);
+  }
+
+  [Pure]
+  public static IAsyncExecutable<T1, T3> RaceSuccess<T1, T2, T3>(this IAsyncExecutable<T1, T2> executable, params IAsyncExecutable<T2, T3>[] executables) {
+    ExceptionsHelper.ThrowIfNullOrEmpty(executables, nameof(executables));
+    return executables.Length > 1 ? executable.Then(new RaceSuccessExecutable<T2, T3>(executables)) : executable.Then(executables[0]);
+  }
+
+  [Pure]
+  public static IAsyncExecutable<T1, T3> RaceSuccess<T1, T2, T3>(this IAsyncExecutable<T1, T2> executable, params AsyncFunc<T2, T3>[] executables) {
+    ExceptionsHelper.ThrowIfNullOrEmpty(executables, nameof(executables));
+    return executables.Length > 1 ? executable.RaceSuccess(executables.Select(AsyncExecutable.Create).ToArray()) : executable.Then(executables[0]);
   }
 
   [Pure]

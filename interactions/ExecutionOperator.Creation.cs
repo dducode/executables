@@ -20,9 +20,29 @@ public static class ExecutionOperator {
   }
 
   [Pure]
+  public static BehaviorOperator<T, T> Cache<T>(ICacheStorage<T, T> storage) {
+    return Cache<T, T>(storage);
+  }
+
+  [Pure]
   public static BehaviorOperator<T1, T2> Metrics<T1, T2>(this IMetrics<T1, T2> metrics, string tag = null) {
     ExceptionsHelper.ThrowIfNull(metrics, nameof(metrics));
     return new MetricsOperator<T1, T2>(metrics, tag);
+  }
+
+  [Pure]
+  public static BehaviorOperator<T, T> Metrics<T>(this IMetrics<T, T> metrics, string tag = null) {
+    return Metrics<T, T>(metrics, tag);
+  }
+
+  [Pure]
+  public static AsyncBehaviorOperator<T1, T2> CancelAfterCompletion<T1, T2>() {
+    return new CancelAfterCompletionOperator<T1, T2>();
+  }
+
+  [Pure]
+  public static AsyncBehaviorOperator<T, T> CancelAfterCompletion<T>() {
+    return CancelAfterCompletion<T, T>();
   }
 
   [Pure]
