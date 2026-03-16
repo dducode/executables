@@ -5,15 +5,15 @@ internal static class Pool<T> where T : new() {
   private static readonly Stack<T> _pool = new();
 
   internal static T Get() {
-    T list;
+    T item;
     lock (_pool)
-      list = _pool.Count > 0 ? _pool.Pop() : new T();
-    return list;
+      item = _pool.Count > 0 ? _pool.Pop() : new T();
+    return item;
   }
 
-  internal static void Return(T list) {
+  internal static void Return(T item) {
     lock (_pool)
-      _pool.Push(list);
+      _pool.Push(item);
   }
 
 }
