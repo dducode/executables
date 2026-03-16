@@ -21,10 +21,7 @@ internal sealed class RaceExecutable<T1, T2>(IAsyncExecutable<T1, T2> first, IAs
     if (t2.IsCompletedSuccessfully)
       return t2.Result;
 
-    Task<T2> task1 = t1.AsTask();
-    Task<T2> task2 = t2.AsTask();
-
-    return (await Task.WhenAny(task1, task2)).Result;
+    return (await Task.WhenAny(t1.AsTask(), t2.AsTask())).Result;
   }
 
 }
