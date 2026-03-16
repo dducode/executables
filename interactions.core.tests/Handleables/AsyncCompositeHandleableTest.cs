@@ -1,6 +1,5 @@
 using Interactions.Core.Executables;
 using Interactions.Core.Handleables;
-using Interactions.Core.Handlers;
 using Interactions.Core.Lifecycle;
 using JetBrains.Annotations;
 
@@ -24,7 +23,7 @@ public class AsyncCompositeHandleableTest {
       secondCalled = true;
       return handler;
     });
-    Assert.Throws<InvalidOperationException>(() => first.Compose(second).Handle(Executable.Identity().AsHandler().ToAsyncHandler()));
+    Assert.Throws<InvalidOperationException>(() => first.Compose(second).Handle(AsyncExecutable.Identity().AsHandler()));
     Assert.False(secondCalled);
   }
 
@@ -33,7 +32,7 @@ public class AsyncCompositeHandleableTest {
     var firstDisposed = false;
     IAsyncHandleable<Unit, Unit> first = AsyncHandleable.Create((AsyncHandler<Unit, Unit> _) => Disposable.Create(() => firstDisposed = true));
     IAsyncHandleable<Unit, Unit> second = AsyncHandleable.Create((AsyncHandler<Unit, Unit> _) => throw new InvalidOperationException());
-    Assert.Throws<InvalidOperationException>(() => first.Compose(second).Handle(Executable.Identity().AsHandler().ToAsyncHandler()));
+    Assert.Throws<InvalidOperationException>(() => first.Compose(second).Handle(AsyncExecutable.Identity().AsHandler()));
     Assert.True(firstDisposed);
   }
 

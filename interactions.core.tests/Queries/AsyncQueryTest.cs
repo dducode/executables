@@ -23,7 +23,7 @@ public class AsyncQueryTest {
   private async Task Cancel() {
     var cts = new CancellationTokenSource();
     var query = new AsyncQuery<Unit, Unit>();
-    query.Handle(Executable.Identity().AsHandler().ToAsyncHandler());
+    query.Handle(AsyncExecutable.Identity().AsHandler());
     await cts.CancelAsync();
     await Assert.ThrowsAsync<OperationCanceledException>(async () => await query.Send(default, cts.Token));
   }
@@ -32,7 +32,7 @@ public class AsyncQueryTest {
   public async Task SendWithoutHandler() {
     var query = new AsyncQuery<Unit, Unit>();
     await Assert.ThrowsAsync<MissingHandlerException>(async () => await query.Send());
-    IDisposable handle = query.Handle(Executable.Identity().AsHandler().ToAsyncHandler());
+    IDisposable handle = query.Handle(AsyncExecutable.Identity().AsHandler());
     await query.Send();
     handle.Dispose();
     await Assert.ThrowsAsync<MissingHandlerException>(async () => await query.Send());
@@ -47,9 +47,9 @@ public class AsyncQueryTest {
   [Fact]
   public void AddHandlerWhenOtherExists() {
     var query = new AsyncQuery<Unit, Unit>();
-    using (query.Handle(Executable.Identity().AsHandler().ToAsyncHandler()))
-      Assert.Throws<InvalidOperationException>(() => query.Handle(Executable.Identity().AsHandler().ToAsyncHandler()));
-    query.Handle(Executable.Identity().AsHandler().ToAsyncHandler());
+    using (query.Handle(AsyncExecutable.Identity().AsHandler()))
+      Assert.Throws<InvalidOperationException>(() => query.Handle(AsyncExecutable.Identity().AsHandler()));
+    query.Handle(AsyncExecutable.Identity().AsHandler());
   }
 
 }

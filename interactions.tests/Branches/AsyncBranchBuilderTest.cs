@@ -15,7 +15,7 @@ public class AsyncBranchBuilderTest {
   [InlineData(2, 2)]
   [InlineData(3, -1)]
   public async Task LinearBranch(int state, int expected) {
-    IAsyncQuery<Unit, int> query = Branch<int>
+    IAsyncQuery<Unit, int> query = AsyncBranch<int>
       .If(() => state == 0, _ => ValueTask.FromResult(0))
       .ElseIf(() => state == 1, _ => ValueTask.FromResult(1))
       .ElseIf(() => state == 2, _ => ValueTask.FromResult(2))
@@ -30,13 +30,13 @@ public class AsyncBranchBuilderTest {
   [InlineData(true, false, 1)]
   [InlineData(false, true, 2)]
   [InlineData(false, false, 3)]
-  public async Task NestedBranch(bool topConditional, bool nestedConditional, int expected) {
-    IAsyncQuery<Unit, int> query = Branch<int>
-      .If(() => topConditional, Branch<int>
-        .If(() => nestedConditional, _ => ValueTask.FromResult(0))
+  public async Task NestedBranch(bool topCondition, bool nestedCondition, int expected) {
+    IAsyncQuery<Unit, int> query = AsyncBranch<int>
+      .If(() => topCondition, AsyncBranch<int>
+        .If(() => nestedCondition, _ => ValueTask.FromResult(0))
         .Else(AsyncExecutable.Create(_ => ValueTask.FromResult(1)))
-      ).Else(Branch<int>
-        .If(() => nestedConditional, _ => ValueTask.FromResult(2))
+      ).Else(AsyncBranch<int>
+        .If(() => nestedCondition, _ => ValueTask.FromResult(2))
         .Else(_ => ValueTask.FromResult(3))
       ).AsQuery();
 
@@ -45,23 +45,23 @@ public class AsyncBranchBuilderTest {
 
   [Fact]
   public void PassNullArguments() {
-    Assert.Throws<ArgumentNullException>(() => Branch<Unit, Unit>.If(null, Executable.Identity().ToAsyncExecutable()));
-    Assert.Throws<ArgumentNullException>(() => Branch<Unit, Unit>.If(() => true, (AsyncHandler<Unit, Unit>)null));
+    Assert.Throws<ArgumentNullException>(() => AsyncBranch<Unit, Unit>.If(null, AsyncExecutable.Identity()));
+    Assert.Throws<ArgumentNullException>(() => AsyncBranch<Unit, Unit>.If(_ => true, (IAsyncExecutable<Unit, Unit>)null));
 
     Assert.Throws<ArgumentNullException>(() => {
-      Branch<Unit, Unit>
-        .If(() => true, Executable.Identity().ToAsyncExecutable())
-        .ElseIf(null, Executable.Identity().ToAsyncExecutable());
+      AsyncBranch<Unit, Unit>
+        .If(_ => true, AsyncExecutable.Identity())
+        .ElseIf(null, AsyncExecutable.Identity());
     });
     Assert.Throws<ArgumentNullException>(() => {
-      Branch<Unit, Unit>
-        .If(() => true, Executable.Identity().ToAsyncExecutable())
-        .ElseIf(() => true, null);
+      AsyncBranch<Unit, Unit>
+        .If(_ => true, AsyncExecutable.Identity())
+        .ElseIf(_ => true, null);
     });
 
     Assert.Throws<ArgumentNullException>(() => {
-      IAsyncExecutable<Unit, Unit> _ = Branch<Unit, Unit>
-        .If(() => true, Executable.Identity().ToAsyncExecutable())
+      IAsyncExecutable<Unit, Unit> _ = AsyncBranch<Unit, Unit>
+        .If(_ => true, AsyncExecutable.Identity())
         .Else(null);
     });
   }

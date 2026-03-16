@@ -1,30 +1,27 @@
 using System.Diagnostics.Contracts;
 using Interactions.Core;
+using Interactions.Core.Internal;
 
 namespace Interactions.Branches;
 
 public static partial class BranchBuilderExtensions {
 
-  public static AsyncBranchBuilder<T1, T2> ElseIf<T1, T2>(this AsyncBranchBuilder<T1, T2> builder, Func<bool> condition, AsyncFunc<T1, T2> action) {
+  public static AsyncBranchBuilder<T1, T2> ElseIf<T1, T2>(this AsyncBranchBuilder<T1, T2> builder, Func<T1, bool> condition, AsyncFunc<T1, T2> action) {
     return builder.ElseIf(condition, AsyncExecutable.Create(action));
   }
 
   public static AsyncBranchBuilder<Unit, T> ElseIf<T>(this AsyncBranchBuilder<Unit, T> builder, Func<bool> condition, AsyncFunc<T> action) {
+    ExceptionsHelper.ThrowIfNull(condition, nameof(condition));
+    return builder.ElseIf(_ => condition(), AsyncExecutable.Create(action));
+  }
+
+  public static AsyncBranchBuilder<T, Unit> ElseIf<T>(this AsyncBranchBuilder<T, Unit> builder, Func<T, bool> condition, AsyncAction<T> action) {
     return builder.ElseIf(condition, AsyncExecutable.Create(action));
   }
 
-  public static AsyncBranchBuilder<T, Unit> ElseIf<T>(this AsyncBranchBuilder<T, Unit> builder, Func<bool> condition, AsyncAction<T> action) {
-    return builder.ElseIf(condition, AsyncExecutable.Create(async (T input, CancellationToken token) => {
-      await action(input, token);
-      return default(Unit);
-    }));
-  }
-
   public static AsyncBranchBuilder<Unit, Unit> ElseIf(this AsyncBranchBuilder<Unit, Unit> builder, Func<bool> condition, AsyncAction action) {
-    return builder.ElseIf(condition, AsyncExecutable.Create(async (Unit _, CancellationToken token) => {
-      await action(token);
-      return default(Unit);
-    }));
+    ExceptionsHelper.ThrowIfNull(condition, nameof(condition));
+    return builder.ElseIf(_ => condition(), AsyncExecutable.Create(action));
   }
 
   [Pure]
@@ -39,18 +36,12 @@ public static partial class BranchBuilderExtensions {
 
   [Pure]
   public static IAsyncExecutable<T, Unit> Else<T>(this AsyncBranchBuilder<T, Unit> builder, AsyncAction<T> action) {
-    return builder.Else(AsyncExecutable.Create(async (T input, CancellationToken token) => {
-      await action(input, token);
-      return default(Unit);
-    }));
+    return builder.Else(AsyncExecutable.Create(action));
   }
 
   [Pure]
   public static IAsyncExecutable<Unit, Unit> Else(this AsyncBranchBuilder<Unit, Unit> builder, AsyncAction action) {
-    return builder.Else(AsyncExecutable.Create(async (Unit _, CancellationToken token) => {
-      await action(token);
-      return default(Unit);
-    }));
+    return builder.Else(AsyncExecutable.Create(action));
   }
 
 }

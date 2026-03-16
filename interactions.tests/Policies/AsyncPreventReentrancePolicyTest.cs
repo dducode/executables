@@ -12,7 +12,7 @@ public class AsyncPreventReentrancePolicyTest {
 
   [Fact]
   public async Task SequentialExecute() {
-    IAsyncQuery<Unit, Unit> query = AsyncPolicy.PreventReentrance<Unit>().Apply(Executable.Identity().ToAsyncExecutable()).AsQuery();
+    IAsyncQuery<Unit, Unit> query = AsyncPolicy.PreventReentrance<Unit>().Apply(AsyncExecutable.Identity()).AsQuery();
 
     await query.Send();
     await query.Send();
@@ -20,7 +20,7 @@ public class AsyncPreventReentrancePolicyTest {
 
   [Fact]
   public async Task Cancel() {
-    IAsyncQuery<Unit, Unit> query = AsyncPolicy.PreventReentrance<Unit>().Apply(Executable.Identity().ToAsyncExecutable()).AsQuery();
+    IAsyncQuery<Unit, Unit> query = AsyncPolicy.PreventReentrance<Unit>().Apply(AsyncExecutable.Identity()).AsQuery();
     var cts = new CancellationTokenSource();
 
     await cts.CancelAsync();
@@ -29,7 +29,7 @@ public class AsyncPreventReentrancePolicyTest {
 
   [Fact]
   public async Task MultiplyExecute() {
-    IAsyncQuery<Unit, Unit> query = AsyncPolicy.PreventReentrance<Unit>().Apply(Executable.Identity().ToAsyncExecutable()).AsQuery();
+    IAsyncQuery<Unit, Unit> query = AsyncPolicy.PreventReentrance<Unit>().Apply(AsyncExecutable.Identity()).AsQuery();
 
     ValueTask first = query.Send();
     ValueTask second = query.Send();
@@ -47,7 +47,7 @@ public class AsyncPreventReentrancePolicyTest {
 
   [Fact]
   public async Task ParallelSequentialExecute() {
-    IAsyncQuery<Unit, Unit> query = AsyncPolicy.PreventReentrance<Unit>().Apply(Executable.Identity().ToAsyncExecutable()).AsQuery();
+    IAsyncQuery<Unit, Unit> query = AsyncPolicy.PreventReentrance<Unit>().Apply(AsyncExecutable.Identity()).AsQuery();
 
     await Parallel.ForAsync(0, 10, async (_, token) => {
       await query.Send(token);
@@ -57,7 +57,7 @@ public class AsyncPreventReentrancePolicyTest {
 
   [Fact]
   public async Task ParallelMultiplyExecute() {
-    IAsyncQuery<Unit, Unit> query = AsyncPolicy.PreventReentrance<Unit>().Apply(Executable.Identity().ToAsyncExecutable()).AsQuery();
+    IAsyncQuery<Unit, Unit> query = AsyncPolicy.PreventReentrance<Unit>().Apply(AsyncExecutable.Identity()).AsQuery();
 
     await Parallel.ForAsync(0, 10, async (_, token) => {
       ValueTask first = query.Send(token);

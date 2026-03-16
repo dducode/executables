@@ -15,7 +15,7 @@ public class AsyncFallbackPolicyTest {
   public async Task RegularExecution() {
     IAsyncQuery<Unit, Unit> query = AsyncPolicy
       .Fallback((Unit _, InvalidOperationException _) => default(Unit))
-      .Apply(Executable.Identity().ToAsyncExecutable())
+      .Apply(AsyncExecutable.Identity())
       .AsQuery();
 
     await query.Send();
@@ -26,7 +26,7 @@ public class AsyncFallbackPolicyTest {
     var cts = new CancellationTokenSource();
     IAsyncQuery<Unit, Unit> query = AsyncPolicy
       .Fallback((Unit _, InvalidOperationException _) => default(Unit))
-      .Apply(Executable.Identity().ToAsyncExecutable())
+      .Apply(AsyncExecutable.Identity())
       .AsQuery();
 
     await cts.CancelAsync();
@@ -37,7 +37,7 @@ public class AsyncFallbackPolicyTest {
   public async Task ReturnFallbackOnException() {
     IAsyncQuery<int, int> query = AsyncPolicy
       .Fallback((int input, InvalidOperationException _) => input)
-      .Apply(Executable.Create<int, int>(_ => throw new InvalidOperationException()).ToAsyncExecutable())
+      .Apply(AsyncExecutable.Create<int, int>((_, _) => throw new InvalidOperationException()))
       .AsQuery();
 
     Assert.Equal(10, await query.Send(10));
@@ -50,7 +50,7 @@ public class AsyncFallbackPolicyTest {
         ExceptionDispatchInfo.Capture(ex).Throw();
         return default(Unit);
       })
-      .Apply(Executable.Create<Unit, Unit>(_ => throw new InvalidOperationException()).ToAsyncExecutable())
+      .Apply(AsyncExecutable.Create<Unit, Unit>((_, _) => throw new InvalidOperationException()))
       .AsQuery();
 
     await Assert.ThrowsAsync<InvalidOperationException>(async () => await query.Send());

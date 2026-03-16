@@ -57,7 +57,7 @@ public class ExecutableExtensionsTest {
   public async Task TryExecuteAsyncQueryWithCanceledToken() {
     var query = new AsyncQuery<Unit, Unit>();
     var cts = new CancellationTokenSource();
-    query.Handle(Executable.Identity().AsHandler().ToAsyncHandler());
+    query.Handle(AsyncExecutable.Identity().AsHandler());
 
     await cts.CancelAsync();
     Result<Unit> result = await query.TrySend(cts.Token);
@@ -67,7 +67,7 @@ public class ExecutableExtensionsTest {
 
   [Fact]
   public void ThrowExceptionFromNullQuery() {
-    Assert.Throws<NullReferenceException>(() => ((Query<Unit, Unit>)null).ToAsyncExecutable());
+    Assert.Throws<NullReferenceException>(() => ((IExecutable<Unit, Unit>)null).ToAsyncExecutable());
   }
 
 }
