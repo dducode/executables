@@ -11,6 +11,12 @@ internal static class ExceptionsHelper {
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  internal static void ThrowIfNullOrEmpty<T>(T[] args, string paramName) {
+    if (args == null || args.Length == 0)
+      throw new ArgumentOutOfRangeException(paramName);
+  }
+
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   internal static void ThrowIfNullReference<T>(this T @this) where T : class {
     if (@this == null)
       throw new NullReferenceException();
