@@ -8,16 +8,15 @@ public interface IAsyncCommand<in T> : IAsyncExecutable<T, bool> {
 
 public class AsyncCommand<T> : AsyncHandleable<T, Unit>, IAsyncCommand<T> {
 
-  public virtual async ValueTask<bool> Execute(T input, CancellationToken token = default) {
+  public virtual ValueTask<bool> Execute(T input, CancellationToken token = default) {
     if (token.IsCancellationRequested)
-      return false;
+      return new ValueTask<bool>(false);
 
     AsyncHandler<T, Unit> handler = Handler;
     if (handler == null)
-      return false;
+      return new ValueTask<bool>(false);
 
-    await handler.Handle(input, token);
-    return true;
+    return Await(input, handler, token);
   }
 
   public Executor GetExecutor() {
@@ -26,6 +25,16 @@ public class AsyncCommand<T> : AsyncHandleable<T, Unit>, IAsyncCommand<T> {
 
   IAsyncExecutor<T, bool> IAsyncExecutable<T, bool>.GetExecutor() {
     return GetExecutor();
+  }
+
+  private static async ValueTask<bool> Await(T input, AsyncHandler<T, Unit> handler, CancellationToken token) {
+    try {
+      await handler.Handle(input, token);
+      return true;
+    }
+    catch (OperationCanceledException) {
+      return false;
+    }
   }
 
   public readonly struct Executor(IAsyncCommand<T> command) : IAsyncExecutor<T, bool> {

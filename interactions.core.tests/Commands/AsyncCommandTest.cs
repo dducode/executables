@@ -34,12 +34,14 @@ public class AsyncCommandTest {
 
   [Fact]
   public async Task Cancel() {
-    var command = new AsyncCommand<Unit>();
-    command.Handle(AsyncExecutable.Identity().AsHandler());
     var cts = new CancellationTokenSource();
 
-    Assert.True(await command.Execute(cts.Token));
-    await cts.CancelAsync();
+    var command = new AsyncCommand<Unit>();
+    command.Handle(AsyncExecutable.Create(async (Unit _, CancellationToken token) => {
+      await cts.CancelAsync();
+      await Task.Delay(10, token);
+    }).AsHandler());
+
     Assert.False(await command.Execute(cts.Token));
   }
 

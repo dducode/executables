@@ -18,7 +18,7 @@ internal sealed class AsyncForkExecutable<T1, T2, T3>(IAsyncExecutable<T1, T2> f
     ValueTask<T2> t1 = _first.Execute(input, token);
     ValueTask<T3> t2 = _second.Execute(input, token);
 
-    if (t1.IsCompletedSuccessfully && t2.IsCompletedSuccessfully)
+    if (t1.IsCompleted && t2.IsCompleted)
       return new ValueTask<(T2, T3)>((t1.Result, t2.Result));
 
     return Await(t1, t2);
