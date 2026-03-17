@@ -29,17 +29,33 @@ public class RaceExecutableTest {
     Assert.Equal(expected, await query.Send(value));
   }
 
-  [Fact]
-  public async Task RaceWithOnceSynchronouslyTask() {
+  [Theory]
+  [InlineData(10, 1)]
+  [InlineData(50, 5)]
+  public async Task ManyRace(int expected, int value) {
     IAsyncQuery<int, int> query = AsyncExecutable
       .Identity<int>()
-      .Race(async (x, token) => {
-        await Task.Delay(10, token);
-        return x * 2;
-      }, (x, _) => new ValueTask<int>(x + 10))
+      .Race(
+        async (x, token) => {
+          await Task.Delay(10, token);
+          return x * 2;
+        },
+        async (x, token) => {
+          await Task.Delay(50, token);
+          return x + 10;
+        },
+        (x, _) => ValueTask.FromResult(x * 10),
+        async (x, token) => {
+          await Task.Delay(250, token);
+          return x + 100;
+        },
+        async (x, token) => {
+          await Task.Delay(100, token);
+          return x * 100;
+        })
       .AsQuery();
 
-    Assert.Equal(11, await query.Send(1));
+    Assert.Equal(expected, await query.Send(value));
   }
 
   [Fact]
@@ -63,7 +79,7 @@ public class RaceExecutableTest {
           await Task.Delay(10, token);
           return x * 2;
         })
-      .Apply(ExecutionOperator.CancelAfterCompletion<int>())
+      .Apply(AsyncPolicy.CancelAfterCompletion<int>())
       .AsQuery();
 
     Assert.Equal(2, await query.Send(1));
@@ -71,33 +87,22 @@ public class RaceExecutableTest {
   }
 
   [Fact]
-  public async Task ManyRace() {
+  public async Task ThrowExceptionWhenAnyFaulted() {
     IAsyncQuery<int, int> query = AsyncExecutable
       .Identity<int>()
       .Race(
         async (x, token) => {
-          await Task.Delay(100, token);
-          return x * 2;
-        },
-        async (x, token) => {
-          await Task.Delay(250, token);
-          return x + 10;
-        },
-        async (x, token) => {
           await Task.Delay(10, token);
-          return x * 10;
+          return x + 2;
         },
+        (_, _) => throw new InvalidOperationException(),
         async (x, token) => {
-          await Task.Delay(2500, token);
-          return x + 100;
-        },
-        async (x, token) => {
-          await Task.Delay(1000, token);
-          return x * 100;
+          await Task.Delay(50, token);
+          return x * 2;
         })
       .AsQuery();
 
-    Assert.Equal(10, await query.Send(1));
+    await Assert.ThrowsAsync<InvalidOperationException>(async () => await query.Send(0));
   }
 
 }

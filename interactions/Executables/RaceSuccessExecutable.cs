@@ -23,43 +23,44 @@ internal sealed class RaceSuccessExecutable<T1, T2> : IAsyncExecutable<T1, T2>, 
     List<ValueTask<T2>> valueTasks = Pool<List<ValueTask<T2>>>.Get();
     using var valueTasksHandle = new ListHandle<ValueTask<T2>>(valueTasks);
 
-    List<ValueTask<T2>> faultedTasks = Pool<List<ValueTask<T2>>>.Get();
-    using var faultedTasksHandle = new ListHandle<ValueTask<T2>>(faultedTasks);
-
-    for (var i = 0; i < _executors.Length; i++) {
-      ValueTask<T2> valueTask = _executors[i].Execute(input, token);
-      if (valueTask.IsCompletedSuccessfully)
-        return new ValueTask<T2>(valueTask.Result);
-      if (!valueTask.IsCompleted)
-        valueTasks.Add(valueTask);
-      else
-        faultedTasks.Add(valueTask);
-    }
-
-    return valueTasks.Count switch {
-      0 => Fail(faultedTasks),
-      1 => valueTasks[0],
-      _ => Await(valueTasks)
-    };
-  }
-
-  private static ValueTask<T2> Fail(List<ValueTask<T2>> faultedTasks) {
     List<Exception> exceptions = Pool<List<Exception>>.Get();
     using var exceptionsHandle = new ListHandle<Exception>(exceptions);
 
-    foreach (ValueTask<T2> faultedTask in faultedTasks) {
+    for (var i = 0; i < _executors.Length; i++) {
+      ValueTask<T2> valueTask;
+
       try {
-        faultedTask.GetAwaiter().GetResult();
+        valueTask = _executors[i].Execute(input, token);
+      }
+      catch (Exception e) {
+        exceptions.Add(e);
+        continue;
+      }
+
+      if (valueTask.IsCompletedSuccessfully)
+        return new ValueTask<T2>(valueTask.Result);
+
+      if (!valueTask.IsCompleted) {
+        valueTasks.Add(valueTask);
+        continue;
+      }
+
+      try {
+        valueTask.GetAwaiter().GetResult();
       }
       catch (Exception e) {
         exceptions.Add(e);
       }
     }
 
-    throw new AggregateException(exceptions);
+    return valueTasks.Count switch {
+      0 => exceptions.All(e => e is OperationCanceledException) ? throw new OperationCanceledException(token) : throw new AggregateException(exceptions),
+      1 => valueTasks[0],
+      _ => Await(valueTasks, token)
+    };
   }
 
-  private static async ValueTask<T2> Await(List<ValueTask<T2>> valueTasks) {
+  private static async ValueTask<T2> Await(List<ValueTask<T2>> valueTasks, CancellationToken token) {
     List<Exception> exceptions = Pool<List<Exception>>.Get();
     using var exceptionsHandle = new ListHandle<Exception>(exceptions);
 
@@ -81,6 +82,8 @@ internal sealed class RaceSuccessExecutable<T1, T2> : IAsyncExecutable<T1, T2>, 
       }
     }
 
+    if (exceptions.All(e => e is OperationCanceledException))
+      throw new OperationCanceledException(token);
     throw new AggregateException(exceptions);
   }
 
