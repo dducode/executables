@@ -1,3 +1,4 @@
+using System.Diagnostics.Contracts;
 using Interactions.Core;
 using Interactions.Fallbacks;
 
@@ -54,6 +55,26 @@ public static partial class PolicyBuilderExtensions {
 
   public static PolicyBuilder<T, Unit> OnThreadPool<T>(this PolicyBuilder<T, Unit> builder) {
     return builder.Add(new ThreadPoolPolicy<T>());
+  }
+
+  [Pure]
+  public static IExecutable<T1, T2> Apply<T1, T2>(this PolicyBuilder<T1, T2> builder, Func<T1, T2> func) {
+    return builder.Apply(Executable.Create(func));
+  }
+
+  [Pure]
+  public static IExecutable<Unit, T> Apply<T>(this PolicyBuilder<Unit, T> builder, Func<T> func) {
+    return builder.Apply(Executable.Create(func));
+  }
+
+  [Pure]
+  public static IExecutable<T, Unit> Apply<T>(this PolicyBuilder<T, Unit> builder, Action<T> action) {
+    return builder.Apply(Executable.Create(action));
+  }
+
+  [Pure]
+  public static IExecutable<Unit, Unit> Apply(this PolicyBuilder<Unit, Unit> builder, Action action) {
+    return builder.Apply(Executable.Create(action));
   }
 
 }

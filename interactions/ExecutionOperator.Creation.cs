@@ -36,16 +36,6 @@ public static class ExecutionOperator {
   }
 
   [Pure]
-  public static AsyncBehaviorOperator<T1, T2> CancelAfterCompletion<T1, T2>() {
-    return new CancelAfterCompletionOperator<T1, T2>();
-  }
-
-  [Pure]
-  public static AsyncBehaviorOperator<T, T> CancelAfterCompletion<T>() {
-    return CancelAfterCompletion<T, T>();
-  }
-
-  [Pure]
   public static ExecutionOperator<T1, T2, T3, T4> Create<T1, T2, T3, T4>(ExecutionFunc<T1, T2, T3, T4> operation) {
     ExceptionsHelper.ThrowIfNull(operation, nameof(operation));
     return new AnonymousOperator<T1, T2, T3, T4>(operation);

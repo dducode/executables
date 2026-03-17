@@ -75,6 +75,10 @@ public class AsyncPolicyBuilder<T1, T2> {
     return Add(new AsyncFallbackPolicy<T1, T2, TEx>(fallback));
   }
 
+  public AsyncPolicyBuilder<T1, T2> CancelAfterCompletion() {
+    return Add(new CancelAfterCompletionPolicy<T1, T2>());
+  }
+
   public AsyncPolicyBuilder<T1, T2> Create(AsyncFunc<T1, IAsyncExecutor<T1, T2>, T2> policy) {
     ExceptionsHelper.ThrowIfNull(policy, nameof(policy));
     return Add(new AsyncAnonymousPolicy<T1, T2>(policy));

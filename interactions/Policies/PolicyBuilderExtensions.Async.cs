@@ -1,3 +1,4 @@
+using System.Diagnostics.Contracts;
 using Interactions.Core;
 using Interactions.Fallbacks;
 using Interactions.RetryRules;
@@ -69,6 +70,26 @@ public static partial class PolicyBuilderExtensions {
 
   public static AsyncPolicyBuilder<T1, T2> Fallback<T1, T2, TEx>(this AsyncPolicyBuilder<T1, T2> builder, Func<T1, TEx, T2> fallback) where TEx : Exception {
     return builder.Fallback(FallbackHandler.Create(fallback));
+  }
+
+  [Pure]
+  public static IAsyncExecutable<T1, T2> Apply<T1, T2>(this AsyncPolicyBuilder<T1, T2> builder, AsyncFunc<T1, T2> func) {
+    return builder.Apply(AsyncExecutable.Create(func));
+  }
+
+  [Pure]
+  public static IAsyncExecutable<Unit, T> Apply<T>(this AsyncPolicyBuilder<Unit, T> builder, AsyncFunc<T> func) {
+    return builder.Apply(AsyncExecutable.Create(func));
+  }
+
+  [Pure]
+  public static IAsyncExecutable<T, Unit> Apply<T>(this AsyncPolicyBuilder<T, Unit> builder, AsyncAction<T> action) {
+    return builder.Apply(AsyncExecutable.Create(action));
+  }
+
+  [Pure]
+  public static IAsyncExecutable<Unit, Unit> Apply(this AsyncPolicyBuilder<Unit, Unit> builder, AsyncAction action) {
+    return builder.Apply(AsyncExecutable.Create(action));
   }
 
 }

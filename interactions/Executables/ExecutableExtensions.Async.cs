@@ -18,8 +18,8 @@ public static partial class ExecutableExtensions {
   }
 
   [Pure]
-  public static IAsyncExecutable<T1, T3> Then<T1, T2, T3>(this IAsyncExecutable<T1, T2> executable, Func<T2, T3> next) {
-    return executable.Then(Executable.Create(next));
+  public static IAsyncExecutable<T1, T3> Then<T1, T2, T3>(this IAsyncExecutable<T1, T2> executable, AsyncFunc<T2, T3> next) {
+    return executable.Then(AsyncExecutable.Create(next));
   }
 
   [Pure]
@@ -28,8 +28,8 @@ public static partial class ExecutableExtensions {
   }
 
   [Pure]
-  public static IAsyncExecutable<T1, T3> Then<T1, T2, T3>(this IAsyncExecutable<T1, T2> executable, AsyncFunc<T2, T3> next) {
-    return executable.Then(AsyncExecutable.Create(next));
+  public static IAsyncExecutable<T1, T3> Then<T1, T2, T3>(this IAsyncExecutable<T1, T2> executable, Func<T2, T3> next) {
+    return executable.Then(Executable.Create(next));
   }
 
   [Pure]
