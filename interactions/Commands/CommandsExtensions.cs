@@ -19,12 +19,12 @@ public static partial class CommandsExtensions {
     return new AsyncCompositeCommand<T>(command, other);
   }
 
-  public static bool Execute<T>(this ICommand<T> command, T input, Action<InteractionContext> init) {
+  public static bool Execute<T>(this ICommand<T> command, T input, ContextInit init) {
     ExceptionsHelper.ThrowIfNull(init, nameof(init));
 
     IReadonlyContext previous = InteractionContext.Current;
     using var current = new InteractionContext(previous);
-    init(current);
+    init(new ContextWriter(current));
     InteractionContext.Current = current;
 
     try {
@@ -35,7 +35,7 @@ public static partial class CommandsExtensions {
     }
   }
 
-  public static bool Execute(this ICommand<Unit> command, Action<InteractionContext> init) {
+  public static bool Execute(this ICommand<Unit> command, ContextInit init) {
     return command.Execute(default, init);
   }
 

@@ -6,12 +6,12 @@ namespace Interactions.Commands;
 
 public static partial class CommandsExtensions {
 
-  public static async ValueTask<bool> Execute<T>(this IAsyncCommand<T> command, T input, Action<InteractionContext> init, CancellationToken token = default) {
+  public static async ValueTask<bool> Execute<T>(this IAsyncCommand<T> command, T input, ContextInit init, CancellationToken token = default) {
     ExceptionsHelper.ThrowIfNull(init, nameof(init));
 
     IReadonlyContext previous = InteractionContext.Current;
     using var current = new InteractionContext(previous);
-    init(current);
+    init(new ContextWriter(current));
     InteractionContext.Current = current;
 
     try {
@@ -22,7 +22,7 @@ public static partial class CommandsExtensions {
     }
   }
 
-  public static ValueTask<bool> Execute(this IAsyncCommand<Unit> command, Action<InteractionContext> init, CancellationToken token = default) {
+  public static ValueTask<bool> Execute(this IAsyncCommand<Unit> command, ContextInit init, CancellationToken token = default) {
     return command.Execute(default, init, token: token);
   }
 

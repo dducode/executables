@@ -6,12 +6,12 @@ namespace Interactions.Events;
 
 public static class EventsExtensions {
 
-  public static void Publish<T>(this IEvent<T> e, T message, Action<InteractionContext> init) {
+  public static void Publish<T>(this IEvent<T> e, T message, ContextInit init) {
     ExceptionsHelper.ThrowIfNull(init, nameof(init));
 
     IReadonlyContext previous = InteractionContext.Current;
     using var current = new InteractionContext(previous);
-    init(current);
+    init(new ContextWriter(current));
     InteractionContext.Current = current;
 
     try {
@@ -22,7 +22,7 @@ public static class EventsExtensions {
     }
   }
 
-  public static void Publish(this IEvent<Unit> e, Action<InteractionContext> init) {
+  public static void Publish(this IEvent<Unit> e, ContextInit init) {
     e.Publish(default, init);
   }
 

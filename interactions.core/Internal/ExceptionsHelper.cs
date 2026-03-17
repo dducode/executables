@@ -12,8 +12,10 @@ internal static class ExceptionsHelper {
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   internal static void ThrowIfNullOrEmpty<T>(T[] args, string paramName) {
-    if (args == null || args.Length == 0)
-      throw new ArgumentOutOfRangeException(paramName);
+    if (args == null)
+      throw new ArgumentNullException(paramName);
+    if (args.Length == 0)
+      throw new ArgumentException(paramName);
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -24,7 +26,9 @@ internal static class ExceptionsHelper {
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   internal static void ThrowIfNullOrEmpty(string value, string paramName) {
-    if (string.IsNullOrEmpty(value))
+    if (value == null)
+      throw new ArgumentNullException(paramName);
+    if (value.Length == 0)
       throw new ArgumentException(paramName);
   }
 

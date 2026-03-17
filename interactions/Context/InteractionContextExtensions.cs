@@ -4,7 +4,7 @@ namespace Interactions.Context;
 
 public static class InteractionContextExtensions {
 
-  public static void Set<T>(this InteractionContext context, T value) {
+  public static void Set<T>(this ContextWriter context, T value) {
     context.Set(Key<T>(), value);
   }
 

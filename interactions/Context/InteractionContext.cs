@@ -44,11 +44,6 @@ public sealed class InteractionContext : IDisposable, IReadonlyContext {
     Depth = parent?.Depth + 1 ?? 0;
   }
 
-  public void Set<T>(object key, T value) {
-    ThrowIfDisposed();
-    _context[key] = value;
-  }
-
   public bool TryGet<T>(object key, out T value) {
     ThrowIfDisposed();
 
@@ -72,6 +67,11 @@ public sealed class InteractionContext : IDisposable, IReadonlyContext {
     return false;
   }
 
+  internal void Set<T>(object key, T value) {
+    ThrowIfDisposed();
+    _context[key] = value;
+  }
+
   public override string ToString() {
     return $"[{CorrelationId}] {Name ?? "Context"}({ContextId}:{Depth})";
   }
@@ -84,7 +84,7 @@ public sealed class InteractionContext : IDisposable, IReadonlyContext {
     return Parent == null ? ToString() : $"{Parent:v}{Environment.NewLine}{ToString()}";
   }
 
-  public void Dispose() {
+  void IDisposable.Dispose() {
     if (_disposed)
       return;
 
