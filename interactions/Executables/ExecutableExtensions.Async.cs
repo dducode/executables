@@ -33,11 +33,6 @@ public static partial class ExecutableExtensions {
   }
 
   [Pure]
-  public static IAsyncExecutable<T1, T3> Return<T1, T2, T3>(this IAsyncExecutable<T1, T2> executable, T3 constValue) {
-    return executable.Then(new ConstantValueExecutable<T2, T3>(constValue));
-  }
-
-  [Pure]
   public static IAsyncExecutable<T1, (T3, T4)> Fork<T1, T2, T3, T4>(
     this IAsyncExecutable<T1, T2> executable,
     IAsyncExecutable<T2, T3> firstBranch,
