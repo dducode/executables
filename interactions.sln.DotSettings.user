@@ -15,6 +15,7 @@
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003AResult_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003FUsers_003FDenis_003FAppData_003FRoaming_003FJetBrains_003FRider2024_002E3_003Fresharper_002Dhost_003FDecompilerCache_003Fdecompiler_003F3b8a3d06763744718fba18c6f47206ff92400_003F3f_003F2cf7f191_003FResult_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003ATaskAsyncEnumerableExtensions_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003FUsers_003FDenis_003FAppData_003FRoaming_003FJetBrains_003FRider2025_002E3_003Fresharper_002Dhost_003FSourcesCache_003F80ad4493f42c6d1b72ab8f7118295a3c32e6fe94346edf912b2717d93ac14022_003FTaskAsyncEnumerableExtensions_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003ATestInvoker_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003FUsers_003FDenis_003FAppData_003FRoaming_003FJetBrains_003FRider2024_002E3_003Fresharper_002Dhost_003FSourcesCache_003F5e14a4e27990972fa4ae94975603bd298aaf328ee083c03b10569ee4724d57_003FTestInvoker_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003ATimeoutException_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003FUsers_003FDenis_003FAppData_003FRoaming_003FJetBrains_003FRider2025_002E3_003Fresharper_002Dhost_003FSourcesCache_003Fcd2c3e908f4c4a01186d41ca3de63286b1459447d4671c3daa93b8f1d71974_003FTimeoutException_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=C74EB7E5_002D15BD_002D4D77_002DB33C_002D3C08A0E29930_002Fd_003ACommands_002Ff_003AAsyncCommandsTest_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/UserRules/=a0b4bc4d_002Dd13b_002D4a37_002Db37e_002Dc9c6864e4302/@EntryIndexedValue">&lt;Policy&gt;&lt;Descriptor Staticness="Any" AccessRightKinds="Any" Description="Types and namespaces"&gt;&lt;ElementKinds&gt;&lt;Kind Name="NAMESPACE" /&gt;&lt;Kind Name="CLASS" /&gt;&lt;Kind Name="STRUCT" /&gt;&lt;Kind Name="ENUM" /&gt;&lt;Kind Name="DELEGATE" /&gt;&lt;/ElementKinds&gt;&lt;/Descriptor&gt;&lt;Policy Inspect="True" WarnAboutPrefixesAndSuffixes="False" Prefix="" Suffix="" Style="AaBb_AaBb" /&gt;&lt;/Policy&gt;</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/UserRules/=c85a0503_002D4de2_002D40f1_002D9cd6_002Da4054c05d384/@EntryIndexedValue">&lt;Policy&gt;&lt;Descriptor Staticness="Any" AccessRightKinds="Any" Description="Properties"&gt;&lt;ElementKinds&gt;&lt;Kind Name="PROPERTY" /&gt;&lt;/ElementKinds&gt;&lt;/Descriptor&gt;&lt;Policy Inspect="True" WarnAboutPrefixesAndSuffixes="False" Prefix="" Suffix="" Style="AaBb" /&gt;&lt;/Policy&gt;</s:String>
@@ -161,7 +162,7 @@
     &lt;/TestAncestor&gt;&#xD;
   &lt;/Or&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=c554cf46_002D4698_002D456c_002D8ffd_002D8b1a5b2a5cac/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="SecondHandleableThrowsException" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=c554cf46_002D4698_002D456c_002D8ffd_002D8b1a5b2a5cac/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="SecondHandleableThrowsException" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;Or&gt;&#xD;
     &lt;TestAncestor&gt;&#xD;
       &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.MergedHandleableTest.SecondHandleableThrowsException&lt;/TestId&gt;&#xD;
@@ -214,11 +215,21 @@
       &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Executables.CompositeExecutableTest.ComposeWithIdentity&lt;/TestId&gt;&#xD;
       &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Executables.FirstSecondExecutableTest.FirstSecond&lt;/TestId&gt;&#xD;
       &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Executables.AsyncForkExecutableTest.AsyncFork&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Operations.CacheOperatorTest.CacheValue&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Operations.CacheOperatorTest.AsyncCache&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Executables.AsyncForkExecutableTest.SimpleFork&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Executables.AsyncForkExecutableTest.NestedFork&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Transformation.MiddlewareTest.AsyncPipelineTest&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Transformation.MiddlewareTest.AsyncPipelineCancel&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Transformation.MiddlewareTest.NeverInvokeNextMiddleware&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Policies.TimeoutPolicyTest.CallWithTimeout&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Policies.RetryPolicyTest.RetryToCallFailedQuery&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Transformation.MiddlewareTest.InvokePipelineWithContext&lt;/TestId&gt;&#xD;
     &lt;/TestAncestor&gt;&#xD;
     &lt;Project Location="C:\.NETProjects\interactions\interactions.core.tests" Presentation="&amp;lt;interactions.core.tests&amp;gt;" /&gt;&#xD;
   &lt;/Or&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=eb53d67b_002D0b0f_002D42e9_002D8e78_002Df87e6b7be184/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="PassNullProvider" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=eb53d67b_002D0b0f_002D42e9_002D8e78_002Df87e6b7be184/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="PassNullProvider" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;Or&gt;&#xD;
     &lt;Project Location="C:\.NETProjects\interactions\interactions.core.tests" Presentation="&amp;lt;interactions.core.tests&amp;gt;" /&gt;&#xD;
     &lt;TestAncestor&gt;&#xD;

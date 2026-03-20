@@ -26,11 +26,12 @@ public static class RetryRuleExtensions {
   /// </summary>
   /// <typeparam name="TEx">Exception type handled by composed rules.</typeparam>
   /// <param name="rule">Base retry rule.</param>
+  /// <param name="time">Delay for retry.</param>
   /// <param name="maxAttemptsCount">Maximum allowed failed attempts.</param>
   /// <returns>Composite retry rule.</returns>
   [Pure]
-  public static IRetryRule<TEx> Simple<TEx>(this IRetryRule<TEx> rule, int maxAttemptsCount) where TEx : Exception {
-    return rule.Compose(RetryRule.Simple<TEx>(maxAttemptsCount));
+  public static IRetryRule<TEx> Simple<TEx>(this IRetryRule<TEx> rule, TimeSpan time, int maxAttemptsCount) where TEx : Exception {
+    return rule.Compose(RetryRule.Simple<TEx>(time, maxAttemptsCount));
   }
 
   /// <summary>

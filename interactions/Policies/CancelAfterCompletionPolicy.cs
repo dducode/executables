@@ -1,6 +1,6 @@
 using Interactions.Core;
 
-namespace Interactions.Operations;
+namespace Interactions.Policies;
 
 internal sealed class CancelAfterCompletionPolicy<T1, T2> : AsyncPolicy<T1, T2> {
 

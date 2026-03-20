@@ -1,7 +1,7 @@
 using Interactions.Core;
 using Interactions.Policies;
 
-namespace Interactions;
+namespace Interactions.Operations;
 
 public class AsyncCacheOperator<T1, T2>(ICacheStorage<T1, T2> storage) : AsyncBehaviorOperator<T1, T2> {
 

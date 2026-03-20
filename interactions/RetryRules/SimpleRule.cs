@@ -1,9 +1,13 @@
 namespace Interactions.RetryRules;
 
-internal sealed class SimpleRule<TEx>(int maxAttempts) : IRetryRule<TEx> where TEx : Exception {
+internal sealed class SimpleRule<TEx>(TimeSpan time, int maxAttempts) : IRetryRule<TEx> where TEx : Exception {
 
-  public ValueTask<bool> ShouldRetry(int attemptsCount, TEx exception, CancellationToken token) {
-    return new ValueTask<bool>(attemptsCount <= maxAttempts);
+  public async ValueTask<bool> ShouldRetry(int attemptsCount, TEx exception, CancellationToken token) {
+    if (attemptsCount > maxAttempts)
+      return false;
+
+    await Task.Delay((int)time.TotalMilliseconds, token);
+    return true;
   }
 
 }

@@ -23,12 +23,13 @@ public static class RetryRule {
   /// Creates a rule that retries until maximum attempt count is reached.
   /// </summary>
   /// <typeparam name="TEx">Exception type handled by this rule.</typeparam>
+  /// <param name="time">Delay for retry.</param>
   /// <param name="maxAttempts">Maximum allowed failed attempts.</param>
   /// <returns>Simple attempt-count based retry rule.</returns>
   [Pure]
-  public static IRetryRule<TEx> Simple<TEx>(int maxAttempts) where TEx : Exception {
+  public static IRetryRule<TEx> Simple<TEx>(TimeSpan time, int maxAttempts) where TEx : Exception {
     ExceptionsHelper.ThrowIfLessOrEqualZero(maxAttempts, nameof(maxAttempts));
-    return new SimpleRule<TEx>(maxAttempts);
+    return new SimpleRule<TEx>(time, maxAttempts);
   }
 
   /// <summary>

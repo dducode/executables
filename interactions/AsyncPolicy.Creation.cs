@@ -55,6 +55,16 @@ public static class AsyncPolicy {
     return Retry<T1, T2, TEx>(RetryRule.Create(rule));
   }
 
+  [Pure]
+  public static AsyncPolicy<T, T> Retry<T, TEx>(IRetryRule<TEx> rule) where TEx : Exception {
+    return Retry<T, T, TEx>(rule);
+  }
+
+  [Pure]
+  public static AsyncPolicy<T, T> Retry<T, TEx>(AsyncFunc<int, TEx, bool> rule) where TEx : Exception {
+    return Retry<T, T, TEx>(rule);
+  }
+
   /// <summary>
   /// Creates a timeout policy that limits total asynchronous invocation duration.
   /// </summary>
