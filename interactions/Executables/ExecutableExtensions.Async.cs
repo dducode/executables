@@ -1,4 +1,5 @@
 using System.Diagnostics.Contracts;
+using Interactions.Context;
 using Interactions.Core;
 using Interactions.Core.Executables;
 using Interactions.Core.Internal;
@@ -155,6 +156,12 @@ public static partial class ExecutableExtensions {
   public static IAsyncExecutable<T1, T2> Tap<T1, T2>(this IAsyncExecutable<T1, T2> executable, AsyncAction<T2> action) {
     ExceptionsHelper.ThrowIfNull(action, nameof(action));
     return executable.Then(new AsyncTransitiveExecutable<T2>(action));
+  }
+
+  [Pure]
+  public static IAsyncExecutable<T1, T2> WithContext<T1, T2>(this IAsyncExecutable<T1, T2> executable, ContextInit init) {
+    ExceptionsHelper.ThrowIfNull(init, nameof(init));
+    return executable.Apply(new AsyncContextOperator<T1, T2>(init));
   }
 
 }

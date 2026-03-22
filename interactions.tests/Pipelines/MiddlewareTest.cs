@@ -2,11 +2,12 @@ using Interactions.Context;
 using Interactions.Core;
 using Interactions.Core.Executables;
 using Interactions.Core.Queries;
+using Interactions.Executables;
+using Interactions.Pipelines;
 using JetBrains.Annotations;
 using Xunit.Abstractions;
-using Interactions.Pipelines;
 
-namespace Interactions.Tests.Transformation;
+namespace Interactions.Tests.Pipelines;
 
 [TestSubject(typeof(Middleware<,,,>))]
 public class MiddlewareTest(ITestOutputHelper output) {
@@ -69,7 +70,7 @@ public class MiddlewareTest(ITestOutputHelper output) {
   [Fact]
   public void NeverInvokeNextMiddleware() {
     IQuery<int, int> query = Pipeline<int, int>
-      .Use((int x, Action _) => x * 2)
+      .Use((x, _) => x * 2)
       .End(() => Assert.Fail())
       .AsQuery();
 
@@ -81,12 +82,13 @@ public class MiddlewareTest(ITestOutputHelper output) {
   [InlineData("00:00:10", "00:00:00", -10)]
   public void InvokePipelineWithContext(string input, string expected, int addedSeconds) {
     IQuery<string, string> query = Pipeline<string, string>
-      .Use((string time, ContextFunc<TimeSpan, TimeSpan> next) => {
+      .Use((string time, Func<TimeSpan, TimeSpan> next) => {
         TimeSpan timeSpan = TimeSpan.Parse(time);
-        TimeSpan result = next.Invoke(timeSpan, context => context.Set(nameof(addedSeconds), addedSeconds));
+        TimeSpan result = next.Invoke(timeSpan);
         return result.ToString();
       })
       .End(timeSpan => timeSpan + TimeSpan.FromSeconds(InteractionContext.Current.Get<int>(nameof(addedSeconds))))
+      .WithContext(context => context.Set(nameof(addedSeconds), addedSeconds))
       .AsQuery();
 
     Assert.Equal(expected, query.Send(input));
