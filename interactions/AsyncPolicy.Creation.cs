@@ -3,7 +3,6 @@ using Interactions.Core;
 using Interactions.Core.Internal;
 using Interactions.Fallbacks;
 using Interactions.Guards;
-using Interactions.Operations;
 using Interactions.Policies;
 using Interactions.RetryRules;
 using Interactions.Validation;
