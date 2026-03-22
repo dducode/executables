@@ -27,9 +27,9 @@ public static class RetryRule {
   /// <param name="maxAttempts">Maximum allowed failed attempts.</param>
   /// <returns>Simple attempt-count based retry rule.</returns>
   [Pure]
-  public static IRetryRule<TEx> Simple<TEx>(TimeSpan time, int maxAttempts) where TEx : Exception {
+  public static IRetryRule<TEx> LinearBackoff<TEx>(TimeSpan time, int maxAttempts) where TEx : Exception {
     ExceptionsHelper.ThrowIfLessOrEqualZero(maxAttempts, nameof(maxAttempts));
-    return new SimpleRule<TEx>(time, maxAttempts);
+    return new LinearBackoffRule<TEx>(time, maxAttempts);
   }
 
   /// <summary>
@@ -40,10 +40,10 @@ public static class RetryRule {
   /// <param name="maxAttempts">Maximum allowed failed attempts.</param>
   /// <returns>Exponential backoff retry rule.</returns>
   [Pure]
-  public static IRetryRule<TEx> Exponential<TEx>(TimeSpan startTime, int maxAttempts) where TEx : Exception {
+  public static IRetryRule<TEx> ExponentialBackoff<TEx>(TimeSpan startTime, int maxAttempts) where TEx : Exception {
     ExceptionsHelper.ThrowIfLessOrEqualZero(startTime, nameof(startTime));
     ExceptionsHelper.ThrowIfLessOrEqualZero(maxAttempts, nameof(maxAttempts));
-    return new ExponentialTimeRule<TEx>(startTime, maxAttempts);
+    return new ExponentialBackoffRule<TEx>(startTime, maxAttempts);
   }
 
   /// <summary>

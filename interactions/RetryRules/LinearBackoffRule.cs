@@ -1,6 +1,6 @@
 namespace Interactions.RetryRules;
 
-internal sealed class SimpleRule<TEx>(TimeSpan time, int maxAttempts) : IRetryRule<TEx> where TEx : Exception {
+internal sealed class LinearBackoffRule<TEx>(TimeSpan time, int maxAttempts) : IRetryRule<TEx> where TEx : Exception {
 
   public async ValueTask<bool> ShouldRetry(int attemptsCount, TEx exception, CancellationToken token) {
     if (attemptsCount > maxAttempts)

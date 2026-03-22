@@ -31,7 +31,7 @@ public static class RetryRuleExtensions {
   /// <returns>Composite retry rule.</returns>
   [Pure]
   public static IRetryRule<TEx> Simple<TEx>(this IRetryRule<TEx> rule, TimeSpan time, int maxAttemptsCount) where TEx : Exception {
-    return rule.Compose(RetryRule.Simple<TEx>(time, maxAttemptsCount));
+    return rule.Compose(RetryRule.LinearBackoff<TEx>(time, maxAttemptsCount));
   }
 
   /// <summary>
@@ -45,7 +45,7 @@ public static class RetryRuleExtensions {
   [Pure]
   public static IRetryRule<TEx> Exponential<TEx>(this IRetryRule<TEx> rule, TimeSpan startTime, int maxAttempts)
     where TEx : Exception {
-    return rule.Compose(RetryRule.Exponential<TEx>(startTime, maxAttempts));
+    return rule.Compose(RetryRule.ExponentialBackoff<TEx>(startTime, maxAttempts));
   }
 
 }
