@@ -1,5 +1,6 @@
 using System.Diagnostics.Contracts;
 using Interactions.Analytics;
+using Interactions.Core;
 using Interactions.Core.Internal;
 using Interactions.Operations;
 using Interactions.Policies;
@@ -36,7 +37,7 @@ public static class ExecutionOperator {
   }
 
   [Pure]
-  public static ExecutionOperator<T1, T2, T3, T4> Create<T1, T2, T3, T4>(ExecutionFunc<T1, T2, T3, T4> operation) {
+  public static ExecutionOperator<T1, T2, T3, T4> Create<T1, T2, T3, T4>(Func<T1, IExecutor<T2, T3>, T4> operation) {
     ExceptionsHelper.ThrowIfNull(operation, nameof(operation));
     return new AnonymousOperator<T1, T2, T3, T4>(operation);
   }
