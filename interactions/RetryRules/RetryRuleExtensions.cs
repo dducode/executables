@@ -22,19 +22,6 @@ public static class RetryRuleExtensions {
   }
 
   /// <summary>
-  /// Appends attempt-count based retry behavior to current rule.
-  /// </summary>
-  /// <typeparam name="TEx">Exception type handled by composed rules.</typeparam>
-  /// <param name="rule">Base retry rule.</param>
-  /// <param name="time">Delay for retry.</param>
-  /// <param name="maxAttemptsCount">Maximum allowed failed attempts.</param>
-  /// <returns>Composite retry rule.</returns>
-  [Pure]
-  public static IRetryRule<TEx> Simple<TEx>(this IRetryRule<TEx> rule, TimeSpan time, int maxAttemptsCount) where TEx : Exception {
-    return rule.Compose(RetryRule.LinearBackoff<TEx>(time, maxAttemptsCount));
-  }
-
-  /// <summary>
   /// Appends exponential-backoff retry behavior to current rule.
   /// </summary>
   /// <typeparam name="TEx">Exception type handled by composed rules.</typeparam>
@@ -43,9 +30,9 @@ public static class RetryRuleExtensions {
   /// <param name="maxAttempts">Maximum allowed failed attempts.</param>
   /// <returns>Composite retry rule.</returns>
   [Pure]
-  public static IRetryRule<TEx> Exponential<TEx>(this IRetryRule<TEx> rule, TimeSpan startTime, int maxAttempts)
+  public static IRetryRule<TEx> ExponentialBackoff<TEx>(this IRetryRule<TEx> rule, TimeSpan startTime, int maxAttempts, float factor = 2, float jitter = 0)
     where TEx : Exception {
-    return rule.Compose(RetryRule.ExponentialBackoff<TEx>(startTime, maxAttempts));
+    return rule.Compose(RetryRule.ExponentialBackoff<TEx>(startTime, maxAttempts, factor, jitter));
   }
 
 }

@@ -71,7 +71,7 @@ public static class AsyncPolicy {
   /// <returns>Timeout policy.</returns>
   [Pure]
   public static AsyncPolicy<T1, T2> Timeout<T1, T2>(TimeSpan timeout) {
-    ExceptionsHelper.ThrowIfLessOrEqualZero(timeout, nameof(timeout));
+    ExceptionsHelper.ThrowIfLessOrEqual(timeout, TimeSpan.Zero, nameof(timeout));
     return new TimeoutPolicy<T1, T2>(timeout);
   }
 

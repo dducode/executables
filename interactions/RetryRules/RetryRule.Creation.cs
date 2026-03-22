@@ -20,19 +20,6 @@ public static class RetryRule {
   }
 
   /// <summary>
-  /// Creates a rule that retries until maximum attempt count is reached.
-  /// </summary>
-  /// <typeparam name="TEx">Exception type handled by this rule.</typeparam>
-  /// <param name="time">Delay for retry.</param>
-  /// <param name="maxAttempts">Maximum allowed failed attempts.</param>
-  /// <returns>Simple attempt-count based retry rule.</returns>
-  [Pure]
-  public static IRetryRule<TEx> LinearBackoff<TEx>(TimeSpan time, int maxAttempts) where TEx : Exception {
-    ExceptionsHelper.ThrowIfLessOrEqualZero(maxAttempts, nameof(maxAttempts));
-    return new LinearBackoffRule<TEx>(time, maxAttempts);
-  }
-
-  /// <summary>
   /// Creates a rule with exponential delay between retries.
   /// </summary>
   /// <typeparam name="TEx">Exception type handled by this rule.</typeparam>
@@ -40,10 +27,12 @@ public static class RetryRule {
   /// <param name="maxAttempts">Maximum allowed failed attempts.</param>
   /// <returns>Exponential backoff retry rule.</returns>
   [Pure]
-  public static IRetryRule<TEx> ExponentialBackoff<TEx>(TimeSpan startTime, int maxAttempts) where TEx : Exception {
-    ExceptionsHelper.ThrowIfLessOrEqualZero(startTime, nameof(startTime));
-    ExceptionsHelper.ThrowIfLessOrEqualZero(maxAttempts, nameof(maxAttempts));
-    return new ExponentialBackoffRule<TEx>(startTime, maxAttempts);
+  public static IRetryRule<TEx> ExponentialBackoff<TEx>(TimeSpan startTime, int maxAttempts, float factor = 2, float jitter = 0) where TEx : Exception {
+    ExceptionsHelper.ThrowIfLessOrEqual(startTime, TimeSpan.Zero, nameof(startTime));
+    ExceptionsHelper.ThrowIfLessOrEqual(maxAttempts, 0, nameof(maxAttempts));
+    ExceptionsHelper.ThrowIfLessOrEqual(factor, 0, nameof(factor));
+    ExceptionsHelper.ThrowIfOutOfRange(jitter, 0, 1, nameof(factor));
+    return new ExponentialBackoffRule<TEx>(startTime, maxAttempts, factor, jitter);
   }
 
   /// <summary>

@@ -21,7 +21,7 @@ public class RetryPolicyTest {
         failsCount = int.MaxValue;
         return num * 2;
       })
-      .Apply(AsyncPolicy.Retry<int, InvalidOperationException>(RetryRule.LinearBackoff<InvalidOperationException>(TimeSpan.FromMilliseconds(100), 5)))
+      .Apply(AsyncPolicy.Retry<int, InvalidOperationException>(RetryRule.ExponentialBackoff<InvalidOperationException>(TimeSpan.FromMilliseconds(10), 5)))
       .AsQuery();
 
     Assert.Equal(20, await query.Send(10));

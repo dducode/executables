@@ -33,14 +33,16 @@ internal static class ExceptionsHelper {
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  internal static void ThrowIfLessOrEqualZero(int value, string paramName) {
-    if (value <= 0)
-      throw new ArgumentOutOfRangeException(paramName);
+  internal static void ThrowIfLessOrEqual<TComparable>(TComparable comparable, TComparable other, string paramName)
+    where TComparable : IComparable<TComparable> {
+    if (comparable.CompareTo(other) <= 0)
+      throw new ArgumentException(paramName);
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  internal static void ThrowIfLessOrEqualZero(TimeSpan value, string paramName) {
-    if (value <= TimeSpan.Zero)
+  internal static void ThrowIfOutOfRange<TComparable>(TComparable comparable, TComparable min, TComparable max, string paramName)
+    where TComparable : IComparable<TComparable> {
+    if (comparable.CompareTo(min) < 0 || comparable.CompareTo(max) >= 0)
       throw new ArgumentOutOfRangeException(paramName);
   }
 

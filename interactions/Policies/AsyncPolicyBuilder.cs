@@ -40,7 +40,7 @@ public class AsyncPolicyBuilder<T1, T2> {
   /// <param name="timeout">Maximum allowed execution time.</param>
   /// <returns>Timeout policy.</returns>
   public AsyncPolicyBuilder<T1, T2> Timeout(TimeSpan timeout) {
-    ExceptionsHelper.ThrowIfLessOrEqualZero(timeout, nameof(timeout));
+    ExceptionsHelper.ThrowIfLessOrEqual(timeout, TimeSpan.Zero, nameof(timeout));
     return Add(new TimeoutPolicy<T1, T2>(timeout));
   }
 
