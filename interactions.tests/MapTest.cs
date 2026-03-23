@@ -1,7 +1,6 @@
 using Interactions.Core;
 using Interactions.Core.Executables;
 using Interactions.Executables;
-using Interactions.Operations;
 using JetBrains.Annotations;
 
 namespace Interactions.Tests;
@@ -51,7 +50,7 @@ public class MapTest {
   public void IdentityMap(int expected, int value) {
     IQuery<int, int> query = Executable
       .Create((int x) => x * 2)
-      .Apply(Interactions.Map.Identity<int>())
+      .Map(Executable.Identity<int>(), Executable.Identity<int>())
       .AsQuery();
 
     Assert.Equal(expected, query.Send(value));

@@ -9,12 +9,23 @@ using Interactions.Validation;
 
 namespace Interactions;
 
+/// <summary>
+/// Factory methods for creating asynchronous policies.
+/// </summary>
 public static class AsyncPolicy {
 
+  /// <summary>
+  /// Creates a builder for asynchronous policies with distinct input and output types.
+  /// </summary>
+  /// <returns>Asynchronous policy builder.</returns>
   public static AsyncPolicyBuilder<T1, T2> Build<T1, T2>() {
     return new AsyncPolicyBuilder<T1, T2>();
   }
 
+  /// <summary>
+  /// Creates a builder for asynchronous policies with identical input and output type.
+  /// </summary>
+  /// <returns>Asynchronous policy builder.</returns>
   public static AsyncPolicyBuilder<T, T> Build<T>() {
     return new AsyncPolicyBuilder<T, T>();
   }
@@ -54,11 +65,23 @@ public static class AsyncPolicy {
     return Retry<T1, T2, TEx>(RetryRule.Create(rule));
   }
 
+  /// <summary>
+  /// Creates an asynchronous retry policy for identical input and output type.
+  /// </summary>
+  /// <typeparam name="TEx">Exception type that can trigger retries.</typeparam>
+  /// <param name="rule">Rule that decides whether the failed invocation should be retried.</param>
+  /// <returns>Retry policy that handles <typeparamref name="TEx"/> failures.</returns>
   [Pure]
   public static AsyncPolicy<T, T> Retry<T, TEx>(IRetryRule<TEx> rule) where TEx : Exception {
     return Retry<T, T, TEx>(rule);
   }
 
+  /// <summary>
+  /// Creates an asynchronous retry policy for identical input and output type from a delegate rule.
+  /// </summary>
+  /// <typeparam name="TEx">Exception type that can trigger retries.</typeparam>
+  /// <param name="rule">Delegate that decides whether the failed invocation should be retried.</param>
+  /// <returns>Retry policy that handles <typeparamref name="TEx"/> failures.</returns>
   [Pure]
   public static AsyncPolicy<T, T> Retry<T, TEx>(AsyncFunc<int, TEx, bool> rule) where TEx : Exception {
     return Retry<T, T, TEx>(rule);
@@ -75,6 +98,11 @@ public static class AsyncPolicy {
     return new TimeoutPolicy<T1, T2>(timeout);
   }
 
+  /// <summary>
+  /// Creates a timeout policy for identical input and output type.
+  /// </summary>
+  /// <param name="timeout">Maximum allowed execution time.</param>
+  /// <returns>Timeout policy.</returns>
   [Pure]
   public static AsyncPolicy<T, T> Timeout<T>(TimeSpan timeout) {
     return Timeout<T, T>(timeout);
@@ -146,6 +174,11 @@ public static class AsyncPolicy {
     return new AsyncGuardPolicy<T1, T2>(guard);
   }
 
+  /// <summary>
+  /// Creates a guard policy for identical input and output type.
+  /// </summary>
+  /// <param name="guard">Guard that controls whether invocation is allowed.</param>
+  /// <returns>Guard policy.</returns>
   [Pure]
   public static AsyncPolicy<T, T> Guard<T>(Guard guard) {
     return Guard<T, T>(guard);
@@ -162,42 +195,79 @@ public static class AsyncPolicy {
     return Guard<T1, T2>(Guards.Guard.Create(guard, errorMessage));
   }
 
+  /// <summary>
+  /// Creates a guard policy for identical input and output type from a predicate.
+  /// </summary>
+  /// <param name="guard">Predicate that returns <see langword="true"/> when invocation is allowed.</param>
+  /// <param name="errorMessage">Message used when guard denies access.</param>
+  /// <returns>Guard policy.</returns>
   [Pure]
   public static AsyncPolicy<T, T> Guard<T>(Func<bool> guard, string errorMessage) {
     return Guard<T, T>(guard, errorMessage);
   }
 
+  /// <summary>
+  /// Creates a policy that rejects reentrant asynchronous execution.
+  /// </summary>
+  /// <returns>Prevent-reentrance policy.</returns>
   [Pure]
   public static AsyncPolicy<T1, T2> PreventReentrance<T1, T2>() {
     return new AsyncPreventReentrancePolicy<T1, T2>();
   }
 
+  /// <summary>
+  /// Creates a policy that rejects reentrant asynchronous execution for identical input and output type.
+  /// </summary>
+  /// <returns>Prevent-reentrance policy.</returns>
   [Pure]
   public static AsyncPolicy<T, T> PreventReentrance<T>() {
     return PreventReentrance<T, T>();
   }
 
+  /// <summary>
+  /// Creates a fallback policy that handles exceptions using a synchronous fallback handler.
+  /// </summary>
+  /// <param name="fallback">Fallback handler invoked after a handled exception.</param>
+  /// <returns>Fallback policy.</returns>
   [Pure]
   public static AsyncPolicy<T1, T2> Fallback<T1, T2, TEx>(IFallbackHandler<T1, TEx, T2> fallback) where TEx : Exception {
     ExceptionsHelper.ThrowIfNull(fallback, nameof(fallback));
     return new AsyncFallbackPolicy<T1, T2, TEx>(fallback);
   }
 
+  /// <summary>
+  /// Creates a fallback policy from a synchronous fallback delegate.
+  /// </summary>
+  /// <param name="fallback">Delegate that converts input and exception into a fallback result.</param>
+  /// <returns>Fallback policy.</returns>
   [Pure]
   public static AsyncPolicy<T1, T2> Fallback<T1, T2, TEx>(Func<T1, TEx, T2> fallback) where TEx : Exception {
     return Fallback(FallbackHandler.Create(fallback));
   }
 
+  /// <summary>
+  /// Creates a policy that cancels linked execution after completion.
+  /// </summary>
+  /// <returns>Cancel-after-completion policy.</returns>
   [Pure]
   public static AsyncPolicy<T1, T2> CancelAfterCompletion<T1, T2>() {
     return new CancelAfterCompletionPolicy<T1, T2>();
   }
 
+  /// <summary>
+  /// Creates a policy that cancels linked execution after completion for identical input and output type.
+  /// </summary>
+  /// <returns>Cancel-after-completion policy.</returns>
   [Pure]
   public static AsyncPolicy<T, T> CancelAfterCompletion<T>() {
     return CancelAfterCompletion<T, T>();
   }
 
+  /// <summary>
+  /// Creates an asynchronous policy from a delegate.
+  /// </summary>
+  /// <param name="policy">Delegate implementing policy behavior.</param>
+  /// <returns>Policy wrapping <paramref name="policy"/>.</returns>
   [Pure]
   public static AsyncPolicy<T1, T2> Create<T1, T2>(AsyncFunc<T1, IAsyncExecutor<T1, T2>, T2> policy) {
     ExceptionsHelper.ThrowIfNull(policy, nameof(policy));

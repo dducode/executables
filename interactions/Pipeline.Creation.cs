@@ -26,7 +26,7 @@ namespace Interactions;
 /// </code>
 /// </example>
 /// </remarks>
-public static partial class Pipeline<T1, T4> {
+public static class Pipeline<T1, T4> {
 
   /// <summary>
   /// Starts a pipeline from a step that receives downstream call as <see cref="Func{T2,T3}" />.
@@ -84,7 +84,7 @@ public static partial class Pipeline<T1, T4> {
 /// Entry point for building pipelines that return <see cref="Unit" />.
 /// </summary>
 /// <typeparam name="T">Input/output type of the final composed executable.</typeparam>
-public static partial class Pipeline<T> {
+public static class Pipeline<T> {
 
   /// <summary>
   /// Starts a parameterless pipeline that returns value and can invoke downstream typed function.
@@ -197,7 +197,7 @@ public static partial class Pipeline<T> {
 /// <summary>
 /// Entry point for building pipelines without input and output values.
 /// </summary>
-public static partial class Pipeline {
+public static class Pipeline {
 
   /// <summary>
   /// Starts a parameterless void pipeline from a step that receives downstream typed function.

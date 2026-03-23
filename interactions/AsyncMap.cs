@@ -2,10 +2,8 @@ using Interactions.Core;
 
 namespace Interactions;
 
-public class AsyncMap<T1, T2, T3, T4>(IExecutable<T1, T2> incoming, IExecutable<T3, T4> outgoing)
+internal sealed class AsyncMap<T1, T2, T3, T4>(IExecutable<T1, T2> incoming, IExecutable<T3, T4> outgoing)
   : AsyncExecutionOperator<T1, T2, T3, T4> {
-
-  internal static AsyncMap<T1, T1, T2, T2> Identity { get; } = new(Executable.Identity<T1>(), Executable.Identity<T2>());
 
   private readonly IExecutor<T1, T2> _incoming = incoming.GetExecutor();
   private readonly IExecutor<T3, T4> _outgoing = outgoing.GetExecutor();

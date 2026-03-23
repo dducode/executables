@@ -4,7 +4,12 @@ using Interactions.Pipelines;
 
 namespace Interactions;
 
-public static partial class AsyncPipeline<T1, T4> {
+/// <summary>
+/// Entry point for building asynchronous pipelines that return a value.
+/// </summary>
+/// <typeparam name="T1">Input type of the final composed executable.</typeparam>
+/// <typeparam name="T4">Output type of the final composed executable.</typeparam>
+public static class AsyncPipeline<T1, T4> {
 
   /// <summary>
   /// Starts an async pipeline from a step that receives downstream call as async function.
@@ -60,7 +65,11 @@ public static partial class AsyncPipeline<T1, T4> {
 
 }
 
-public static partial class AsyncPipeline<T> {
+/// <summary>
+/// Entry point for building asynchronous pipelines that either return a value or complete with <see cref="Unit" />.
+/// </summary>
+/// <typeparam name="T">Primary value type used by the final composed executable.</typeparam>
+public static class AsyncPipeline<T> {
 
   /// <summary>
   /// Starts a parameterless async pipeline that returns value and can invoke downstream typed async function.
@@ -170,7 +179,10 @@ public static partial class AsyncPipeline<T> {
 
 }
 
-public static partial class AsyncPipeline {
+/// <summary>
+/// Entry point for building asynchronous pipelines without input and output values.
+/// </summary>
+public static class AsyncPipeline {
 
   /// <summary>
   /// Starts a parameterless async void pipeline from a step that receives downstream typed async function.

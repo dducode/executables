@@ -8,12 +8,23 @@ using Interactions.Validation;
 
 namespace Interactions;
 
+/// <summary>
+/// Factory methods for creating synchronous policies.
+/// </summary>
 public static class Policy {
 
+  /// <summary>
+  /// Creates a builder for policies with distinct input and output types.
+  /// </summary>
+  /// <returns>Policy builder.</returns>
   public static PolicyBuilder<T1, T2> Build<T1, T2>() {
     return new PolicyBuilder<T1, T2>();
   }
 
+  /// <summary>
+  /// Creates a builder for policies with identical input and output type.
+  /// </summary>
+  /// <returns>Policy builder.</returns>
   public static PolicyBuilder<T, T> Build<T>() {
     return new PolicyBuilder<T, T>();
   }
@@ -93,6 +104,11 @@ public static class Policy {
     return new GuardPolicy<T1, T2>(guard);
   }
 
+  /// <summary>
+  /// Creates a guard policy for identical input and output type.
+  /// </summary>
+  /// <param name="guard">Guard that controls whether invocation is allowed.</param>
+  /// <returns>Guard policy.</returns>
   [Pure]
   public static Policy<T, T> Guard<T>(Guard guard) {
     return Guard<T, T>(guard);
@@ -103,43 +119,77 @@ public static class Policy {
   /// </summary>
   /// <param name="guard">Predicate that returns <see langword="true"/> when invocation is allowed.</param>
   /// <param name="errorMessage">Message used when guard denies access.</param>
+  /// <returns>Guard policy.</returns>
   [Pure]
   public static Policy<T1, T2> Guard<T1, T2>(Func<bool> guard, string errorMessage) {
     return Guard<T1, T2>(Guards.Guard.Create(guard, errorMessage));
   }
 
+  /// <summary>
+  /// Creates a guard policy for identical input and output type from a predicate.
+  /// </summary>
+  /// <param name="guard">Predicate that returns <see langword="true"/> when invocation is allowed.</param>
+  /// <param name="errorMessage">Message used when guard denies access.</param>
+  /// <returns>Guard policy.</returns>
   [Pure]
   public static Policy<T, T> Guard<T>(Func<bool> guard, string errorMessage) {
     return Guard<T, T>(guard, errorMessage);
   }
 
+  /// <summary>
+  /// Creates a policy that rejects reentrant execution.
+  /// </summary>
+  /// <returns>Prevent-reentrance policy.</returns>
   [Pure]
   public static Policy<T1, T2> PreventReentrance<T1, T2>() {
     return new PreventReentrancePolicy<T1, T2>();
   }
 
+  /// <summary>
+  /// Creates a policy that rejects reentrant execution for identical input and output type.
+  /// </summary>
+  /// <returns>Prevent-reentrance policy.</returns>
   [Pure]
   public static Policy<T, T> PreventReentrance<T>() {
     return PreventReentrance<T, T>();
   }
 
+  /// <summary>
+  /// Creates a fallback policy that handles exceptions using a fallback handler.
+  /// </summary>
+  /// <param name="fallback">Fallback handler invoked after a handled exception.</param>
+  /// <returns>Fallback policy.</returns>
   [Pure]
   public static Policy<T1, T2> Fallback<T1, T2, TEx>(IFallbackHandler<T1, TEx, T2> fallback) where TEx : Exception {
     ExceptionsHelper.ThrowIfNull(fallback, nameof(fallback));
     return new FallbackPolicy<T1, T2, TEx>(fallback);
   }
 
+  /// <summary>
+  /// Creates a fallback policy from a fallback delegate.
+  /// </summary>
+  /// <param name="fallback">Delegate that converts input and exception into a fallback result.</param>
+  /// <returns>Fallback policy.</returns>
   [Pure]
   public static Policy<T1, T2> Fallback<T1, T2, TEx>(Func<T1, TEx, T2> fallback) where TEx : Exception {
     return Fallback(FallbackHandler.Create(fallback));
   }
 
+  /// <summary>
+  /// Creates a policy from a delegate.
+  /// </summary>
+  /// <param name="policy">Delegate implementing policy behavior.</param>
+  /// <returns>Policy wrapping <paramref name="policy"/>.</returns>
   [Pure]
   public static Policy<T1, T2> Create<T1, T2>(Func<T1, IExecutor<T1, T2>, T2> policy) {
     ExceptionsHelper.ThrowIfNull(policy, nameof(policy));
     return new AnonymousPolicy<T1, T2>(policy);
   }
 
+  /// <summary>
+  /// Creates a policy that executes work on the thread pool.
+  /// </summary>
+  /// <returns>Thread-pool policy.</returns>
   [Pure]
   public static Policy<T, Unit> OnThreadPool<T>() {
     return new ThreadPoolPolicy<T>();
