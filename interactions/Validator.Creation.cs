@@ -14,14 +14,17 @@ public static class Validator {
   /// Gets a validator that accepts only zero.
   /// </summary>
   public static Validator<int> ZeroEqual { get; } = Equal(0);
+
   /// <summary>
   /// Gets a validator that rejects zero.
   /// </summary>
   public static Validator<int> ZeroNotEqual { get; } = NotEqual(0);
+
   /// <summary>
   /// Gets a validator that accepts values greater than zero.
   /// </summary>
   public static Validator<int> MoreThanZero { get; } = MoreThan(0);
+
   /// <summary>
   /// Gets a validator that accepts values less than or equal to zero.
   /// </summary>
@@ -111,11 +114,10 @@ public static class Validator {
   /// </summary>
   /// <param name="value">Lower inclusive bound.</param>
   /// <param name="comparer">Optional comparer.</param>
-  /// <param name="equalityComparer">Optional equality comparer.</param>
   /// <returns>Greater-than-or-equal validator.</returns>
   [Pure]
-  public static Validator<T> MoreThanOrEqual<T>(T value, IComparer<T> comparer = null, IEqualityComparer<T> equalityComparer = null) {
-    return MoreThan(value, comparer).Or(Equal(value, equalityComparer));
+  public static Validator<T> MoreThanOrEqual<T>(T value, IComparer<T> comparer = null) {
+    return new MoreThanOrEqualValidator<T>(value, comparer);
   }
 
   /// <summary>
@@ -123,11 +125,10 @@ public static class Validator {
   /// </summary>
   /// <param name="value">Upper inclusive bound.</param>
   /// <param name="comparer">Optional comparer.</param>
-  /// <param name="equalityComparer">Optional equality comparer.</param>
   /// <returns>Less-than-or-equal validator.</returns>
   [Pure]
-  public static Validator<T> LessThanOrEqual<T>(T value, IComparer<T> comparer = null, IEqualityComparer<T> equalityComparer = null) {
-    return LessThan(value, comparer).Or(Equal(value, equalityComparer));
+  public static Validator<T> LessThanOrEqual<T>(T value, IComparer<T> comparer = null) {
+    return new LessThanOrEqualValidator<T>(value, comparer);
   }
 
   /// <summary>
@@ -136,12 +137,11 @@ public static class Validator {
   /// <param name="min">Lower bound.</param>
   /// <param name="max">Upper bound.</param>
   /// <param name="rightInclusive"><see langword="true"/> to include the right bound; otherwise it is exclusive.</param>
-  /// <param name="c">Optional comparer.</param>
-  /// <param name="ec">Optional equality comparer.</param>
+  /// <param name="comparer">Optional comparer.</param>
   /// <returns>Range validator.</returns>
   [Pure]
-  public static Validator<T> InRange<T>(T min, T max, bool rightInclusive = false, IComparer<T> c = null, IEqualityComparer<T> ec = null) {
-    return InRangeCore(min, max, rightInclusive, c, ec)
+  public static Validator<T> InRange<T>(T min, T max, bool rightInclusive = false, IComparer<T> comparer = null) {
+    return InRangeCore(min, max, rightInclusive, comparer)
       .OverrideMessage($"Value must be in range [{min}..{max}{(rightInclusive ? "]" : ")")}");
   }
 
@@ -151,12 +151,11 @@ public static class Validator {
   /// <param name="min">Lower bound.</param>
   /// <param name="max">Upper bound.</param>
   /// <param name="rightInclusive"><see langword="true"/> to include the right bound; otherwise it is exclusive.</param>
-  /// <param name="c">Optional comparer.</param>
-  /// <param name="ec">Optional equality comparer.</param>
+  /// <param name="comparer">Optional comparer.</param>
   /// <returns>Out-of-range validator.</returns>
   [Pure]
-  public static Validator<T> OutRange<T>(T min, T max, bool rightInclusive = false, IComparer<T> c = null, IEqualityComparer<T> ec = null) {
-    return Not(InRangeCore(min, max, rightInclusive, c, ec))
+  public static Validator<T> OutRange<T>(T min, T max, bool rightInclusive = false, IComparer<T> comparer = null) {
+    return Not(InRangeCore(min, max, rightInclusive, comparer))
       .OverrideMessage($"Value must be outside of range [{min}..{max}{(rightInclusive ? "]" : ")")}");
   }
 
@@ -247,8 +246,8 @@ public static class Validator {
     return new AnonymousValidator<T>(validation, errorMessage);
   }
 
-  private static Validator<T> InRangeCore<T>(T min, T max, bool rightInclusive = false, IComparer<T> c = null, IEqualityComparer<T> ec = null) {
-    return MoreThan(min, c).Or(Equal(min, ec)).And(rightInclusive ? LessThan(max, c).Or(Equal(max, ec)) : LessThan(max, c));
+  private static Validator<T> InRangeCore<T>(T min, T max, bool rightInclusive = false, IComparer<T> comparer = null) {
+    return MoreThanOrEqual(min, comparer).And(rightInclusive ? LessThanOrEqual(max, comparer) : LessThan(max, comparer));
   }
 
 }
