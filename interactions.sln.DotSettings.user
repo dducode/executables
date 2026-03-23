@@ -229,8 +229,12 @@
       &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.MapTest.InMapParse&lt;/TestId&gt;&#xD;
       &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.MapTest.OutMapToString&lt;/TestId&gt;&#xD;
       &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.MapTest&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Validation.CompositeValidatorsTest&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Validation.AllValidatorTest&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Validation.CollectionCountValidatorTest&lt;/TestId&gt;&#xD;
     &lt;/TestAncestor&gt;&#xD;
     &lt;Project Location="C:\.NETProjects\interactions\interactions.core.tests" Presentation="&amp;lt;interactions.core.tests&amp;gt;" /&gt;&#xD;
+    &lt;ProjectFolder&gt;C74EB7E5-15BD-4D77-B33C-3C08A0E29930/d:Validation&lt;/ProjectFolder&gt;&#xD;
   &lt;/Or&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=eb53d67b_002D0b0f_002D42e9_002D8e78_002Df87e6b7be184/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="PassNullProvider" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;

@@ -117,7 +117,7 @@ public static class Validator {
   /// <returns>Greater-than-or-equal validator.</returns>
   [Pure]
   public static Validator<T> MoreThanOrEqual<T>(T value, IComparer<T> comparer = null) {
-    return new MoreThanOrEqualValidator<T>(value, comparer);
+    return new MoreThanOrEqualValidator<T>(value, comparer ?? Comparer<T>.Default);
   }
 
   /// <summary>
@@ -128,7 +128,7 @@ public static class Validator {
   /// <returns>Less-than-or-equal validator.</returns>
   [Pure]
   public static Validator<T> LessThanOrEqual<T>(T value, IComparer<T> comparer = null) {
-    return new LessThanOrEqualValidator<T>(value, comparer);
+    return new LessThanOrEqualValidator<T>(value, comparer ?? Comparer<T>.Default);
   }
 
   /// <summary>
