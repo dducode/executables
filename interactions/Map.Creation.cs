@@ -12,6 +12,11 @@ public static class Map {
   }
 
   [Pure]
+  public static Map<T, T, T, T> Identity<T>() {
+    return Map<T, T, T, T>.Identity;
+  }
+
+  [Pure]
   public static Map<T1, T2, T3, T4> Create<T1, T2, T3, T4>(IExecutable<T1, T2> incoming, IExecutable<T3, T4> outgoing) {
     ExceptionsHelper.ThrowIfNull(incoming, nameof(incoming));
     ExceptionsHelper.ThrowIfNull(outgoing, nameof(outgoing));
