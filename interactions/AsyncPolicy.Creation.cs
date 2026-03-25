@@ -42,7 +42,6 @@ public static class AsyncPolicy {
   /// <summary>
   /// Creates an asynchronous retry policy for specific exception type.
   /// </summary>
-  /// <typeparam name="TEx">Exception type that can trigger retries.</typeparam>
   /// <param name="rule">Rule that decides whether the failed invocation should be retried.</param>
   /// <returns>Retry policy that handles <typeparamref name="TEx"/> failures.</returns>
   [Pure]
@@ -54,7 +53,6 @@ public static class AsyncPolicy {
   /// <summary>
   /// Creates an asynchronous retry policy from a delegate rule.
   /// </summary>
-  /// <typeparam name="TEx">Exception type that can trigger retries.</typeparam>
   /// <param name="rule">
   /// Delegate that receives current failed-attempt count and exception instance,
   /// and returns <see langword="true"/> to continue retrying.
@@ -68,7 +66,6 @@ public static class AsyncPolicy {
   /// <summary>
   /// Creates an asynchronous retry policy for identical input and output type.
   /// </summary>
-  /// <typeparam name="TEx">Exception type that can trigger retries.</typeparam>
   /// <param name="rule">Rule that decides whether the failed invocation should be retried.</param>
   /// <returns>Retry policy that handles <typeparamref name="TEx"/> failures.</returns>
   [Pure]
@@ -79,7 +76,6 @@ public static class AsyncPolicy {
   /// <summary>
   /// Creates an asynchronous retry policy for identical input and output type from a delegate rule.
   /// </summary>
-  /// <typeparam name="TEx">Exception type that can trigger retries.</typeparam>
   /// <param name="rule">Delegate that decides whether the failed invocation should be retried.</param>
   /// <returns>Retry policy that handles <typeparamref name="TEx"/> failures.</returns>
   [Pure]
