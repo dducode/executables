@@ -31,38 +31,44 @@ internal sealed class RaceSuccessExecutable<T1, T2> : IAsyncExecutable<T1, T2>, 
 
       try {
         valueTask = _executors[i].Execute(input, token);
+        if (valueTask.IsCompleted)
+          return new ValueTask<T2>(valueTask.Result);
       }
       catch (Exception e) {
         exceptions.Add(e);
         continue;
       }
 
-      if (valueTask.IsCompletedSuccessfully)
-        return new ValueTask<T2>(valueTask.Result);
-
-      if (!valueTask.IsCompleted) {
-        valueTasks.Add(valueTask);
-        continue;
-      }
-
-      try {
-        valueTask.GetAwaiter().GetResult();
-      }
-      catch (Exception e) {
-        exceptions.Add(e);
-      }
+      valueTasks.Add(valueTask);
     }
 
     return valueTasks.Count switch {
       0 => exceptions.All(e => e is OperationCanceledException) ? throw new OperationCanceledException(token) : throw new AggregateException(exceptions),
-      1 => valueTasks[0],
-      _ => Await(valueTasks, token)
+      1 => Await(valueTasks[0], exceptions, token),
+      _ => Await(valueTasks, exceptions, token)
     };
   }
 
-  private static async ValueTask<T2> Await(List<ValueTask<T2>> valueTasks, CancellationToken token) {
+  private static async ValueTask<T2> Await(ValueTask<T2> task, List<Exception> otherExceptions, CancellationToken token) {
     List<Exception> exceptions = Pool<List<Exception>>.Get();
     using var exceptionsHandle = new ListHandle<Exception>(exceptions);
+    exceptions.AddRange(otherExceptions);
+
+    try {
+      return await task;
+    }
+    catch (Exception exception) {
+      exceptions.Add(exception);
+      if (exceptions.All(e => e is OperationCanceledException))
+        throw new OperationCanceledException(token);
+      throw new AggregateException(exceptions);
+    }
+  }
+
+  private static async ValueTask<T2> Await(List<ValueTask<T2>> valueTasks, List<Exception> otherExceptions, CancellationToken token) {
+    List<Exception> exceptions = Pool<List<Exception>>.Get();
+    using var exceptionsHandle = new ListHandle<Exception>(exceptions);
+    exceptions.AddRange(otherExceptions);
 
     List<Task<T2>> tasks = Pool<List<Task<T2>>>.Get();
     using var tasksHandle = new ListHandle<Task<T2>>(tasks);

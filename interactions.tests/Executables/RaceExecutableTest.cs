@@ -1,5 +1,6 @@
 using Interactions.Core;
 using Interactions.Core.Executables;
+using Interactions.Core.Queries;
 using Interactions.Executables;
 using Interactions.Operations;
 using JetBrains.Annotations;
@@ -103,6 +104,49 @@ public class RaceExecutableTest {
       .AsQuery();
 
     await Assert.ThrowsAsync<InvalidOperationException>(async () => await query.Send(0));
+  }
+
+  [Theory]
+  [InlineData("meow", 10, 50)]
+  [InlineData("woof", 50, 10)]
+  public async Task CatEitherDogRace(string expectedSound, int catDelay, int dogDelay) {
+    IAsyncQuery<Unit, string> query = AsyncExecutable
+      .Identity()
+      .Race(
+        async ValueTask<Animal> (_, token) => {
+          await Task.Delay(catDelay, token);
+          return new Cat();
+        },
+        async ValueTask<Animal> (_, token) => {
+          await Task.Delay(dogDelay, token);
+          return new Dog();
+        })
+      .Then(animal => animal.MakeSound())
+      .AsQuery();
+
+    Assert.Equal(expectedSound, await query.Send());
+  }
+
+}
+
+file abstract class Animal {
+
+  public abstract string MakeSound();
+
+}
+
+file sealed class Cat : Animal {
+
+  public override string MakeSound() {
+    return "meow";
+  }
+
+}
+
+file sealed class Dog : Animal {
+
+  public override string MakeSound() {
+    return "woof";
   }
 
 }
