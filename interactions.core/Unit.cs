@@ -1,5 +1,8 @@
 namespace Interactions.Core;
 
+/// <summary>
+/// Represents the absence of a meaningful value.
+/// </summary>
 public struct Unit : IEquatable<Unit> {
 
   public static bool operator ==(Unit left, Unit right) {

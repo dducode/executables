@@ -5,14 +5,6 @@ namespace Interactions.Core.Executables;
 
 public static partial class ExecutableExtensions {
 
-  public static T Execute<T>(this IExecutor<Unit, T> executor) {
-    return executor.Execute(default);
-  }
-
-  public static void Execute(this IExecutor<Unit, Unit> executor) {
-    executor.Execute(default);
-  }
-
   [Pure]
   public static IAsyncExecutable<T1, T2> ToAsyncExecutable<T1, T2>(this IExecutable<T1, T2> inner) {
     inner.ThrowIfNullReference();
