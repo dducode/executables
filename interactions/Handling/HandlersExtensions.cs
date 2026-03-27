@@ -20,9 +20,10 @@ public static partial class HandlersExtensions {
   }
 
   [Pure]
-  public static AutoDisposeHandlerProvider<T1, T2> DisposeOnException<T1, T2>(this Handler<T1, T2> handler) {
+  public static AutoDisposeHandlerProvider<T1, T2> DisposeExternalHandle<T1, T2>(this Handler<T1, T2> handler, IDisposable handle) {
     handler.ThrowIfNullReference();
-    return new AutoDisposeHandlerProvider<T1, T2>(handler);
+    ExceptionsHelper.ThrowIfNull(handle, nameof(handle));
+    return new AutoDisposeHandlerProvider<T1, T2>(handler, handle);
   }
 
 }

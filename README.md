@@ -44,13 +44,14 @@
       `OutMap(...)`](#55-adapting-contracts-with-map-inmap-and-outmap)
     - [5.6. Observing Results with `Tap(...)`](#56-observing-results-with-tap)
     - [5.7. Building Reusable Pipelines with `Pipe(...)`](#57-building-reusable-pipelines-with-pipe)
-- [6. Commands, Queries, and Events](#6-commands-queries-and-events)
-    - [6.1. Command Semantics](#61-command-semantics)
-    - [6.2. Query Semantics](#62-query-semantics)
-    - [6.3. Event Publishing](#63-event-publishing)
-    - [6.4. Subscribing and Unsubscribing](#64-subscribing-and-unsubscribing)
-    - [6.5. One-Time Subscriptions](#65-one-time-subscriptions)
-    - [6.6. Parameterless Operations](#66-parameterless-operations)
+- [6. Handleables and Handlers](#6-handleables-and-handlers)
+    - [6.1. Missing-Handler Behavior](#61-missing-handler-behavior)
+    - [6.2. Subscription Lifetime](#62-subscription-lifetime)
+    - [6.3. One-Time Subscriptions](#63-one-time-subscriptions)
+    - [6.4. Parameterless Operations](#64-parameterless-operations)
+    - [6.5. Handleables and Merging](#65-handleables-and-merging)
+    - [6.6. Composing Commands](#66-composing-commands)
+    - [6.7. Handler Lifecycle and Disposal](#67-handler-lifecycle-and-disposal)
 - [7. Policies and Execution Control](#7-policies-and-execution-control)
     - [7.1. Applying Policies with `WithPolicy(...)`](#71-applying-policies-with-withpolicy)
     - [7.2. Input and Output Validation](#72-input-and-output-validation)
@@ -543,19 +544,137 @@ IExecutable<int, string> pipeline =
     .Pipe(executable => executable.Then(value => $"Value: {value}"));
 ```
 
-## 6. Commands, Queries, and Events
+## 6. Handleables and Handlers
 
-### 6.1. Command Semantics
+### 6.1. Missing-Handler Behavior
 
-### 6.2. Query Semantics
+The base implementations do not all react the same way when no handler is attached:
 
-### 6.3. Event Publishing
+- `Command<T>` returns `false`,
+- `Query<TIn, TOut>` throws `MissingHandlerException`,
+- `Event<T>` does nothing if there are no subscribers, but throws `MissingHandlerException` if subscribers exist and no
+  handler is attached.
 
-### 6.4. Subscribing and Unsubscribing
+This distinction is important when choosing which abstraction to expose.
 
-### 6.5. One-Time Subscriptions
+### 6.2. Subscription Lifetime
 
-### 6.6. Parameterless Operations
+Event subscriptions are explicit and disposable. `Subscribe(...)` returns an `IDisposable`, and disposing it removes the
+subscriber from the event.
+
+```csharp
+var changed = new Event<string>();
+using IDisposable subscription = changed.Subscribe(value => Console.WriteLine(value));
+```
+
+### 6.3. One-Time Subscriptions
+
+`SubscribeOnce(...)` is useful for fire-once reactions such as initialization notifications, confirmation events, or
+single-use UI hooks.
+
+```csharp
+var changed = new Event<string>();
+changed.SubscribeOnce(value => Console.WriteLine($"First: {value}"));
+```
+
+### 6.4. Parameterless Operations
+
+Commands, queries, and events all support parameterless usage through `Unit`-based overloads.
+
+```csharp
+ICommand<Unit> refresh =
+  Executable.Create(() => Console.WriteLine("Refresh"))
+    .Then(_ => true)
+    .AsCommand();
+
+IQuery<Unit, string> getVersion =
+  Executable.Create(() => "1.0.0")
+    .AsQuery();
+
+IEvent<Unit> tick = new Event<Unit>();
+
+refresh.Execute();
+string version = getVersion.Send();
+tick.Publish();
+```
+
+### 6.5. Handleables and Merging
+
+`IHandleable<...>` represents an object that can accept a handler through `Handle(...)`. This is the common attachment
+model behind base types such as `Command<T>`, `Query<TIn, TOut>`, and `Event<T>`.
+
+This abstraction is useful when the important part is not the specific command or query contract, but the fact that an
+object can be connected to execution logic from the outside.
+
+`IHandleable<...>` objects can also be merged with `Merge(...)`. This lets multiple handleables share one attached
+handler. In other words, `Merge(...)` combines handler attachment points rather than command behavior.
+
+```csharp
+IHandleable<string, Unit> first = new Command<string>();
+IHandleable<string, Unit> second = new Command<string>();
+
+var merged = first.Merge(second);
+
+merged.Handle(value => Console.WriteLine(value));
+```
+
+`Handle(...)` itself returns an `IDisposable` attachment handle, so the handler can later be detached from the merged
+handleable. The extension overloads also allow attaching plain delegates directly, without manually converting them to
+handlers first.
+
+### 6.6. Composing Commands
+
+Commands are composed at the interface level through `ICommand<T>.Compose(...)`. This keeps command composition focused
+on the command contract rather than on a specific concrete implementation.
+
+```csharp
+ICommand<string> first =
+  Executable.Create((string value) =>
+  {
+    Console.WriteLine($"First: {value}");
+    return true;
+  }).AsCommand();
+
+ICommand<string> second =
+  Executable.Create((string value) =>
+  {
+    Console.WriteLine($"Second: {value}");
+    return true;
+  }).AsCommand();
+
+ICommand<string> combined = first.Compose(second);
+combined.Execute("Run");
+```
+
+Use `Merge(...)` when the goal is to attach one handler to multiple handleables. Use `Compose(...)` when the goal is to
+combine command behavior behind one `ICommand<T>`.
+
+### 6.7. Handler Lifecycle and Disposal
+
+Handlers implement `IDisposable`, expose a `Disposed` flag, and throw `HandlerDisposedException` if invoked after
+disposal. This matters when a handler owns resources or should stop participating in execution after a failure.
+
+The API also provides disposal helpers:
+
+- `OnDispose(...)` adds custom disposal logic,
+- `DisposeExternalHandle(handle).OnException<TEx>()` disposes an external attachment handle when a selected exception
+  type is thrown.
+
+```csharp
+var query = new Query<int, string>();
+
+var handle = new DisposeHandle();
+Handler<int, string> inner =
+  Executable.Create((int id) =>
+  {
+    if (id < 0)
+      throw new InvalidOperationException();
+    return id.ToString();
+  }).AsHandler();
+
+handle.Register(query.Handle(inner.DisposeExternalHandle(handle).OnException<InvalidOperationException>()));
+// If InvalidOperationException is thrown, the registered handle is disposed and the handler is detached.
+```
 
 ## 7. Policies and Execution Control
 

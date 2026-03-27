@@ -15,7 +15,7 @@ public class AutoDisposeHandlerTest {
     var query = new Query<string, int>();
 
     Handler<string, int> inner = TestHandler.IntParseHandler();
-    handle.Register(query.Handle(inner.DisposeOnException().OfType<ArgumentNullException>(handle)));
+    handle.Register(query.Handle(inner.DisposeExternalHandle(handle).OnException<ArgumentNullException>()));
 
     Assert.Throws<ArgumentNullException>(() => query.Send(null));
     Assert.Throws<MissingHandlerException>(() => query.Send(null));

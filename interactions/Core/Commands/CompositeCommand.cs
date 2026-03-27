@@ -1,17 +1,13 @@
-using Interactions.Handling;
-using Interactions.Internal;
-
 namespace Interactions.Core.Commands;
 
-internal sealed class CompositeCommand<T>(Command<T> first, Command<T> second) : Command<T> {
+internal sealed class CompositeCommand<T>(ICommand<T> first, ICommand<T> second) : ICommand<T>, IExecutor<T, bool> {
 
-  public override bool Execute(T input) {
+  public bool Execute(T input) {
     return first.Execute(input) && second.Execute(input);
   }
 
-  public override IDisposable Handle(Handler<T, Unit> handler) {
-    ExceptionsHelper.ThrowIfNull(handler, nameof(handler));
-    return Handleable.MergedHandle(first, second, handler);
+  IExecutor<T, bool> IExecutable<T, bool>.GetExecutor() {
+    return this;
   }
 
 }

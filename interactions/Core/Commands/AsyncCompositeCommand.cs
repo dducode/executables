@@ -1,11 +1,8 @@
-using Interactions.Handling;
-using Interactions.Internal;
-
 namespace Interactions.Core.Commands;
 
-internal sealed class AsyncCompositeCommand<T>(AsyncCommand<T> first, AsyncCommand<T> second) : AsyncCommand<T> {
+internal sealed class AsyncCompositeCommand<T>(IAsyncCommand<T> first, IAsyncCommand<T> second) : IAsyncCommand<T>, IAsyncExecutor<T, bool> {
 
-  public override ValueTask<bool> Execute(T input, CancellationToken token = default) {
+  public ValueTask<bool> Execute(T input, CancellationToken token = default) {
     ValueTask<bool> firstTask = first.Execute(input, token);
 
     if (firstTask.IsCompleted)
@@ -14,13 +11,12 @@ internal sealed class AsyncCompositeCommand<T>(AsyncCommand<T> first, AsyncComma
     return Await(input, firstTask, second, token);
   }
 
-  private static async ValueTask<bool> Await(T input, ValueTask<bool> task, AsyncCommand<T> secondCommand, CancellationToken token) {
-    return await task && await secondCommand.Execute(input, token);
+  IAsyncExecutor<T, bool> IAsyncExecutable<T, bool>.GetExecutor() {
+    return this;
   }
 
-  public override IDisposable Handle(AsyncHandler<T, Unit> handler) {
-    ExceptionsHelper.ThrowIfNull(handler, nameof(handler));
-    return Handleable.MergedHandle(first, second, handler);
+  private static async ValueTask<bool> Await(T input, ValueTask<bool> task, IAsyncCommand<T> secondCommand, CancellationToken token) {
+    return await task && await secondCommand.Execute(input, token);
   }
 
 }

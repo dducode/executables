@@ -11,13 +11,13 @@ public static partial class CommandsExtensions {
   }
 
   [Pure]
-  public static Command<T> Compose<T>(this Command<T> command, Command<T> other) {
+  public static ICommand<T> Compose<T>(this ICommand<T> command, ICommand<T> other) {
     ExceptionsHelper.ThrowIfNull(other, nameof(other));
     return new CompositeCommand<T>(command, other);
   }
 
   [Pure]
-  public static AsyncCommand<T> Compose<T>(this AsyncCommand<T> command, AsyncCommand<T> other) {
+  public static IAsyncCommand<T> Compose<T>(this IAsyncCommand<T> command, IAsyncCommand<T> other) {
     ExceptionsHelper.ThrowIfNull(other, nameof(other));
     return new AsyncCompositeCommand<T>(command, other);
   }

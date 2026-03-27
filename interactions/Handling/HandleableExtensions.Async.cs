@@ -7,7 +7,7 @@ namespace Interactions.Handling;
 public static partial class HandleableExtensions {
 
   [Pure]
-  public static IAsyncHandleable<T1, T2, THandler> Compose<T1, T2, THandler>(
+  public static IAsyncHandleable<T1, T2, THandler> Merge<T1, T2, THandler>(
     this IAsyncHandleable<T1, T2, THandler> first,
     IAsyncHandleable<T1, T2, THandler> second) where THandler : AsyncHandler<T1, T2> {
     first.ThrowIfNullReference();

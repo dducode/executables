@@ -1,12 +1,10 @@
 using Interactions.Core.Handlers;
-using Interactions.Internal;
 
 namespace Interactions.Handling;
 
-public readonly ref struct AsyncAutoDisposeHandlerProvider<T1, T2>(AsyncHandler<T1, T2> handler) {
+public readonly ref struct AsyncAutoDisposeHandlerProvider<T1, T2>(AsyncHandler<T1, T2> handler, IDisposable handle) {
 
-  public AsyncHandler<T1, T2> OfType<TEx>(IDisposable handle) where TEx : Exception {
-    ExceptionsHelper.ThrowIfNull(handle, nameof(handle));
+  public AsyncHandler<T1, T2> OnException<TEx>() where TEx : Exception {
     return new AsyncAutoDisposeHandler<T1, T2, TEx>(handler, handle);
   }
 

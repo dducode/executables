@@ -7,7 +7,7 @@ namespace Interactions.Handling;
 public static partial class HandleableExtensions {
 
   [Pure]
-  public static IHandleable<T1, T2, THandler> Compose<T1, T2, THandler>(
+  public static IHandleable<T1, T2, THandler> Merge<T1, T2, THandler>(
     this IHandleable<T1, T2, THandler> first,
     IHandleable<T1, T2, THandler> second) where THandler : Handler<T1, T2> {
     first.ThrowIfNullReference();

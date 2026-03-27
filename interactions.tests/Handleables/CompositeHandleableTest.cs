@@ -12,7 +12,7 @@ public class CompositeHandleableTest {
   public void PassNullHandler() {
     IHandleable<Unit, Unit> first = Handleable.Create((Handler<Unit, Unit> handler) => handler);
     IHandleable<Unit, Unit> second = Handleable.Create((Handler<Unit, Unit> handler) => handler);
-    Assert.Throws<ArgumentNullException>(() => first.Compose(second).Handle(null));
+    Assert.Throws<ArgumentNullException>(() => first.Merge(second).Handle(null));
   }
 
   [Fact]
@@ -23,7 +23,7 @@ public class CompositeHandleableTest {
       secondCalled = true;
       return handler;
     });
-    Assert.Throws<InvalidOperationException>(() => first.Compose(second).Handle(Executable.Identity().AsHandler()));
+    Assert.Throws<InvalidOperationException>(() => first.Merge(second).Handle(Executable.Identity().AsHandler()));
     Assert.False(secondCalled);
   }
 
@@ -32,7 +32,7 @@ public class CompositeHandleableTest {
     var firstDisposed = false;
     IHandleable<Unit, Unit> first = Handleable.Create((Handler<Unit, Unit> _) => Disposable.Create(() => firstDisposed = true));
     IHandleable<Unit, Unit> second = Handleable.Create((Handler<Unit, Unit> _) => throw new InvalidOperationException());
-    Assert.Throws<InvalidOperationException>(() => first.Compose(second).Handle(Executable.Identity().AsHandler()));
+    Assert.Throws<InvalidOperationException>(() => first.Merge(second).Handle(Executable.Identity().AsHandler()));
     Assert.True(firstDisposed);
   }
 
