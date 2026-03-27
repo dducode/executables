@@ -4,7 +4,7 @@ using Interactions.Internal;
 
 namespace Interactions.Handling;
 
-public static class HandlersExtensions {
+public static partial class HandlersExtensions {
 
   [Pure]
   public static AsyncHandler<T1, T2> ToAsyncHandler<T1, T2>(this Handler<T1, T2> handler) {
@@ -20,10 +20,9 @@ public static class HandlersExtensions {
   }
 
   [Pure]
-  public static AsyncHandler<T1, T2> OnDispose<T1, T2>(this AsyncHandler<T1, T2> handler, Action dispose) {
+  public static AutoDisposeHandlerProvider<T1, T2> DisposeOnException<T1, T2>(this Handler<T1, T2> handler) {
     handler.ThrowIfNullReference();
-    ExceptionsHelper.ThrowIfNull(dispose, nameof(dispose));
-    return new AsyncAnonymousDisposeHandler<T1, T2>(handler, dispose);
+    return new AutoDisposeHandlerProvider<T1, T2>(handler);
   }
 
 }

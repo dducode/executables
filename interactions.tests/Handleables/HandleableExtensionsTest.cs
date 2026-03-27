@@ -1,0 +1,29 @@
+using Interactions.Handling;
+using JetBrains.Annotations;
+
+namespace Interactions.Tests.Handleables;
+
+[TestSubject(typeof(HandleableExtensions))]
+public class HandleableExtensionsTest {
+
+  [Fact]
+  public void PassNullAsyncHandleable() {
+    Assert.Throws<ArgumentNullException>(() => AsyncHandleable.Create((AsyncHandler<Unit, Unit> handler) => handler).Compose(null));
+  }
+
+  [Fact]
+  public void PassNullHandleable() {
+    Assert.Throws<ArgumentNullException>(() => Handleable.Create((Handler<Unit, Unit> handler) => handler).Compose(null));
+  }
+
+  [Fact]
+  public void ThrowExceptionFromNullHandleable() {
+    Assert.Throws<NullReferenceException>(() => ((Handleable<Unit, Unit>)null).Compose(null));
+  }
+
+  [Fact]
+  public void ThrowExceptionFromNullAsyncHandleable() {
+    Assert.Throws<NullReferenceException>(() => ((AsyncHandleable<Unit, Unit>)null).Compose(null));
+  }
+
+}

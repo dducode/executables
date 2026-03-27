@@ -1,6 +1,6 @@
 namespace Interactions.Handling;
 
-public abstract partial class Handler<T1, T2> : IExecutable<T1, T2>, IDisposable {
+public abstract class Handler<T1, T2> : IExecutable<T1, T2>, IDisposable {
 
   public bool Disposed => Volatile.Read(ref _disposed) != 0;
 
