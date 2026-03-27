@@ -173,13 +173,66 @@ It may also be the wrong tool if you are specifically looking for:
 
 ### 2.1. Executables as the Core Abstraction
 
+The central idea behind `interactions` is that application behavior can be represented as executable objects with a
+well-defined input and output contract. Instead of treating logic as "just a method" or "just a handler", the library
+treats it as a first-class value that can be reused, wrapped, transformed, and composed.
+
+This gives different kinds of behavior a common model. A transformation, a command-like action, a query, a notification
+step, or a policy-decorated workflow can all be described as executable logic and combined using the same set of
+concepts.
+
 ### 2.2. Separating Execution from Invocation
+
+The model separates the definition of an operation from the act of running it. An `IExecutable<TIn, TOut>` describes
+something that can provide an executor, while `IExecutor<TIn, TOut>` is the object that actually performs
+`Execute(...)`.
+
+This distinction keeps the API flexible. Executables can be composed and adapted as reusable building blocks, while
+executors provide a direct execution boundary when the user wants to invoke the final operation explicitly.
 
 ### 2.3. Commands, Queries, and Events
 
+`interactions` treats commands, queries, and events as related forms of application behavior rather than isolated
+patterns.
+
+- commands represent actions that perform work,
+- queries represent operations that return data,
+- events represent publish-subscribe notifications.
+
+Because these concepts live near the same abstraction family, the library makes it easier to move between them. A
+reusable executable can often be exposed as a command or query, and event-driven flows still fit into the same
+execution-oriented model.
+
 ### 2.4. Composition Over Inheritance
 
+The library is designed around composition. Instead of encouraging large service hierarchies or framework-specific base
+classes, it provides small operations that can be combined with APIs such as `Then(...)`, `Fork(...)`, `Map(...)`,
+`Pipe(...)`, `WithPolicy(...)`, and `WithContext(...)`.
+
+This leads to a predictable way of building behavior:
+
+- start with a small executable,
+- combine it with other steps,
+- adapt inputs and outputs where necessary,
+- apply cross-cutting rules around it,
+- expose the final result through the API shape the application needs.
+
+That approach keeps behavior explicit and usually makes it easier to test, reason about, and evolve over time.
+
 ### 2.5. Sync and Async as Parallel APIs
+
+Another important principle is that synchronous and asynchronous workflows should feel structurally similar. The library
+provides sync and async abstractions, along with conversion helpers, so that moving from one style to the other does not
+require adopting a completely different mental model.
+
+The APIs stay explicit rather than hiding the distinction:
+
+- synchronous pipelines remain simple,
+- asynchronous pipelines remain strongly typed,
+- mixed chains are supported through clear adaptation methods.
+
+For users, this means a pipeline can begin as a straightforward synchronous flow and later grow into an asynchronous one
+without losing conceptual consistency.
 
 ## 3. Core Concepts for Users
 
