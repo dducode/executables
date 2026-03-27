@@ -1,7 +1,7 @@
 using Interactions.Core;
 using Interactions.Core.Executables;
 using Interactions.Core.Queries;
-using Interactions.Operations;
+using Interactions.Executables;
 using Interactions.Policies;
 using JetBrains.Annotations;
 
@@ -12,7 +12,7 @@ public class AsyncPreventReentrancePolicyTest {
 
   [Fact]
   public async Task SequentialExecute() {
-    IAsyncQuery<Unit, Unit> query = AsyncPolicy.PreventReentrance<Unit>().Apply(AsyncExecutable.Identity()).AsQuery();
+    IAsyncQuery<Unit, Unit> query = AsyncExecutable.Identity().WithPolicy(builder => builder.PreventReentrance()).AsQuery();
 
     await query.Send();
     await query.Send();
@@ -20,7 +20,7 @@ public class AsyncPreventReentrancePolicyTest {
 
   [Fact]
   public async Task Cancel() {
-    IAsyncQuery<Unit, Unit> query = AsyncPolicy.PreventReentrance<Unit>().Apply(AsyncExecutable.Identity()).AsQuery();
+    IAsyncQuery<Unit, Unit> query = AsyncExecutable.Identity().WithPolicy(builder => builder.PreventReentrance()).AsQuery();
     var cts = new CancellationTokenSource();
 
     await cts.CancelAsync();
@@ -29,7 +29,7 @@ public class AsyncPreventReentrancePolicyTest {
 
   [Fact]
   public async Task MultiplyExecute() {
-    IAsyncQuery<Unit, Unit> query = AsyncPolicy.PreventReentrance<Unit>().Apply(AsyncExecutable.Identity()).AsQuery();
+    IAsyncQuery<Unit, Unit> query = AsyncExecutable.Identity().WithPolicy(builder => builder.PreventReentrance()).AsQuery();
 
     ValueTask first = query.Send();
     ValueTask second = query.Send();
@@ -39,7 +39,7 @@ public class AsyncPreventReentrancePolicyTest {
   [Fact]
   public async Task NestedExecution() {
     var query = new AsyncQuery<Unit, Unit>();
-    IAsyncQuery<Unit, Unit> inner = AsyncPolicy.PreventReentrance<Unit>().Apply(query).AsQuery();
+    IAsyncQuery<Unit, Unit> inner = query.WithPolicy(builder => builder.PreventReentrance()).AsQuery();
     query.Handle(AsyncExecutable.Create(async token => await inner.Send(token)).AsHandler());
 
     await Assert.ThrowsAsync<ReentranceException>(async () => await query.Send());
@@ -47,7 +47,7 @@ public class AsyncPreventReentrancePolicyTest {
 
   [Fact]
   public async Task ParallelSequentialExecute() {
-    IAsyncQuery<Unit, Unit> query = AsyncPolicy.PreventReentrance<Unit>().Apply(AsyncExecutable.Identity()).AsQuery();
+    IAsyncQuery<Unit, Unit> query = AsyncExecutable.Identity().WithPolicy(builder => builder.PreventReentrance()).AsQuery();
 
     await Parallel.ForAsync(0, 10, async (_, token) => {
       await query.Send(token);
@@ -57,7 +57,7 @@ public class AsyncPreventReentrancePolicyTest {
 
   [Fact]
   public async Task ParallelMultiplyExecute() {
-    IAsyncQuery<Unit, Unit> query = AsyncPolicy.PreventReentrance<Unit>().Apply(AsyncExecutable.Identity()).AsQuery();
+    IAsyncQuery<Unit, Unit> query = AsyncExecutable.Identity().WithPolicy(builder => builder.PreventReentrance()).AsQuery();
 
     await Parallel.ForAsync(0, 10, async (_, token) => {
       ValueTask first = query.Send(token);
@@ -69,7 +69,7 @@ public class AsyncPreventReentrancePolicyTest {
   [Fact]
   public async Task ParallelNestedExecution() {
     var query = new AsyncQuery<Unit, Unit>();
-    IAsyncQuery<Unit, Unit> inner = AsyncPolicy.PreventReentrance<Unit>().Apply(query).AsQuery();
+    IAsyncQuery<Unit, Unit> inner = query.WithPolicy(builder => builder.PreventReentrance()).AsQuery();
     query.Handle(AsyncExecutable.Create(async token => await inner.Send(token)).AsHandler());
 
     await Parallel.ForAsync(0, 10, async (_, token) => {
@@ -80,7 +80,7 @@ public class AsyncPreventReentrancePolicyTest {
   [Fact]
   public async Task NestedParallelExecute() {
     var query = new AsyncQuery<Unit, Unit>();
-    IAsyncQuery<Unit, Unit> inner = AsyncPolicy.PreventReentrance<Unit>().Apply(query).AsQuery();
+    IAsyncQuery<Unit, Unit> inner = query.WithPolicy(builder => builder.PreventReentrance()).AsQuery();
     query.Handle(AsyncExecutable.Create(async token => {
       await Parallel.ForAsync(0, 10, token, async (_, t) => await inner.Send(t));
     }).AsHandler());

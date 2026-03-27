@@ -2,7 +2,9 @@ using AutoFixture;
 using Interactions.Analytics;
 using Interactions.Core;
 using Interactions.Core.Executables;
+using Interactions.Executables;
 using Interactions.Operations;
+using Interactions.Policies;
 using Interactions.Validation;
 using JetBrains.Annotations;
 using Xunit.Abstractions;
@@ -38,8 +40,9 @@ public class MetricsTest(ITestOutputHelper outputHelper) {
       latency => outputHelper.WriteLine($"{nameof(latency)}: {latency.Ticks}\n"))
     );
 
-    IQuery<int, TimeSpan> query = Executable.Create((int seconds) => TimeSpan.FromSeconds(seconds))
-      .Apply(Policy.ValidateInput<int, TimeSpan>(Validator.MoreThanZero))
+    IQuery<int, TimeSpan> query = Executable
+      .Create((int seconds) => TimeSpan.FromSeconds(seconds))
+      .WithPolicy(builder => builder.ValidateInput(Validator.MoreThanZero))
       .Apply(metrics)
       .AsQuery();
 

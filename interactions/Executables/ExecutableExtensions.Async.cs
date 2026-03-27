@@ -4,6 +4,7 @@ using Interactions.Core;
 using Interactions.Core.Executables;
 using Interactions.Core.Internal;
 using Interactions.Operations;
+using Interactions.Policies;
 
 namespace Interactions.Executables;
 
@@ -321,6 +322,79 @@ public static partial class ExecutableExtensions {
   public static IAsyncExecutable<T1, T2> WithContext<T1, T2>(this IAsyncExecutable<T1, T2> executable, ContextInit init) {
     ExceptionsHelper.ThrowIfNull(init, nameof(init));
     return executable.Apply(new AsyncContextOperator<T1, T2>(init));
+  }
+
+  /// <summary>
+  /// Builds and applies an asynchronous policy pipeline to an executable.
+  /// </summary>
+  /// <param name="executable">Executable to wrap with policies.</param>
+  /// <param name="building">Builder action that configures policies.</param>
+  /// <returns>Executable wrapped with configured policies.</returns>
+  [Pure]
+  public static IAsyncExecutable<T1, T2> WithPolicy<T1, T2>(this IAsyncExecutable<T1, T2> executable, Action<AsyncPolicyBuilder<T1, T2>> building) {
+    executable.ThrowIfNullReference();
+    ExceptionsHelper.ThrowIfNull(building, nameof(building));
+    var source = new AsyncPolicyBuilder<T1, T2>();
+    building(source);
+    return source.Apply(executable);
+  }
+
+  /// <summary>
+  /// Wraps executable result into <see cref="Result{T}" /> capturing thrown exceptions.
+  /// </summary>
+  /// <param name="executable">Executable to wrap.</param>
+  /// <returns>Executable returning success or failure result.</returns>
+  [Pure]
+  public static IAsyncExecutable<T1, Result<T2>> WithResult<T1, T2>(this IAsyncExecutable<T1, T2> executable) {
+    return executable.Apply(new AsyncResultOperator<T1, T2>());
+  }
+
+  /// <summary>
+  /// Returns the same executable when result wrapping is already applied.
+  /// </summary>
+  /// <param name="executable">Executable already returning <see cref="Result{T}" />.</param>
+  /// <returns>The original executable.</returns>
+  [Pure]
+  public static IAsyncExecutable<T1, Result<T2>> WithResult<T1, T2>(this IAsyncExecutable<T1, Result<T2>> executable) {
+    executable.ThrowIfNullReference();
+    return executable;
+  }
+
+  /// <summary>
+  /// Starts configuration of exception suppression for asynchronous executable results.
+  /// </summary>
+  /// <param name="executable">Executable to configure.</param>
+  /// <returns>Provider for selecting exception types to suppress.</returns>
+  [Pure]
+  public static SuppressExceptionAsyncOperatorProvider<T1, T2> SuppressException<T1, T2>(this IAsyncExecutable<T1, T2> executable) {
+    executable.ThrowIfNullReference();
+    return new SuppressExceptionAsyncOperatorProvider<T1, T2>(executable);
+  }
+
+  /// <summary>
+  /// Starts configuration of exception suppression for asynchronous executables returning <see cref="Optional{T}" />.
+  /// </summary>
+  /// <param name="executable">Executable to configure.</param>
+  /// <returns>Provider for selecting exception types to suppress.</returns>
+  [Pure]
+  public static SuppressExceptionAsyncOptionalOperatorProvider<T1, T2> SuppressException<T1, T2>(this IAsyncExecutable<T1, Optional<T2>> executable) {
+    executable.ThrowIfNullReference();
+    return new SuppressExceptionAsyncOptionalOperatorProvider<T1, T2>(executable);
+  }
+
+  /// <summary>
+  /// Pipes an asynchronous executable through a transformation function.
+  /// </summary>
+  /// <param name="executable">Source executable.</param>
+  /// <param name="pipe">Transformation function.</param>
+  /// <returns>Transformed asynchronous executable.</returns>
+  [Pure]
+  public static IAsyncExecutable<T1, T3> Pipe<T1, T2, T3>(
+    this IAsyncExecutable<T1, T2> executable,
+    Func<IAsyncExecutable<T1, T2>, IAsyncExecutable<T1, T3>> pipe) {
+    executable.ThrowIfNullReference();
+    ExceptionsHelper.ThrowIfNull(pipe, nameof(pipe));
+    return pipe(executable);
   }
 
 }

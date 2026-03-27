@@ -1,6 +1,4 @@
-using System.Diagnostics.Contracts;
 using Interactions.Core;
-using Interactions.Fallbacks;
 
 namespace Interactions.Policies;
 
@@ -60,66 +58,12 @@ public static partial class PolicyBuilderExtensions {
   }
 
   /// <summary>
-  /// Creates a fallback policy from a delegate.
-  /// </summary>
-  /// <param name="builder">Policy builder.</param>
-  /// <param name="fallback">Delegate that converts input and exception into a fallback result.</param>
-  /// <returns>Current builder instance.</returns>
-  public static PolicyBuilder<T1, T2> Fallback<T1, T2, TEx>(this PolicyBuilder<T1, T2> builder, Func<T1, TEx, T2> fallback) where TEx : Exception {
-    return builder.Fallback(FallbackHandler.Create(fallback));
-  }
-
-  /// <summary>
   /// Adds a policy that executes work on the thread pool.
   /// </summary>
   /// <param name="builder">Policy builder.</param>
   /// <returns>Current builder instance.</returns>
   public static PolicyBuilder<T, Unit> OnThreadPool<T>(this PolicyBuilder<T, Unit> builder) {
     return builder.Add(new ThreadPoolPolicy<T>());
-  }
-
-  /// <summary>
-  /// Applies configured policies to a delegate converted into executable.
-  /// </summary>
-  /// <param name="builder">Policy builder.</param>
-  /// <param name="func">Delegate to wrap with configured policies.</param>
-  /// <returns>Executable wrapped with configured policies.</returns>
-  [Pure]
-  public static IExecutable<T1, T2> Apply<T1, T2>(this PolicyBuilder<T1, T2> builder, Func<T1, T2> func) {
-    return builder.Apply(Executable.Create(func));
-  }
-
-  /// <summary>
-  /// Applies configured policies to a parameterless delegate converted into executable.
-  /// </summary>
-  /// <param name="builder">Policy builder.</param>
-  /// <param name="func">Delegate to wrap with configured policies.</param>
-  /// <returns>Executable wrapped with configured policies.</returns>
-  [Pure]
-  public static IExecutable<Unit, T> Apply<T>(this PolicyBuilder<Unit, T> builder, Func<T> func) {
-    return builder.Apply(Executable.Create(func));
-  }
-
-  /// <summary>
-  /// Applies configured policies to an action converted into executable.
-  /// </summary>
-  /// <param name="builder">Policy builder.</param>
-  /// <param name="action">Action to wrap with configured policies.</param>
-  /// <returns>Executable wrapped with configured policies.</returns>
-  [Pure]
-  public static IExecutable<T, Unit> Apply<T>(this PolicyBuilder<T, Unit> builder, Action<T> action) {
-    return builder.Apply(Executable.Create(action));
-  }
-
-  /// <summary>
-  /// Applies configured policies to a parameterless action converted into executable.
-  /// </summary>
-  /// <param name="builder">Policy builder.</param>
-  /// <param name="action">Action to wrap with configured policies.</param>
-  /// <returns>Executable wrapped with configured policies.</returns>
-  [Pure]
-  public static IExecutable<Unit, Unit> Apply(this PolicyBuilder<Unit, Unit> builder, Action action) {
-    return builder.Apply(Executable.Create(action));
   }
 
 }

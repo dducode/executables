@@ -17,19 +17,9 @@ namespace Interactions.Policies;
 /// <remarks>
 /// Policies are invoked in reverse order of addition: the last added policy executes first.
 /// </remarks>
-public class AsyncPolicyBuilder<T1, T2> {
+public readonly struct AsyncPolicyBuilder<T1, T2>() {
 
   private readonly List<AsyncPolicy<T1, T2>> _policies = [];
-
-  internal AsyncPolicyBuilder() { }
-
-  /// <summary>
-  /// Adds a no-op asynchronous policy that only executes wrapped invocation.
-  /// </summary>
-  /// <returns>Current builder instance.</returns>
-  public AsyncPolicyBuilder<T1, T2> Identity() {
-    return Add(AsyncIdentityPolicy<T1, T2>.Instance);
-  }
 
   /// <summary>
   /// Adds an asynchronous retry policy for specific exception type.
@@ -40,6 +30,18 @@ public class AsyncPolicyBuilder<T1, T2> {
   public AsyncPolicyBuilder<T1, T2> Retry<TEx>(IRetryRule<TEx> rule) where TEx : Exception {
     ExceptionsHelper.ThrowIfNull(rule, nameof(rule));
     return Add(new RetryPolicy<T1, T2, TEx>(rule));
+  }
+
+  /// <summary>
+  /// Creates an asynchronous retry policy from a delegate rule.
+  /// </summary>
+  /// <param name="rule">
+  /// Delegate that receives current failed-attempt count and exception instance,
+  /// and returns <see langword="true"/> to continue retrying.
+  /// </param>
+  /// <returns>Current builder instance.</returns>
+  public AsyncPolicyBuilder<T1, T2> Retry<TEx>(AsyncFunc<int, TEx, bool> rule) where TEx : Exception {
+    return Retry(RetryRule.Create(rule));
   }
 
   /// <summary>
@@ -94,6 +96,15 @@ public class AsyncPolicyBuilder<T1, T2> {
   }
 
   /// <summary>
+  /// Creates a fallback policy from a delegate.
+  /// </summary>
+  /// <param name="fallback">Delegate that converts input and exception into a fallback result.</param>
+  /// <returns>Current builder instance.</returns>
+  public AsyncPolicyBuilder<T1, T2> Fallback<TEx>(Func<T1, TEx, T2> fallback) where TEx : Exception {
+    return Fallback(FallbackHandler.Create(fallback));
+  }
+
+  /// <summary>
   /// Adds a policy that cancels linked execution after completion.
   /// </summary>
   /// <returns>Current builder instance.</returns>
@@ -121,15 +132,11 @@ public class AsyncPolicyBuilder<T1, T2> {
     return this;
   }
 
-  /// <summary>
-  /// Applies configured policies to an asynchronous executable.
-  /// </summary>
-  /// <param name="executable">Executable to wrap.</param>
-  /// <returns>Executable wrapped with all configured policies.</returns>
   [Pure]
-  public IAsyncExecutable<T1, T2> Apply(IAsyncExecutable<T1, T2> executable) {
-    ExceptionsHelper.ThrowIfNull(executable, nameof(executable));
-    return _policies.Aggregate(executable, (current, policy) => new AsyncExecutableOperator<T1, T1, T2, T2>(policy, current));
+  internal IAsyncExecutable<T1, T2> Apply(IAsyncExecutable<T1, T2> executable) {
+    return _policies.Count == 0
+      ? executable
+      : _policies.Aggregate(executable, (current, policy) => new AsyncExecutableOperator<T1, T1, T2, T2>(policy, current));
   }
 
 }

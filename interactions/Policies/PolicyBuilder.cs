@@ -16,19 +16,9 @@ namespace Interactions.Policies;
 /// <remarks>
 /// Policies are invoked in reverse order of addition: the last added policy executes first.
 /// </remarks>
-public class PolicyBuilder<T1, T2> {
+public readonly struct PolicyBuilder<T1, T2>() {
 
   private readonly List<Policy<T1, T2>> _policies = [];
-
-  internal PolicyBuilder() { }
-
-  /// <summary>
-  /// Adds a no-op policy that only executes wrapped invocation.
-  /// </summary>
-  /// <returns>Current builder instance.</returns>
-  public PolicyBuilder<T1, T2> Identity() {
-    return Add(IdentityPolicy<T1, T2>.Instance);
-  }
 
   /// <summary>
   /// Adds a policy that validates input before invocation and output after invocation.
@@ -72,6 +62,16 @@ public class PolicyBuilder<T1, T2> {
   }
 
   /// <summary>
+  /// Creates a fallback policy from a delegate.
+  /// </summary>
+  /// <typeparam name="TEx">Handled exception type.</typeparam>
+  /// <param name="fallback">Delegate that converts input and exception into a fallback result.</param>
+  /// <returns>Current builder instance.</returns>
+  public PolicyBuilder<T1, T2> Fallback<TEx>(Func<T1, TEx, T2> fallback) where TEx : Exception {
+    return Fallback(FallbackHandler.Create(fallback));
+  }
+
+  /// <summary>
   /// Adds a policy created from a delegate.
   /// </summary>
   /// <param name="policy">Delegate implementing policy behavior.</param>
@@ -91,15 +91,11 @@ public class PolicyBuilder<T1, T2> {
     return this;
   }
 
-  /// <summary>
-  /// Applies configured policies to an executable.
-  /// </summary>
-  /// <param name="executable">Executable to wrap.</param>
-  /// <returns>Executable wrapped with all configured policies.</returns>
   [Pure]
-  public IExecutable<T1, T2> Apply(IExecutable<T1, T2> executable) {
-    ExceptionsHelper.ThrowIfNull(executable, nameof(executable));
-    return _policies.Aggregate(executable, (current, policy) => new ExecutableOperator<T1, T1, T2, T2>(policy, current));
+  internal IExecutable<T1, T2> Apply(IExecutable<T1, T2> executable) {
+    return _policies.Count == 0
+      ? executable
+      : _policies.Aggregate(executable, (current, policy) => new ExecutableOperator<T1, T1, T2, T2>(policy, current));
   }
 
 }

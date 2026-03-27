@@ -1,7 +1,7 @@
 using Interactions.Core;
 using Interactions.Core.Executables;
 using Interactions.Core.Queries;
-using Interactions.Operations;
+using Interactions.Executables;
 using Interactions.Policies;
 using JetBrains.Annotations;
 
@@ -12,7 +12,7 @@ public class PreventReentrancePolicyTest {
 
   [Fact]
   public void SequentialExecute() {
-    IQuery<Unit, Unit> query = Policy.PreventReentrance<Unit>().Apply(Executable.Identity()).AsQuery();
+    IQuery<Unit, Unit> query = Executable.Identity().WithPolicy(builder => builder.PreventReentrance()).AsQuery();
 
     query.Send();
     query.Send();
@@ -21,14 +21,14 @@ public class PreventReentrancePolicyTest {
   [Fact]
   public void NestedExecution() {
     var query = new Query<Unit, Unit>();
-    IQuery<Unit, Unit> inner = Policy.PreventReentrance<Unit>().Apply(query).AsQuery();
+    IQuery<Unit, Unit> inner = query.WithPolicy(builder => builder.PreventReentrance()).AsQuery();
     query.Handle(Executable.Create(void () => inner.Send()).AsHandler());
     Assert.Throws<ReentranceException>(() => inner.Send());
   }
 
   [Fact]
   public void ParallelSequentialExecute() {
-    IQuery<Unit, Unit> query = Policy.PreventReentrance<Unit>().Apply(Executable.Identity()).AsQuery();
+    IQuery<Unit, Unit> query = Executable.Identity().WithPolicy(builder => builder.PreventReentrance()).AsQuery();
 
     Parallel.For(0, 10, _ => {
       query.Send();
@@ -39,7 +39,7 @@ public class PreventReentrancePolicyTest {
   [Fact]
   public void ParallelNestedExecution() {
     var query = new Query<Unit, Unit>();
-    IQuery<Unit, Unit> inner = Policy.PreventReentrance<Unit>().Apply(query).AsQuery();
+    IQuery<Unit, Unit> inner = query.WithPolicy(builder => builder.PreventReentrance()).AsQuery();
     query.Handle(Executable.Create(void () => inner.Send()).AsHandler());
 
     Parallel.For(0, 10, _ => Assert.Throws<ReentranceException>(() => inner.Send()));

@@ -1,6 +1,6 @@
 using Interactions.Core;
 using Interactions.Core.Executables;
-using Interactions.Operations;
+using Interactions.Executables;
 using Interactions.Policies;
 using JetBrains.Annotations;
 
@@ -11,14 +11,12 @@ public class TimeoutPolicyTest {
 
   [Fact]
   public async Task CallWithTimeout() {
-    AsyncPolicy<int, int> timeout = AsyncPolicy.Timeout<int>(TimeSpan.FromMilliseconds(500));
-
     IAsyncQuery<int, int> fastQuery = AsyncExecutable
       .Create(async (int num, CancellationToken token) => {
         await Task.Delay(10, token);
         return num * 2;
       })
-      .Apply(timeout)
+      .WithPolicy(TimeoutPolicy)
       .AsQuery();
 
     Assert.Equal(20, await fastQuery.Send(10));
@@ -28,10 +26,15 @@ public class TimeoutPolicyTest {
         await Task.Delay(1000, token);
         return num + 10;
       })
-      .Apply(timeout)
+      .WithPolicy(TimeoutPolicy)
       .AsQuery();
 
     await Assert.ThrowsAsync<TimeoutException>(async () => await slowQuery.Send(10));
+    return;
+
+    void TimeoutPolicy(AsyncPolicyBuilder<int, int> builder) {
+      builder.Timeout(TimeSpan.FromMilliseconds(500));
+    }
   }
 
 }

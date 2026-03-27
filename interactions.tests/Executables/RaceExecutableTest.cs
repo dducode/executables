@@ -2,7 +2,6 @@ using Interactions.Core;
 using Interactions.Core.Executables;
 using Interactions.Core.Queries;
 using Interactions.Executables;
-using Interactions.Operations;
 using JetBrains.Annotations;
 
 namespace Interactions.Tests.Executables;
@@ -80,7 +79,7 @@ public class RaceExecutableTest {
           await Task.Delay(10, token);
           return x * 2;
         })
-      .Apply(AsyncPolicy.CancelAfterCompletion<int>())
+      .WithPolicy(builder => builder.CancelAfterCompletion())
       .AsQuery();
 
     Assert.Equal(2, await query.Send(1));

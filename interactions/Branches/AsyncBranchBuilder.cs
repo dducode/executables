@@ -4,7 +4,10 @@ using Interactions.Core.Internal;
 
 namespace Interactions.Branches;
 
-public sealed class AsyncBranchBuilder<T1, T2> {
+/// <summary>
+/// Builds an asynchronous conditional branch pipeline.
+/// </summary>
+public readonly struct AsyncBranchBuilder<T1, T2> {
 
   private readonly List<(Func<T1, bool> condition, IAsyncExecutable<T1, T2> executable)> _nodes = [];
 
@@ -18,6 +21,12 @@ public sealed class AsyncBranchBuilder<T1, T2> {
     return new AsyncBranchBuilder<T1, T2>(condition, executable);
   }
 
+  /// <summary>
+  /// Adds another conditional branch checked after previously added branches.
+  /// </summary>
+  /// <param name="condition">Condition that selects this branch.</param>
+  /// <param name="executable">Executable invoked when <paramref name="condition"/> returns <see langword="true"/>.</param>
+  /// <returns>Updated branch builder.</returns>
   public AsyncBranchBuilder<T1, T2> ElseIf(Func<T1, bool> condition, IAsyncExecutable<T1, T2> executable) {
     ExceptionsHelper.ThrowIfNull(condition, nameof(condition));
     ExceptionsHelper.ThrowIfNull(executable, nameof(executable));
@@ -25,6 +34,11 @@ public sealed class AsyncBranchBuilder<T1, T2> {
     return this;
   }
 
+  /// <summary>
+  /// Finalizes the branch chain with a fallback executable.
+  /// </summary>
+  /// <param name="executable">Executable used when no branch condition matches.</param>
+  /// <returns>Composed asynchronous executable with all branch conditions.</returns>
   [Pure]
   public IAsyncExecutable<T1, T2> Else(IAsyncExecutable<T1, T2> executable) {
     ExceptionsHelper.ThrowIfNull(executable, nameof(executable));

@@ -2,7 +2,7 @@ using System.Runtime.ExceptionServices;
 using Interactions.Core;
 using Interactions.Core.Executables;
 using Interactions.Core.Queries;
-using Interactions.Operations;
+using Interactions.Executables;
 using Interactions.Policies;
 using JetBrains.Annotations;
 
@@ -13,9 +13,9 @@ public class AsyncFallbackPolicyTest {
 
   [Fact]
   public async Task RegularExecution() {
-    IAsyncQuery<Unit, Unit> query = AsyncPolicy
-      .Fallback((Unit _, InvalidOperationException _) => default(Unit))
-      .Apply(AsyncExecutable.Identity())
+    IAsyncQuery<Unit, Unit> query = AsyncExecutable
+      .Identity()
+      .WithPolicy(builder => builder.Fallback<InvalidOperationException>((_, _) => default))
       .AsQuery();
 
     await query.Send();
@@ -24,9 +24,9 @@ public class AsyncFallbackPolicyTest {
   [Fact]
   public async Task Cancel() {
     var cts = new CancellationTokenSource();
-    IAsyncQuery<Unit, Unit> query = AsyncPolicy
-      .Fallback((Unit _, InvalidOperationException _) => default(Unit))
-      .Apply(AsyncExecutable.Identity())
+    IAsyncQuery<Unit, Unit> query = AsyncExecutable
+      .Identity()
+      .WithPolicy(builder => builder.Fallback<InvalidOperationException>((_, _) => default))
       .AsQuery();
 
     await cts.CancelAsync();
@@ -35,9 +35,9 @@ public class AsyncFallbackPolicyTest {
 
   [Fact]
   public async Task ReturnFallbackOnException() {
-    IAsyncQuery<int, int> query = AsyncPolicy
-      .Fallback((int input, InvalidOperationException _) => input)
-      .Apply(AsyncExecutable.Create<int, int>((_, _) => throw new InvalidOperationException()))
+    IAsyncQuery<int, int> query = AsyncExecutable
+      .Create<int, int>((_, _) => throw new InvalidOperationException())
+      .WithPolicy(builder => builder.Fallback<InvalidOperationException>((input, _) => input))
       .AsQuery();
 
     Assert.Equal(10, await query.Send(10));
@@ -45,12 +45,12 @@ public class AsyncFallbackPolicyTest {
 
   [Fact]
   public async Task ThrowExceptionFromFallbackHandler() {
-    IAsyncQuery<Unit, Unit> query = AsyncPolicy
-      .Fallback((Unit _, InvalidOperationException ex) => {
+    IAsyncQuery<Unit, Unit> query = AsyncExecutable
+      .Create<Unit, Unit>((_, _) => throw new InvalidOperationException())
+      .WithPolicy(builder => builder.Fallback<InvalidOperationException>((_, ex) => {
         ExceptionDispatchInfo.Capture(ex).Throw();
-        return default(Unit);
-      })
-      .Apply(AsyncExecutable.Create<Unit, Unit>((_, _) => throw new InvalidOperationException()))
+        return default;
+      }))
       .AsQuery();
 
     await Assert.ThrowsAsync<InvalidOperationException>(async () => await query.Send());

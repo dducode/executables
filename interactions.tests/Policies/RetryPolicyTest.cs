@@ -1,6 +1,6 @@
 using Interactions.Core;
 using Interactions.Core.Executables;
-using Interactions.Operations;
+using Interactions.Executables;
 using Interactions.Policies;
 using Interactions.RetryRules;
 using JetBrains.Annotations;
@@ -21,7 +21,7 @@ public class RetryPolicyTest {
         failsCount = int.MaxValue;
         return num * 2;
       })
-      .Apply(AsyncPolicy.Retry<int, InvalidOperationException>(RetryRule.ExponentialBackoff<InvalidOperationException>(TimeSpan.FromMilliseconds(10), 5)))
+      .WithPolicy(builder => builder.Retry(RetryRule.ExponentialBackoff<InvalidOperationException>(TimeSpan.FromMilliseconds(10), 5)))
       .AsQuery();
 
     Assert.Equal(20, await query.Send(10));

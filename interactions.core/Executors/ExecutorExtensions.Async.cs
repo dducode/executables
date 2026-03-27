@@ -103,25 +103,4 @@ public static partial class ExecutorExtensions {
     return executor.Execute((t1, t2, t3, t4), token);
   }
 
-  /// <summary>
-  /// Executes an async executor and captures cancellation as <see cref="Result{T}" />.
-  /// </summary>
-  /// <returns>Successful result value or canceled result when execution is canceled.</returns>
-  public static async ValueTask<Result<T2>> TryExecute<T1, T2>(this IAsyncExecutor<T1, T2> executor, T1 input, CancellationToken token = default) {
-    try {
-      return await executor.Execute(input, token);
-    }
-    catch (OperationCanceledException e) {
-      return Result<T2>.FromException(e);
-    }
-  }
-
-  /// <summary>
-  /// Executes a parameterless async executor and captures cancellation as <see cref="Result{T}" />.
-  /// </summary>
-  /// <returns>Successful result value or canceled result when execution is canceled.</returns>
-  public static async ValueTask<Result<T>> TryExecute<T>(this IAsyncExecutor<Unit, T> executor, CancellationToken token = default) {
-    return await executor.TryExecute(default, token);
-  }
-
 }
