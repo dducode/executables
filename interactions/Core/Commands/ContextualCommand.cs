@@ -1,6 +1,6 @@
 using System.Diagnostics;
 using Interactions.Commands;
-using Interactions.Handlers;
+using Interactions.Handling;
 
 namespace Interactions.Core.Commands;
 

@@ -1,6 +1,4 @@
-using Interactions.Handling;
-
-namespace Interactions.Handlers;
+namespace Interactions.Handling;
 
 public abstract class ReversibleHandler<TInput, TChange> : Handler<TInput, TChange> {
 

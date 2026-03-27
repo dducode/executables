@@ -2,7 +2,7 @@ using System.Diagnostics.Contracts;
 using Interactions.Core.Handlers;
 using Interactions.Internal;
 
-namespace Interactions.Handlers;
+namespace Interactions.Handling;
 
 public static class ReversibleHandler {
 

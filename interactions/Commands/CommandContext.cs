@@ -1,5 +1,5 @@
 using Interactions.Core.Commands;
-using Interactions.Handlers;
+using Interactions.Handling;
 using Interactions.Internal;
 using Interactions.Lifecycle;
 
