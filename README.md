@@ -238,21 +238,174 @@ without losing conceptual consistency.
 
 ### 3.1. `IExecutable<TIn, TOut>`
 
+`IExecutable<TIn, TOut>` is the core abstraction of the library. It represents a reusable operation that accepts a value
+of type `TIn` and produces a value of type `TOut`.
+
+In practice, this is the type you compose, decorate, and expose through the rest of the API.
+
+```csharp
+IExecutable<int, int> doubleValue = Executable.Create((int x) => x * 2);
+IExecutable<int, string> pipeline = doubleValue.Then(x => $"Result: {x}");
+```
+
 ### 3.2. `IExecutor<TIn, TOut>`
+
+An executor is the runtime object that actually performs the work. `IExecutable<TIn, TOut>` describes an operation,
+while `IExecutor<TIn, TOut>` invokes it through `Execute(...)`.
+
+Most users work with executables first and only access the executor when they want an explicit execution step. For
+tuple-based multi-argument executors, `Execute(...)` also supports partial application, so an executor can be curried
+into another executor with fewer remaining arguments.
+
+```csharp
+IExecutable<int, int> square = Executable.Create((int x) => x * x);
+IExecutor<int, int> executor = square.GetExecutor();
+
+int result = executor.Execute(4); // 16
+
+IExecutor<(int, int), int> sum =
+  Executable.Create((int a, int b) => a + b).GetExecutor();
+
+IExecutor<int, int> add10 = sum.Execute(10);
+int result2 = add10.Execute(5); // 15
+```
 
 ### 3.3. `ICommand<T>`
 
+A command models an action whose primary purpose is doing work rather than returning data. Commands return `bool` to
+indicate whether execution was accepted and performed.
+
+In the base implementation, `Command<T>` is a handleable object. It delegates execution to an attached
+`Handler<T, Unit>`. If no handler is attached, `Execute(...)` returns `false`.
+
+An executable that returns `bool` can also be exposed as a command through `AsCommand()`.
+
+This is useful for UI actions, state changes, and application operations with command-like semantics.
+
+```csharp
+var printName = new Command<string>();
+printName.Handle(Executable.Create((string value) => Console.WriteLine(value)).AsHandler());
+
+bool executed = printName.Execute("Denis");
+
+ICommand<string> saveName =
+  Executable.Create((string value) => !string.IsNullOrWhiteSpace(value))
+    .AsCommand();
+```
+
 ### 3.4. `IQuery<TIn, TOut>`
+
+A query models a read-style operation. It accepts input and returns data through `Send(...)`.
+
+In the base implementation, `Query<TIn, TOut>` is also handleable. It delegates to an attached `Handler<TIn, TOut>`.
+If no handler is attached, `Send(...)` throws `MissingHandlerException`.
+
+An executable can also be exposed as a query through `AsQuery()`.
+
+Use queries when the operation is conceptually about obtaining a result rather than performing a command.
+
+```csharp
+var formatId = new Query<int, string>();
+formatId.Handle(Executable.Create((int id) => $"User-{id}").AsHandler());
+
+string value = formatId.Send(42);
+
+IQuery<int, string> formatId2 =
+  Executable.Create((int id) => $"User-{id}")
+    .AsQuery();
+```
 
 ### 3.5. `IEvent<T>`
 
+An event is a publish-subscribe executable. It lets publishers emit values and subscribers react to them.
+
+In the base implementation, `Event<T>` keeps track of subscribers internally, but publication still runs through an
+attached handler. On `Publish(...)`, the event creates a `Publishing<T>` value that contains the message and the current
+subscriber list, then passes it to `Handler<Publishing<T>, Unit>`. If there are no subscribers, the event does nothing.
+`MissingHandlerException` is thrown only when subscribers exist but no handler is attached.
+
+This is useful for notification flows and loosely coupled reactions inside an application.
+
+```csharp
+var nameChanged = new Event<string>();
+
+using IDisposable subscription = nameChanged.Subscribe(name => Console.WriteLine(name));
+
+nameChanged.Handle(Executable.Create((Publishing<string> x) =>
+{
+  foreach (var subscriber in x)
+    subscriber.Receive(x.arg);
+}).AsHandler());
+
+nameChanged.Publish("Updated");
+```
+
 ### 3.6. Handlers and Subscribers
+
+Handlers are the concrete execution layer behind the base command, query, and event types.
+
+- `Command<T>` is a `Handleable<T, Unit>`,
+- `Query<TIn, TOut>` is a `Handleable<TIn, TOut>`,
+- `Event<T>` is a `Handleable<Publishing<T>, Unit>`.
+
+`Handleable<...>` allows one handler to be attached through `Handle(...)` and returns an `IDisposable` that can detach
+it later. In other words, the API object defines the interaction shape, and the attached handler defines the behavior.
+
+Subscribers are the receiving side of events. `Event<T>` owns the subscriber collection, while the attached handler owns
+the publication logic that decides how those subscribers are notified.
+
+This matters because the library supports two complementary styles:
+
+- create pipelines from executables and convert them into commands or queries,
+- work directly with handleable objects and attach handlers to them.
+
+The second style explains how the base `Command`, `Query`, and `Event` implementations actually operate.
 
 ### 3.7. `Unit`, `Optional<T>`, and `Result<T>`
 
+These types model common execution cases without relying on ad hoc conventions:
+
+- `Unit` represents "no meaningful value",
+- `Optional<T>` represents an optional value, typically produced when selected exception types are suppressed,
+- `Result<T>` represents either a successful value or a captured failure.
+
+They make pipelines more explicit and easier to compose.
+
+```csharp
+IExecutable<string, Optional<int>> parseOptional =
+  Executable.Create((string text) => int.Parse(text))
+    .SuppressException()
+    .OfType<FormatException>();
+
+IExecutable<string, Result<int>> parseResult =
+  Executable.Create((string text) => int.Parse(text))
+    .WithResult();
+```
+
 ### 3.8. Interaction Context
 
+The interaction context carries execution-scoped metadata such as correlation and nested call information. It is useful
+when a pipeline needs ambient context without manually threading metadata through every method signature.
+
+This becomes especially valuable in larger flows with logging, tracing, or context-aware policies.
+
+```csharp
+IExecutable<int, int> pipeline =
+  Executable.Create((int x) => x + 1)
+    .WithContext(ctx => ctx.Name = "Increment");
+```
+
 ### 3.9. History, Undo, and Redo
+
+The library includes support for reversible command scenarios through history tracking and undo/redo behavior. This is
+useful in UI workflows and stateful application actions where reversing previous changes is part of the model.
+
+The main user-facing concept here is `ReversibleCommand<TInput, TChange>`, which stores change history and supports
+`Undo()` and `Redo()`.
+
+```csharp
+var command = new ReversibleCommand<int, int>();
+```
 
 ## 4. Creating API Objects
 
