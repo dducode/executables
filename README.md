@@ -1,4 +1,4 @@
-# interactions
+# Interactions
 
 <details>
 <summary>Table of contents</summary>
@@ -458,17 +458,90 @@ changed.Publish("Updated");
 
 ### 5.1. Chaining with `Then(...)`
 
+`Then(...)` is the basic way to compose steps into a pipeline. The output of one executable becomes the input of the
+next one.
+
+```csharp
+IExecutable<string, int> parseLength =
+  Executable.Create((string text) => text.Trim())
+    .Then(text => text.Length);
+```
+
 ### 5.2. Branching with `Fork(...)`
+
+`Fork(...)` sends one result into two parallel branches and returns both outputs as a tuple. This is useful when the
+same intermediate value must be processed in multiple ways.
+
+```csharp
+IExecutable<string, (int, string)> info =
+  Executable.Create((string text) => text.Trim())
+    .Fork(
+      text => text.Length,
+      text => text.ToUpperInvariant());
+```
 
 ### 5.3. Transforming Tuple Outputs with `First(...)`, `Second(...)`, and `Swap()`
 
+After a fork, you can transform either side of the tuple independently or swap tuple items.
+
+```csharp
+IExecutable<string, (string, string)> transformed =
+  Executable.Create((string text) => text.Trim())
+    .Fork(text => text.Length, text => text.ToUpperInvariant())
+    .First(length => $"Length: {length}")
+    .Second(text => $"Value: {text}")
+    .Swap();
+```
+
 ### 5.4. Combining Branches with `Merge(...)`
+
+`Merge(...)` turns a tuple result back into a single output. It is typically used after `Fork(...)`.
+
+```csharp
+IExecutable<string, string> summary =
+  Executable.Create((string text) => text.Trim())
+    .Fork(text => text.Length, text => text.ToUpperInvariant())
+    .Merge((length, upper) => $"{upper} ({length})");
+```
 
 ### 5.5. Adapting Contracts with `Map(...)`, `InMap(...)`, and `OutMap(...)`
 
+These methods adapt an executable to a different external contract without changing its internal logic.
+
+- `Map(...)` adapts both input and output,
+- `InMap(...)` adapts only input,
+- `OutMap(...)` adapts only output.
+
+```csharp
+IExecutable<int, int> square = Executable.Create((int x) => x * x);
+
+IExecutable<string, string> squareText =
+  square.Map(
+    text => int.Parse(text),
+    value => $"Result: {value}");
+```
+
 ### 5.6. Observing Results with `Tap(...)`
 
+`Tap(...)` runs a side effect on the result while preserving the original output. This is useful for logging, metrics,
+or debugging.
+
+```csharp
+IExecutable<int, int> pipeline =
+  Executable.Create((int x) => x * 2)
+    .Tap(value => Console.WriteLine($"Produced: {value}"));
+```
+
 ### 5.7. Building Reusable Pipelines with `Pipe(...)`
+
+`Pipe(...)` lets you pass an executable through a reusable transformation function. This is useful when a composition
+pattern should be applied in many places.
+
+```csharp
+IExecutable<int, string> pipeline =
+  Executable.Create((int x) => x + 1)
+    .Pipe(executable => executable.Then(value => $"Value: {value}"));
+```
 
 ## 6. Commands, Queries, and Events
 
