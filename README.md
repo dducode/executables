@@ -243,11 +243,6 @@ of type `TIn` and produces a value of type `TOut`.
 
 In practice, this is the type you compose, decorate, and expose through the rest of the API.
 
-```csharp
-IExecutable<int, int> doubleValue = Executable.Create((int x) => x * 2);
-IExecutable<int, string> pipeline = doubleValue.Then(x => $"Result: {x}");
-```
-
 ### 3.2. `IExecutor<TIn, TOut>`
 
 An executor is the runtime object that actually performs the work. `IExecutable<TIn, TOut>` describes an operation,
@@ -278,20 +273,7 @@ indicate whether execution was accepted and performed.
 In the base implementation, `Command<T>` is a handleable object. It delegates execution to an attached
 `Handler<T, Unit>`. If no handler is attached, `Execute(...)` returns `false`.
 
-An executable that returns `bool` can also be exposed as a command through `AsCommand()`.
-
 This is useful for UI actions, state changes, and application operations with command-like semantics.
-
-```csharp
-var printName = new Command<string>();
-printName.Handle(Executable.Create((string value) => Console.WriteLine(value)).AsHandler());
-
-bool executed = printName.Execute("Denis");
-
-ICommand<string> saveName =
-  Executable.Create((string value) => !string.IsNullOrWhiteSpace(value))
-    .AsCommand();
-```
 
 ### 3.4. `IQuery<TIn, TOut>`
 
@@ -300,20 +282,7 @@ A query models a read-style operation. It accepts input and returns data through
 In the base implementation, `Query<TIn, TOut>` is also handleable. It delegates to an attached `Handler<TIn, TOut>`.
 If no handler is attached, `Send(...)` throws `MissingHandlerException`.
 
-An executable can also be exposed as a query through `AsQuery()`.
-
 Use queries when the operation is conceptually about obtaining a result rather than performing a command.
-
-```csharp
-var formatId = new Query<int, string>();
-formatId.Handle(Executable.Create((int id) => $"User-{id}").AsHandler());
-
-string value = formatId.Send(42);
-
-IQuery<int, string> formatId2 =
-  Executable.Create((int id) => $"User-{id}")
-    .AsQuery();
-```
 
 ### 3.5. `IEvent<T>`
 
@@ -325,20 +294,6 @@ subscriber list, then passes it to `Handler<Publishing<T>, Unit>`. If there are 
 `MissingHandlerException` is thrown only when subscribers exist but no handler is attached.
 
 This is useful for notification flows and loosely coupled reactions inside an application.
-
-```csharp
-var nameChanged = new Event<string>();
-
-using IDisposable subscription = nameChanged.Subscribe(name => Console.WriteLine(name));
-
-nameChanged.Handle(Executable.Create((Publishing<string> x) =>
-{
-  foreach (var subscriber in x)
-    subscriber.Receive(x.arg);
-}).AsHandler());
-
-nameChanged.Publish("Updated");
-```
 
 ### 3.6. Handlers and Subscribers
 
@@ -389,12 +344,6 @@ when a pipeline needs ambient context without manually threading metadata throug
 
 This becomes especially valuable in larger flows with logging, tracing, or context-aware policies.
 
-```csharp
-IExecutable<int, int> pipeline =
-  Executable.Create((int x) => x + 1)
-    .WithContext(ctx => ctx.Name = "Increment");
-```
-
 ### 3.9. History, Undo, and Redo
 
 The library includes support for reversible command scenarios through history tracking and undo/redo behavior. This is
@@ -403,25 +352,107 @@ useful in UI workflows and stateful application actions where reversing previous
 The main user-facing concept here is `ReversibleCommand<TInput, TChange>`, which stores change history and supports
 `Undo()` and `Redo()`.
 
-```csharp
-var command = new ReversibleCommand<int, int>();
-```
-
 ## 4. Creating API Objects
 
 ### 4.1. Creating Executables with `Executable.Create(...)`
 
+`Executable.Create(...)` is the main entry point for wrapping delegates into the library model. It supports functions
+and actions with zero to four arguments.
+
+For multi-argument delegates, the executable input becomes a tuple.
+
+```csharp
+IExecutable<int, int> square =
+  Executable.Create((int x) => x * x);
+
+IExecutable<(int, int), int> sum =
+  Executable.Create((int a, int b) => a + b);
+
+IExecutable<string, Unit> print =
+  Executable.Create((string text) => Console.WriteLine(text));
+```
+
 ### 4.2. Creating Async Executables with `AsyncExecutable.Create(...)`
+
+`AsyncExecutable.Create(...)` is the async counterpart. It wraps async delegates into `IAsyncExecutable<...>` and
+follows the same shape as the synchronous API.
+
+```csharp
+IAsyncExecutable<int, int> doubleAsync =
+  AsyncExecutable.Create(async (int x, CancellationToken token) =>
+  {
+    await Task.Delay(10, token);
+    return x * 2;
+  });
+```
 
 ### 4.3. Identity Executables
 
+`Executable.Identity<T>()` and `AsyncExecutable.Identity<T>()` create pass-through executables that return the input
+unchanged. They are useful in mapping, adaptation, and composition scenarios where one side of a transformation should
+stay untouched.
+
+```csharp
+IExecutable<int, int> identity = Executable.Identity<int>();
+int result = identity.GetExecutor().Execute(5); // 5
+```
+
 ### 4.4. Converting Executables to Commands
+
+If an executable returns `bool`, it can be exposed as a command through `AsCommand()`. This is the simplest way to reuse
+an existing executable in a command-oriented API.
+
+```csharp
+ICommand<string> saveName =
+  Executable.Create((string value) => !string.IsNullOrWhiteSpace(value))
+    .AsCommand();
+```
 
 ### 4.5. Converting Executables to Queries
 
+Any executable can be exposed as a query through `AsQuery()`. This is useful when the operation is conceptually a read
+or lookup and you want query-style semantics on top of reusable executable logic.
+
+```csharp
+IQuery<int, string> getUserName =
+  Executable.Create((int id) => $"User-{id}")
+    .AsQuery();
+```
+
 ### 4.6. Converting Executables to Handlers
 
+`AsHandler()` converts an executable into a `Handler<TIn, TOut>`. This is especially useful when working with base
+`Command`, `Query`, or `Event` objects, because those types delegate their actual behavior to handlers.
+
+```csharp
+Handler<int, string> formatHandler =
+  Executable.Create((int id) => $"User-{id}")
+    .AsHandler();
+
+var query = new Query<int, string>();
+query.Handle(formatHandler);
+```
+
 ### 4.7. Creating and Using Events
+
+Events are created directly through `new Event<T>()`. Unlike commands and queries, they are not normally produced by
+converting an executable. Instead, you create the event object, attach subscribers, and optionally attach a handler that
+controls publication.
+
+```csharp
+var changed = new Event<string>();
+
+using IDisposable subscription = changed.Subscribe(value => Console.WriteLine(value));
+
+changed.Handle(
+  Executable.Create((Publishing<string> x) =>
+  {
+    foreach (var subscriber in x)
+      subscriber.Receive(x.arg);
+  }).AsHandler());
+
+changed.Publish("Updated");
+```
 
 ## 5. Composition API
 
