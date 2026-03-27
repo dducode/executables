@@ -15,6 +15,7 @@ public static class AsyncExecutionOperator {
   /// </summary>
   /// <param name="storage">Cache storage used to resolve and persist values.</param>
   /// <returns>Cache operator.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="storage"/> is <see langword="null"/>.</exception>
   [Pure]
   public static AsyncBehaviorOperator<T1, T2> Cache<T1, T2>(ICacheStorage<T1, T2> storage) {
     ExceptionsHelper.ThrowIfNull(storage, nameof(storage));
@@ -27,6 +28,7 @@ public static class AsyncExecutionOperator {
   /// <param name="metrics">Metrics sink used to record execution information.</param>
   /// <param name="tag">Optional tag associated with recorded metrics.</param>
   /// <returns>Metrics operator.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="metrics"/> is <see langword="null"/>.</exception>
   [Pure]
   public static AsyncBehaviorOperator<T1, T2> Metrics<T1, T2>(this IMetrics<T1, T2> metrics, string tag = null) {
     ExceptionsHelper.ThrowIfNull(metrics, nameof(metrics));
@@ -39,6 +41,7 @@ public static class AsyncExecutionOperator {
   /// <param name="incoming">Executable that converts external input to the wrapped executor input type.</param>
   /// <param name="outgoing">Executable that converts wrapped executor output to the final output type.</param>
   /// <returns>Asynchronous execution operator that applies both mappings around the wrapped executor.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="incoming"/> or <paramref name="outgoing"/> is <see langword="null"/>.</exception>
   [Pure]
   public static AsyncExecutionOperator<T1, T2, T3, T4> Map<T1, T2, T3, T4>(IExecutable<T1, T2> incoming, IExecutable<T3, T4> outgoing) {
     ExceptionsHelper.ThrowIfNull(incoming, nameof(incoming));
@@ -51,6 +54,7 @@ public static class AsyncExecutionOperator {
   /// </summary>
   /// <param name="operation">Delegate implementing operator behavior.</param>
   /// <returns>Execution operator wrapping <paramref name="operation"/>.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="operation"/> is <see langword="null"/>.</exception>
   [Pure]
   public static AsyncExecutionOperator<T1, T2, T3, T4> Create<T1, T2, T3, T4>(AsyncFunc<T1, IAsyncExecutor<T2, T3>, T4> operation) {
     ExceptionsHelper.ThrowIfNull(operation, nameof(operation));

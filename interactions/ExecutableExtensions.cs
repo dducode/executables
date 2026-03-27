@@ -36,6 +36,7 @@ public static partial class ExecutableExtensions {
   /// <param name="first">Executable invoked first.</param>
   /// <param name="second">Executable invoked with the result of <paramref name="first"/>.</param>
   /// <returns>Composed executable.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="second"/> is <see langword="null"/>.</exception>
   [Pure]
   public static IExecutable<T1, T3> Then<T1, T2, T3>(this IExecutable<T1, T2> first, IExecutable<T2, T3> second) {
     first.ThrowIfNullReference();
@@ -51,6 +52,7 @@ public static partial class ExecutableExtensions {
   /// <param name="executable">Executable invoked first.</param>
   /// <param name="next">Delegate invoked with the result of <paramref name="executable"/>.</param>
   /// <returns>Composed executable.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="next"/> is <see langword="null"/>.</exception>
   [Pure]
   public static IExecutable<T1, T3> Then<T1, T2, T3>(this IExecutable<T1, T2> executable, Func<T2, T3> next) {
     return executable.Then(Executable.Create(next));
@@ -62,6 +64,7 @@ public static partial class ExecutableExtensions {
   /// <param name="first">Synchronous executable invoked first.</param>
   /// <param name="second">Asynchronous executable invoked with the result of <paramref name="first"/>.</param>
   /// <returns>Composed asynchronous executable.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="second"/> is <see langword="null"/>.</exception>
   [Pure]
   public static IAsyncExecutable<T1, T3> Then<T1, T2, T3>(this IExecutable<T1, T2> first, IAsyncExecutable<T2, T3> second) {
     return first.ToAsyncExecutable().Then(second);
@@ -73,6 +76,7 @@ public static partial class ExecutableExtensions {
   /// <param name="executable">Executable invoked first.</param>
   /// <param name="next">Asynchronous delegate invoked with the result of <paramref name="executable"/>.</param>
   /// <returns>Composed asynchronous executable.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="next"/> is <see langword="null"/>.</exception>
   [Pure]
   public static IAsyncExecutable<T1, T3> Then<T1, T2, T3>(this IExecutable<T1, T2> executable, AsyncFunc<T2, T3> next) {
     return executable.ToAsyncExecutable().Then(AsyncExecutable.Create(next));
@@ -85,6 +89,7 @@ public static partial class ExecutableExtensions {
   /// <param name="firstBranch">First branch executable.</param>
   /// <param name="secondBranch">Second branch executable.</param>
   /// <returns>Executable that returns both branch results.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="firstBranch"/> or <paramref name="secondBranch"/> is <see langword="null"/>.</exception>
   [Pure]
   public static IExecutable<T1, (T3, T4)> Fork<T1, T2, T3, T4>(
     this IExecutable<T1, T2> executable,
@@ -102,6 +107,7 @@ public static partial class ExecutableExtensions {
   /// <param name="firstBranch">First branch delegate.</param>
   /// <param name="secondBranch">Second branch delegate.</param>
   /// <returns>Executable that returns both branch results.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="firstBranch"/> or <paramref name="secondBranch"/> is <see langword="null"/>.</exception>
   [Pure]
   public static IExecutable<T1, (T3, T4)> Fork<T1, T2, T3, T4>(this IExecutable<T1, T2> executable, Func<T2, T3> firstBranch, Func<T2, T4> secondBranch) {
     return executable.Fork(Executable.Create(firstBranch), Executable.Create(secondBranch));
@@ -123,6 +129,7 @@ public static partial class ExecutableExtensions {
   /// <param name="fork">Executable that returns a tuple.</param>
   /// <param name="map">Executable applied to the first tuple item.</param>
   /// <returns>Executable with transformed first tuple item.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="map"/> is <see langword="null"/>.</exception>
   [Pure]
   public static IExecutable<T1, (TNew, T3)> First<T1, T2, T3, TNew>(this IExecutable<T1, (T2, T3)> fork, IExecutable<T2, TNew> map) {
     ExceptionsHelper.ThrowIfNull(map, nameof(map));
@@ -135,6 +142,7 @@ public static partial class ExecutableExtensions {
   /// <param name="fork">Executable that returns a tuple.</param>
   /// <param name="map">Delegate applied to the first tuple item.</param>
   /// <returns>Executable with transformed first tuple item.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="map"/> is <see langword="null"/>.</exception>
   [Pure]
   public static IExecutable<T1, (TNew, T3)> First<T1, T2, T3, TNew>(this IExecutable<T1, (T2, T3)> fork, Func<T2, TNew> map) {
     return fork.First(Executable.Create(map));
@@ -146,6 +154,7 @@ public static partial class ExecutableExtensions {
   /// <param name="fork">Executable that returns a tuple.</param>
   /// <param name="map">Executable applied to the second tuple item.</param>
   /// <returns>Executable with transformed second tuple item.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="map"/> is <see langword="null"/>.</exception>
   [Pure]
   public static IExecutable<T1, (T2, TNew)> Second<T1, T2, T3, TNew>(this IExecutable<T1, (T2, T3)> fork, IExecutable<T3, TNew> map) {
     ExceptionsHelper.ThrowIfNull(map, nameof(map));
@@ -158,6 +167,7 @@ public static partial class ExecutableExtensions {
   /// <param name="fork">Executable that returns a tuple.</param>
   /// <param name="map">Delegate applied to the second tuple item.</param>
   /// <returns>Executable with transformed second tuple item.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="map"/> is <see langword="null"/>.</exception>
   [Pure]
   public static IExecutable<T1, (T2, TNew)> Second<T1, T2, T3, TNew>(this IExecutable<T1, (T2, T3)> fork, Func<T3, TNew> map) {
     return fork.Second(Executable.Create(map));
@@ -169,6 +179,7 @@ public static partial class ExecutableExtensions {
   /// <param name="fork">Executable that returns a tuple.</param>
   /// <param name="merge">Executable that combines tuple items into a single result.</param>
   /// <returns>Executable that returns the merged result.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="merge"/> is <see langword="null"/>.</exception>
   [Pure]
   public static IExecutable<T1, T4> Merge<T1, T2, T3, T4>(this IExecutable<T1, (T2, T3)> fork, IExecutable<(T2, T3), T4> merge) {
     return fork.Then(merge);
@@ -180,6 +191,7 @@ public static partial class ExecutableExtensions {
   /// <param name="fork">Executable that returns a tuple.</param>
   /// <param name="merge">Delegate that combines tuple items into a single result.</param>
   /// <returns>Executable that returns the merged result.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="merge"/> is <see langword="null"/>.</exception>
   [Pure]
   public static IExecutable<T1, T4> Merge<T1, T2, T3, T4>(this IExecutable<T1, (T2, T3)> fork, Func<T2, T3, T4> merge) {
     ExceptionsHelper.ThrowIfNull(merge, nameof(merge));
@@ -193,6 +205,7 @@ public static partial class ExecutableExtensions {
   /// <param name="incoming">Executable that converts external input to the executable input type.</param>
   /// <param name="outgoing">Executable that converts executable output to the external output type.</param>
   /// <returns>Executable with adapted input and output contracts.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="incoming"/> or <paramref name="outgoing"/> is <see langword="null"/>.</exception>
   [Pure]
   public static IExecutable<T1, T4> Map<T1, T2, T3, T4>(this IExecutable<T2, T3> executable, IExecutable<T1, T2> incoming, IExecutable<T3, T4> outgoing) {
     return executable.Apply(ExecutionOperator.Map(incoming, outgoing));
@@ -205,50 +218,55 @@ public static partial class ExecutableExtensions {
   /// <param name="incoming">Delegate that converts external input to the executable input type.</param>
   /// <param name="outgoing">Delegate that converts executable output to the external output type.</param>
   /// <returns>Executable with adapted input and output contracts.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="incoming"/> or <paramref name="outgoing"/> is <see langword="null"/>.</exception>
   [Pure]
   public static IExecutable<T1, T4> Map<T1, T2, T3, T4>(this IExecutable<T2, T3> executable, Func<T1, T2> incoming, Func<T3, T4> outgoing) {
     return executable.Map(Executable.Create(incoming), Executable.Create(outgoing));
   }
 
   /// <summary>
-  /// Adapts only the input type of an executable.
+  /// Adapts only the input type of executable.
   /// </summary>
   /// <param name="executable">Executable being adapted.</param>
   /// <param name="incoming">Executable that converts external input to the executable input type.</param>
   /// <returns>Executable with adapted input type.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="incoming"/> is <see langword="null"/>.</exception>
   [Pure]
   public static IExecutable<T1, T3> InMap<T1, T2, T3>(this IExecutable<T2, T3> executable, IExecutable<T1, T2> incoming) {
     return executable.Map(incoming, Executable.Identity<T3>());
   }
 
   /// <summary>
-  /// Adapts only the output type of an executable.
+  /// Adapts only the output type of executable.
   /// </summary>
   /// <param name="executable">Executable being adapted.</param>
   /// <param name="outgoing">Executable that converts executable output to the external output type.</param>
   /// <returns>Executable with adapted output type.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="outgoing"/> is <see langword="null"/>.</exception>
   [Pure]
   public static IExecutable<T1, T3> OutMap<T1, T2, T3>(this IExecutable<T1, T2> executable, IExecutable<T2, T3> outgoing) {
     return executable.Map(Executable.Identity<T1>(), outgoing);
   }
 
   /// <summary>
-  /// Adapts only the input type of an executable with a delegate.
+  /// Adapts only the input type of executable with a delegate.
   /// </summary>
   /// <param name="executable">Executable being adapted.</param>
   /// <param name="incoming">Delegate that converts external input to the executable input type.</param>
   /// <returns>Executable with adapted input type.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="incoming"/> is <see langword="null"/>.</exception>
   [Pure]
   public static IExecutable<T1, T3> InMap<T1, T2, T3>(this IExecutable<T2, T3> executable, Func<T1, T2> incoming) {
     return executable.InMap(Executable.Create(incoming));
   }
 
   /// <summary>
-  /// Adapts only the output type of an executable with a delegate.
+  /// Adapts only the output type of executable with a delegate.
   /// </summary>
   /// <param name="executable">Executable being adapted.</param>
   /// <param name="outgoing">Delegate that converts executable output to the external output type.</param>
   /// <returns>Executable with adapted output type.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="outgoing"/> is <see langword="null"/>.</exception>
   [Pure]
   public static IExecutable<T1, T3> OutMap<T1, T2, T3>(this IExecutable<T1, T2> executable, Func<T2, T3> outgoing) {
     return executable.OutMap(Executable.Create(outgoing));
@@ -260,6 +278,7 @@ public static partial class ExecutableExtensions {
   /// <param name="executable">Executable producing the observed result.</param>
   /// <param name="action">Side-effect action invoked with the produced result.</param>
   /// <returns>Executable that preserves the original result.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null"/>.</exception>
   [Pure]
   public static IExecutable<T1, T2> Tap<T1, T2>(this IExecutable<T1, T2> executable, Action<T2> action) {
     ExceptionsHelper.ThrowIfNull(action, nameof(action));
@@ -272,6 +291,7 @@ public static partial class ExecutableExtensions {
   /// <param name="executable">Executable producing the observed result.</param>
   /// <param name="action">Asynchronous side-effect action invoked with the produced result.</param>
   /// <returns>Asynchronous executable that preserves the original result.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null"/>.</exception>
   [Pure]
   public static IAsyncExecutable<T1, T2> Tap<T1, T2>(this IExecutable<T1, T2> executable, AsyncAction<T2> action) {
     ExceptionsHelper.ThrowIfNull(action, nameof(action));
@@ -284,6 +304,7 @@ public static partial class ExecutableExtensions {
   /// <param name="executable">Executable to run inside the context.</param>
   /// <param name="init">Context initialization logic.</param>
   /// <returns>Executable wrapped with contextual execution.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="init"/> is <see langword="null"/>.</exception>
   [Pure]
   public static IExecutable<T1, T2> WithContext<T1, T2>(this IExecutable<T1, T2> executable, ContextInit init) {
     ExceptionsHelper.ThrowIfNull(init, nameof(init));
@@ -296,6 +317,7 @@ public static partial class ExecutableExtensions {
   /// <param name="executable">Executable to wrap with policies.</param>
   /// <param name="building">Builder action that configures policies.</param>
   /// <returns>Executable wrapped with configured policies.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="building"/> is <see langword="null"/>.</exception>
   [Pure]
   public static IExecutable<T1, T2> WithPolicy<T1, T2>(this IExecutable<T1, T2> executable, Action<PolicyBuilder<T1, T2>> building) {
     executable.ThrowIfNullReference();
@@ -354,6 +376,7 @@ public static partial class ExecutableExtensions {
   /// <param name="executable">Source executable.</param>
   /// <param name="pipe">Transformation function.</param>
   /// <returns>Transformed executable.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="pipe"/> is <see langword="null"/>.</exception>
   [Pure]
   public static IExecutable<T1, T3> Pipe<T1, T2, T3>(this IExecutable<T1, T2> executable, Func<IExecutable<T1, T2>, IExecutable<T1, T3>> pipe) {
     executable.ThrowIfNullReference();
@@ -367,6 +390,7 @@ public static partial class ExecutableExtensions {
   /// <param name="executable">Source executable.</param>
   /// <param name="pipe">Transformation function.</param>
   /// <returns>Transformed asynchronous executable.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="pipe"/> is <see langword="null"/>.</exception>
   [Pure]
   public static IAsyncExecutable<T1, T3> Pipe<T1, T2, T3>(this IExecutable<T1, T2> executable, Func<IExecutable<T1, T2>, IAsyncExecutable<T1, T3>> pipe) {
     executable.ThrowIfNullReference();
