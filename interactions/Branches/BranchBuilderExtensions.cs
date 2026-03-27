@@ -1,6 +1,5 @@
 using System.Diagnostics.Contracts;
-using Interactions.Core;
-using Interactions.Core.Internal;
+using Interactions.Internal;
 
 namespace Interactions.Branches;
 

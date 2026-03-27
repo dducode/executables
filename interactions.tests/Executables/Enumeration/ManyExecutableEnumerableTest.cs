@@ -1,6 +1,4 @@
-using Interactions.Core;
-using Interactions.Core.Executables;
-using Interactions.Executables.Enumeration;
+using Interactions.Enumeration;
 using JetBrains.Annotations;
 using Xunit.Abstractions;
 

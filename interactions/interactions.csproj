@@ -21,6 +21,8 @@
             policies, maps added, policy handlers deprecated;
             handlers data transformation deprecated, executable maps used instead;
             bugs fixed
+            executable and handleable interfaces extracted;
+            event handling changed;
         </PackageReleaseNotes>
     </PropertyGroup>
 
@@ -29,10 +31,6 @@
         <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
             <_Parameter1>interactions.tests</_Parameter1>
         </AssemblyAttribute>
-    </ItemGroup>
-
-    <ItemGroup>
-        <ProjectReference Include="..\interactions.core\interactions.core.csproj"/>
     </ItemGroup>
 
 </Project>

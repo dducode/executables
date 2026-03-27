@@ -1,4 +1,3 @@
-using Interactions.Core;
 using Interactions.Handlers;
 
 namespace Interactions.Commands;

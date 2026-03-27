@@ -1,9 +1,9 @@
 using System.Diagnostics.Contracts;
-using Interactions.Core;
-using Interactions.Core.Internal;
+using Interactions.Core.Operators;
+using Interactions.Core.Policies;
 using Interactions.Fallbacks;
 using Interactions.Guards;
-using Interactions.Operations;
+using Interactions.Internal;
 using Interactions.RetryRules;
 using Interactions.Validation;
 

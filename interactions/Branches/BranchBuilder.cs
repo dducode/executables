@@ -1,6 +1,6 @@
 using System.Diagnostics.Contracts;
-using Interactions.Core;
-using Interactions.Core.Internal;
+using Interactions.Core.Executables;
+using Interactions.Internal;
 
 namespace Interactions.Branches;
 

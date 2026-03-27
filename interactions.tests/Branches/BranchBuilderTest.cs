@@ -1,7 +1,5 @@
 using Interactions.Branches;
-using Interactions.Core;
-using Interactions.Core.Executables;
-using Interactions.Core.Queries;
+using Interactions.Queries;
 using JetBrains.Annotations;
 
 namespace Interactions.Tests.Branches;

@@ -1,4 +1,4 @@
-using Interactions.Core;
+using Interactions.Handling;
 
 namespace Interactions.Handlers;
 

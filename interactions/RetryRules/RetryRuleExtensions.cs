@@ -1,5 +1,6 @@
 using System.Diagnostics.Contracts;
-using Interactions.Core.Internal;
+using Interactions.Core.RetryRules;
+using Interactions.Internal;
 
 namespace Interactions.RetryRules;
 

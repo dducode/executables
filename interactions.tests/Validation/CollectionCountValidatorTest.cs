@@ -1,4 +1,5 @@
 using AutoFixture;
+using Interactions.Core.Validation;
 using Interactions.Validation;
 using JetBrains.Annotations;
 

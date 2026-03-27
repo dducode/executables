@@ -1,9 +1,6 @@
 using Interactions.Context;
-using Interactions.Core;
-using Interactions.Core.Executables;
-using Interactions.Core.Queries;
-using Interactions.Executables;
 using Interactions.Pipelines;
+using Interactions.Queries;
 using JetBrains.Annotations;
 using Xunit.Abstractions;
 

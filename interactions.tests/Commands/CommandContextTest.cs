@@ -1,7 +1,6 @@
 using System.Text;
 using AutoFixture;
 using Interactions.Commands;
-using Interactions.Core;
 using JetBrains.Annotations;
 using Xunit.Abstractions;
 

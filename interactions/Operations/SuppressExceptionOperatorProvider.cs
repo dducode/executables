@@ -1,4 +1,4 @@
-using Interactions.Core;
+using Interactions.Core.Operators;
 
 namespace Interactions.Operations;
 

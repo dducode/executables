@@ -1,5 +1,3 @@
-using Interactions.Core;
-using Interactions.Core.Executors;
 using JetBrains.Annotations;
 
 namespace Interactions.Tests.Extensions;

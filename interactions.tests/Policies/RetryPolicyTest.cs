@@ -1,7 +1,4 @@
-using Interactions.Core;
-using Interactions.Core.Executables;
-using Interactions.Executables;
-using Interactions.Policies;
+using Interactions.Core.Policies;
 using Interactions.RetryRules;
 using JetBrains.Annotations;
 

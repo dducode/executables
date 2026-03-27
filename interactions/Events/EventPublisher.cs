@@ -1,0 +1,29 @@
+using System.Diagnostics.Contracts;
+using Interactions.Core.Events;
+using Interactions.Handling;
+
+namespace Interactions.Events;
+
+public static class EventPublisher {
+
+  [Pure]
+  public static Handler<Publishing<T>, Unit> Sequential<T>(PublishOrder order = PublishOrder.Direct) {
+    return new SequentialPublisher<T>(order);
+  }
+
+  [Pure]
+  public static Handler<Publishing<Unit>, Unit> Sequential(PublishOrder order = PublishOrder.Direct) {
+    return Sequential<Unit>(order);
+  }
+
+  [Pure]
+  public static Handler<Publishing<T>, Unit> Parallel<T>(ParallelOptions options = null) {
+    return new ParallelPublisher<T>(options ?? new ParallelOptions());
+  }
+
+  [Pure]
+  public static Handler<Publishing<Unit>, Unit> Parallel(ParallelOptions options = null) {
+    return Parallel<Unit>(options);
+  }
+
+}

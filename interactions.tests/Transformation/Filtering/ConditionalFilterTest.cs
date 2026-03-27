@@ -1,9 +1,7 @@
 using AutoFixture;
-using Interactions.Core;
-using Interactions.Core.Executables;
 using Interactions.Linq;
 using JetBrains.Annotations;
-using static Interactions.Validator;
+using static Interactions.Validation.Validator;
 
 namespace Interactions.Tests.Transformation.Filtering;
 

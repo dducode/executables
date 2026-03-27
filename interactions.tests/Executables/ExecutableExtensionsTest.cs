@@ -1,7 +1,4 @@
-using Interactions.Core;
-using Interactions.Executables;
 using JetBrains.Annotations;
-using ExecutableExtensions = Interactions.Executables.ExecutableExtensions;
 
 namespace Interactions.Tests.Executables;
 

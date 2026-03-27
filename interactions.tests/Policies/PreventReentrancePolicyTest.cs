@@ -1,8 +1,6 @@
-using Interactions.Core;
-using Interactions.Core.Executables;
-using Interactions.Core.Queries;
-using Interactions.Executables;
+using Interactions.Core.Policies;
 using Interactions.Policies;
+using Interactions.Queries;
 using JetBrains.Annotations;
 
 namespace Interactions.Tests.Policies;

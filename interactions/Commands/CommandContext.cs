@@ -1,7 +1,7 @@
-using Interactions.Core;
-using Interactions.Core.Internal;
-using Interactions.Core.Lifecycle;
+using Interactions.Core.Commands;
 using Interactions.Handlers;
+using Interactions.Internal;
+using Interactions.Lifecycle;
 
 namespace Interactions.Commands;
 

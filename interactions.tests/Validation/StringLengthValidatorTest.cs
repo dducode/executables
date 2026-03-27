@@ -1,6 +1,7 @@
+using Interactions.Core.Validation;
 using Interactions.Validation;
 using JetBrains.Annotations;
-using static Interactions.Validator;
+using static Interactions.Validation.Validator;
 
 namespace Interactions.Tests.Validation;
 

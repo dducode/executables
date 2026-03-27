@@ -1,4 +1,4 @@
-using Interactions.Extensions;
+using Interactions.Internal.Extensions;
 
 namespace Interactions;
 

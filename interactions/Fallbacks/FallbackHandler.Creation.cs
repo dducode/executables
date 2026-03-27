@@ -1,5 +1,6 @@
 using System.Diagnostics.Contracts;
-using Interactions.Core.Internal;
+using Interactions.Core.Fallbacks;
+using Interactions.Internal;
 
 namespace Interactions.Fallbacks;
 

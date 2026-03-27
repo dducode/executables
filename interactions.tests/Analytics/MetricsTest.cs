@@ -1,8 +1,5 @@
 using AutoFixture;
 using Interactions.Analytics;
-using Interactions.Core;
-using Interactions.Core.Executables;
-using Interactions.Executables;
 using Interactions.Operations;
 using Interactions.Policies;
 using Interactions.Validation;

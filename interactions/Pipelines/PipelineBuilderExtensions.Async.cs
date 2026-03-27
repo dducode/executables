@@ -1,6 +1,6 @@
 using System.Diagnostics.Contracts;
-using Interactions.Core;
-using Interactions.Core.Internal;
+using Interactions.Core.Pipelines;
+using Interactions.Internal;
 
 namespace Interactions.Pipelines;
 
