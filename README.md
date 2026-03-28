@@ -713,15 +713,95 @@ second.Send(10);
 
 ### 7.1. Applying Policies with `WithPolicy(...)`
 
+`WithPolicy(...)` wraps an executable with a policy pipeline built through `PolicyBuilder<TIn, TOut>` or
+`AsyncPolicyBuilder<TIn, TOut>`. This is the main entry point for validation, guards, fallback behavior, retry rules,
+timeouts, and execution restrictions.
+
+Policies are added declaratively, but they run as wrappers around the executable. The last added policy executes first.
+
+```csharp
+IExecutable<string, int> parse =
+  Executable.Create((string text) => int.Parse(text))
+    .WithPolicy(policy =>
+    {
+      policy.ValidateInput(text => !string.IsNullOrWhiteSpace(text), "Value is required");
+      policy.Fallback<FormatException>((text, ex) => 0);
+    });
+```
+
 ### 7.2. Input and Output Validation
+
+Validation policies are applied through `Validate(...)`, `ValidateInput(...)`, and `ValidateOutput(...)`. They are a
+better place for contract checks than embedding validation directly into handler logic.
+
+```csharp
+IExecutable<string, int> parseLength =
+  Executable.Create((string text) => text.Trim().Length)
+    .WithPolicy(policy =>
+    {
+      policy.ValidateInput(text => text.Length <= 100, "Input is too long");
+      policy.ValidateOutput(length => length >= 0, "Length must be non-negative");
+    });
+```
 
 ### 7.3. Guard Conditions
 
+Guards block execution when some external condition is not satisfied. Unlike validators, they usually express access or
+state constraints rather than input correctness.
+
+```csharp
+bool isEnabled = true;
+
+IExecutable<Unit, string> run =
+  Executable.Create(() => "Started")
+    .WithPolicy(policy => policy.Guard(() => isEnabled, "Operation is disabled"));
+```
+
 ### 7.4. Retry, Timeout, and Fallback Patterns
+
+The async policy builder supports retry and timeout control, while both sync and async builders support fallback.
+
+Use fallback when a known exception should be converted into a result. Use retry when an operation may succeed on a
+later attempt. Use timeout when total async execution time must be bounded.
+
+```csharp
+IAsyncExecutable<int, string> load =
+  AsyncExecutable.Create(async (int id, CancellationToken token) =>
+  {
+    await Task.Delay(50, token);
+    return $"User-{id}";
+  })
+  .WithPolicy(policy =>
+  {
+    policy.Timeout(TimeSpan.FromSeconds(2));
+    policy.Retry<TimeoutException>(RetryRule.ExponentialBackoff<TimeoutException>(
+      TimeSpan.FromMilliseconds(100),
+      maxAttempts: 3));
+    policy.Fallback<TimeoutException>((id, ex) => "Unavailable");
+  });
+```
 
 ### 7.5. Preventing Reentrancy
 
+`PreventReentrance()` rejects overlapping execution of the same executable. This is useful for UI actions, command
+buttons, or operations that must not run concurrently.
+
+```csharp
+IExecutable<Unit, Unit> save =
+  Executable.Create(() => Console.WriteLine("Saving"))
+    .WithPolicy(policy => policy.PreventReentrance());
+```
+
 ### 7.6. Running Work on the Thread Pool
+
+For synchronous `Unit`-returning operations, `OnThreadPool()` adds a policy that offloads execution to the thread pool.
+This is mainly useful for fire-and-forget style command work that should not block the current thread.
+
+```csharp
+IExecutable<string, Unit> log =
+  Executable.Create((string text) => Console.WriteLine(text))
+    .WithPolicy(policy => policy.OnThreadPool());
+```
 
 ## 8. Context, Safety, and Error Handling
 
