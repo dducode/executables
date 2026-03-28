@@ -14,9 +14,9 @@ public static partial class HandlersExtensions {
   }
 
   [Pure]
-  public static AsyncAutoDetachableHandlerProvider<T1, T2> DisposeExternalHandle<T1, T2>(this AsyncHandler<T1, T2> handler) {
+  public static AsyncHandler<T1, T2> DisposeOnUnhandledException<T1, T2>(this AsyncHandler<T1, T2> handler) {
     handler.ThrowIfNullReference();
-    return new AsyncAutoDetachableHandlerProvider<T1, T2>(handler);
+    return new AsyncAutoDisposedHandler<T1, T2>(handler);
   }
 
 }

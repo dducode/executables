@@ -14,10 +14,4 @@ internal sealed class AsyncExecutableHandler<T1, T2>(IAsyncExecutable<T1, T2> ex
     (executable as IDisposable)?.Dispose();
   }
 
-#if !NETFRAMEWORK
-  protected override ValueTask AsyncDisposeCore() {
-    return (executable as IAsyncDisposable)?.DisposeAsync() ?? default;
-  }
-#endif
-
 }

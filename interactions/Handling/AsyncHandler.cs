@@ -1,6 +1,6 @@
 namespace Interactions.Handling;
 
-public abstract partial class AsyncHandler<T1, T2> : DisposableHandler, IAsyncExecutable<T1, T2> {
+public abstract class AsyncHandler<T1, T2> : DisposableHandler, IAsyncExecutable<T1, T2> {
 
   public ValueTask<T2> Handle(T1 input, CancellationToken token = default) {
     ThrowIfDisposed();

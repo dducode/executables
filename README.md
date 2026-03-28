@@ -651,29 +651,62 @@ combine command behavior behind one `ICommand<T>`.
 
 ### 6.7. Handler Lifecycle and Disposal
 
-Handlers implement `IDisposable`, expose a `Disposed` flag, and throw `HandlerDisposedException` if invoked after
-disposal. This matters when a handler owns resources or should stop participating in execution after a failure.
+`Handler<TIn, TOut>` and `AsyncHandler<TIn, TOut>` share a common disposal model through `DisposableHandler`. A handler
+exposes a `Disposed` flag, tracks all active attachment handles, and automatically detaches from connected handleables
+when it is disposed.
+
+This matters because disposal is not only about releasing resources. It also closes the handler as an execution
+endpoint. After disposal, invoking it throws `HandlerDisposedException`.
 
 The API also provides disposal helpers:
 
 - `OnDispose(...)` adds custom disposal logic,
-- `DisposeExternalHandle(handle).OnException<TEx>()` disposes an external attachment handle when a selected exception
-  type is thrown.
+- `DisposeOnUnhandledException()` wraps a handler so that this wrapped attachment is disposed when an exception escapes
+  from its execution logic.
+
+If the same handler instance is attached to multiple handleables, disposing that handler detaches all of its active
+attachments. Because of that, exception-based auto-disposal is best used when any unhandled exception should be treated
+as fatal for the handler instance itself, not for ordinary input or validation failures.
+
+Applied at attachment time, `DisposeOnUnhandledException()` affects only that wrapped handler instance. If you want a
+shared handler itself to become invalid after an unhandled exception, apply `DisposeOnUnhandledException()` when
+creating the shared handler, not only when attaching it to one handleable.
 
 ```csharp
-var query = new Query<int, string>();
+var first = new Query<int, string>();
+var second = new Query<int, string>();
 
-var handle = new DisposeHandle();
-Handler<int, string> inner =
+Handler<int, string> sharedHandler =
+  Executable.Create((int id) =>
+    {
+      string[] values = ["zero", "one"];
+      return values[id].ToUpperInvariant();
+    }).AsHandler();
+
+first.Handle(sharedHandler);
+second.Handle(sharedHandler.DisposeOnUnhandledException());
+
+second.Send(10);
+// The wrapped attachment used by `second` is disposed.
+// The original `sharedHandler` remains attached to `first`.
+```
+
+```csharp
+Handler<int, string> fatalSharedHandler =
   Executable.Create((int id) =>
   {
-    if (id < 0)
-      throw new InvalidOperationException();
-    return id.ToString();
-  }).AsHandler();
+    string[] values = ["zero", "one"];
+    return values[id].ToUpperInvariant();
+  })
+  .AsHandler()
+  .DisposeOnUnhandledException();
 
-handle.Register(query.Handle(inner.DisposeExternalHandle(handle).OnException<InvalidOperationException>()));
-// If InvalidOperationException is thrown, the registered handle is disposed and the handler is detached.
+first.Handle(fatalSharedHandler);
+second.Handle(fatalSharedHandler);
+
+second.Send(10);
+// The shared handler instance is disposed,
+// so it is detached from both `first` and `second`.
 ```
 
 ## 7. Policies and Execution Control
