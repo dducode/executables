@@ -2,7 +2,7 @@ using Interactions.Handling;
 
 namespace Interactions.Core.Handlers;
 
-internal sealed class AsyncAutoDisposeHandler<T1, T2, TException>(AsyncHandler<T1, T2> inner, IDisposable handle)
+internal sealed class AsyncAutoDetachableHandler<T1, T2, TException>(AsyncHandler<T1, T2> inner)
   : AsyncHandler<T1, T2> where TException : Exception {
 
   protected override async ValueTask<T2> HandleCore(T1 input, CancellationToken token = default) {
@@ -10,7 +10,7 @@ internal sealed class AsyncAutoDisposeHandler<T1, T2, TException>(AsyncHandler<T
       return await inner.Handle(input, token);
     }
     catch (TException) {
-      handle.Dispose();
+      DisposeHandles();
       throw;
     }
   }

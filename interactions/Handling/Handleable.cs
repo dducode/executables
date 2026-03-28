@@ -23,12 +23,15 @@ public abstract class Handleable<T1, T2> : IHandleable<T1, T2> {
     lock (_lock) {
       if (_handlerNode != null)
         throw new InvalidOperationException("Already has handler");
-      return _handlerNode = new HandlerNode(this, handler);
+      var handle = new HandlerNode(this, handler);
+      handler.RegisterHandle(handle);
+      return _handlerNode = handle;
     }
   }
 
   private void RemoveNode(HandlerNode node) {
     Interlocked.CompareExchange(ref _handlerNode, null, node);
+    node.Handler.UnregisterHandle(node);
   }
 
   private class HandlerNode(Handleable<T1, T2> parent, Handler<T1, T2> handler) : IDisposable {

@@ -4,8 +4,9 @@ namespace Interactions.Handling;
 public abstract partial class AsyncHandler<T1, T2> : IAsyncDisposable {
 
   public ValueTask DisposeAsync() {
-    if (Interlocked.Exchange(ref _disposed, 1) != 0)
+    if (Interlocked.Exchange(ref disposeState, 1) != 0)
       return new ValueTask(Task.CompletedTask);
+    DisposeHandles();
     return AsyncDisposeCore();
   }
 

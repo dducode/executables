@@ -1,14 +1,9 @@
 namespace Interactions.Handling;
 
-public abstract class Handler<T1, T2> : IExecutable<T1, T2>, IDisposable {
-
-  public bool Disposed => Volatile.Read(ref _disposed) != 0;
-
-  private int _disposed;
+public abstract class Handler<T1, T2> : DisposableHandler, IExecutable<T1, T2> {
 
   public T2 Handle(T1 input) {
-    if (Disposed)
-      throw new HandlerDisposedException(GetType().Name);
+    ThrowIfDisposed();
     return HandleCore(input);
   }
 
@@ -20,14 +15,7 @@ public abstract class Handler<T1, T2> : IExecutable<T1, T2>, IDisposable {
     return GetExecutor();
   }
 
-  public void Dispose() {
-    if (Interlocked.Exchange(ref _disposed, 1) != 0)
-      return;
-    DisposeCore();
-  }
-
   protected abstract T2 HandleCore(T1 input);
-  protected virtual void DisposeCore() { }
 
   public readonly struct Executor(Handler<T1, T2> handler) : IExecutor<T1, T2> {
 

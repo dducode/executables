@@ -1,14 +1,9 @@
 namespace Interactions.Handling;
 
-public abstract partial class AsyncHandler<T1, T2> : IAsyncExecutable<T1, T2>, IDisposable {
-
-  public bool Disposed => Volatile.Read(ref _disposed) != 0;
-
-  private int _disposed;
+public abstract partial class AsyncHandler<T1, T2> : DisposableHandler, IAsyncExecutable<T1, T2> {
 
   public ValueTask<T2> Handle(T1 input, CancellationToken token = default) {
-    if (Disposed)
-      throw new HandlerDisposedException(GetType().Name);
+    ThrowIfDisposed();
     token.ThrowIfCancellationRequested();
     return HandleCore(input, token);
   }
@@ -21,14 +16,7 @@ public abstract partial class AsyncHandler<T1, T2> : IAsyncExecutable<T1, T2>, I
     return GetExecutor();
   }
 
-  public void Dispose() {
-    if (Interlocked.Exchange(ref _disposed, 1) != 0)
-      return;
-    DisposeCore();
-  }
-
   protected abstract ValueTask<T2> HandleCore(T1 input, CancellationToken token = default);
-  protected virtual void DisposeCore() { }
 
   public readonly struct Executor(AsyncHandler<T1, T2> handler) : IAsyncExecutor<T1, T2> {
 
