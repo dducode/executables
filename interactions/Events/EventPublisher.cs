@@ -8,7 +8,11 @@ public static class EventPublisher {
 
   [Pure]
   public static Handler<Publishing<T>, Unit> Sequential<T>(PublishOrder order = PublishOrder.Direct) {
-    return new SequentialPublisher<T>(order);
+    return order switch {
+      PublishOrder.Direct => new DirectPublisher<T>(),
+      PublishOrder.Reverse => new ReversedPublisher<T>(),
+      _ => throw new ArgumentOutOfRangeException(nameof(order))
+    };
   }
 
   [Pure]

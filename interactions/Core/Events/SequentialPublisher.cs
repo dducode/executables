@@ -2,24 +2,16 @@ using System.Runtime.ExceptionServices;
 using Interactions.Events;
 using Interactions.Handling;
 using Interactions.Internal;
-using Interactions.Subscribers;
 
 namespace Interactions.Core.Events;
 
-internal sealed class SequentialPublisher<T>(PublishOrder order) : Handler<Publishing<T>, Unit> {
+internal abstract class SequentialPublisher<T> : Handler<Publishing<T>, Unit> {
 
   protected override Unit HandleCore(Publishing<T> publishing) {
     List<Exception> exceptions = Pool<List<Exception>>.Get();
     using var handle = new ListHandle<Exception>(exceptions);
 
-    foreach (ISubscriber<T> subscriber in order == PublishOrder.Direct ? publishing : publishing.Reverse()) {
-      try {
-        subscriber.Receive(publishing.arg);
-      }
-      catch (Exception e) {
-        exceptions.Add(e);
-      }
-    }
+    Publish(publishing, exceptions);
 
     switch (exceptions.Count) {
       case > 1:
@@ -31,5 +23,7 @@ internal sealed class SequentialPublisher<T>(PublishOrder order) : Handler<Publi
 
     return default;
   }
+
+  protected abstract void Publish(Publishing<T> publishing, List<Exception> exceptions);
 
 }

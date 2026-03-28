@@ -12,9 +12,9 @@ internal sealed class ParallelPublisher<T>(ParallelOptions options) : Handler<Pu
     ConcurrentQueue<Exception> exceptions = Pool<ConcurrentQueue<Exception>>.Get();
 
     try {
-      Parallel.ForEach(publishing, options, subscriber => {
+      Parallel.For(0, publishing.subscribers.Count, options, i => {
         try {
-          subscriber.Receive(publishing.arg);
+          publishing.subscribers[i].Receive(publishing.arg);
         }
         catch (Exception e) {
           exceptions.Enqueue(e);

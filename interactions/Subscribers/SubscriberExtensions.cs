@@ -13,10 +13,4 @@ public static class SubscriberExtensions {
     return new OnceSubscriber<T>(subscriber, handle);
   }
 
-  [Pure]
-  public static ISubscriber<T> OnThreadPool<T>(this ISubscriber<T> subscriber) {
-    subscriber.ThrowIfNullReference();
-    return new ThreadPoolSubscriber<T>(subscriber);
-  }
-
 }

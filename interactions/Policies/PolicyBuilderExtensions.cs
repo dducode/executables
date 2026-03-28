@@ -1,4 +1,3 @@
-using Interactions.Core.Policies;
 using Interactions.Validation;
 
 namespace Interactions.Policies;
@@ -56,15 +55,6 @@ public static partial class PolicyBuilderExtensions {
   /// <returns>Current builder instance.</returns>
   public static PolicyBuilder<T1, T2> Guard<T1, T2>(this PolicyBuilder<T1, T2> builder, Func<bool> guard, string errorMessage) {
     return builder.Guard(Guards.Guard.Create(guard, errorMessage));
-  }
-
-  /// <summary>
-  /// Adds a policy that executes work on the thread pool.
-  /// </summary>
-  /// <param name="builder">Policy builder.</param>
-  /// <returns>Current builder instance.</returns>
-  public static PolicyBuilder<T, Unit> OnThreadPool<T>(this PolicyBuilder<T, Unit> builder) {
-    return builder.Add(new ThreadPoolPolicy<T>());
   }
 
 }

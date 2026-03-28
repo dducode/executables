@@ -440,17 +440,26 @@ Events are created directly through `new Event<T>()`. Unlike commands and querie
 converting an executable. Instead, you create the event object, attach subscribers, and optionally attach a handler that
 controls publication.
 
+The library provides ready-to-use event publishers through `EventPublisher.Sequential(...)` and
+`EventPublisher.Parallel(...)`. These handlers define how subscribers are invoked, while the event still owns the
+subscriber list.
+
+`EventPublisher.Sequential(...)` supports both direct and reverse order through `PublishOrder`. In direct order,
+subscribers are called in the same order in which they are enumerated. In reverse order, the last subscribed handler
+receives the message first.
+
+Because `ISubscriber<T>` is also an `IExecutable<T, Unit>`, an executable can be converted into a subscriber through
+`AsSubscriber()`.
+
 ```csharp
 var changed = new Event<string>();
 
 using IDisposable subscription = changed.Subscribe(value => Console.WriteLine(value));
+using IDisposable executableSubscription = changed.Subscribe(
+  Executable.Create((string value) => Console.WriteLine($"Executable: {value}"))
+    .AsSubscriber());
 
-changed.Handle(
-  Executable.Create((Publishing<string> x) =>
-  {
-    foreach (var subscriber in x)
-      subscriber.Receive(x.arg);
-  }).AsHandler());
+changed.Handle(EventPublisher.Sequential<string>(PublishOrder.Reverse));
 
 changed.Publish("Updated");
 ```
@@ -747,7 +756,8 @@ IExecutable<string, int> parseLength =
 ### 7.3. Guard Conditions
 
 Guards block execution when some external condition is not satisfied. Unlike validators, they usually express access or
-state constraints rather than input correctness.
+state constraints rather than input correctness. When a guard denies execution, the policy throws
+`AccessDeniedException`.
 
 ```csharp
 bool isEnabled = true;
@@ -783,24 +793,35 @@ IAsyncExecutable<int, string> load =
 
 ### 7.5. Preventing Reentrancy
 
-`PreventReentrance()` rejects overlapping execution of the same executable. This is useful for UI actions, command
-buttons, or operations that must not run concurrently.
+`PreventReentrance()` blocks nested re-entry into the same executable. Its main purpose is to prevent a call from
+invoking the same executable again while the original call is still in progress.
+
+This is different from general concurrency control. The important case here is recursive or indirect self-invocation,
+where executable logic loops back into itself through another call path.
 
 ```csharp
-IExecutable<Unit, Unit> save =
-  Executable.Create(() => Console.WriteLine("Saving"))
+IExecutable<int, int> recursive = null;
+
+recursive =
+  Executable.Create((int value) =>
+    value == 0
+      ? 0
+      : recursive.GetExecutor().Execute(value - 1))
     .WithPolicy(policy => policy.PreventReentrance());
 ```
 
 ### 7.6. Running Work on the Thread Pool
 
-For synchronous `Unit`-returning operations, `OnThreadPool()` adds a policy that offloads execution to the thread pool.
-This is mainly useful for fire-and-forget style command work that should not block the current thread.
+For synchronous `Unit`-returning operations, `OnThreadPool()` is an executable operator that offloads execution to the
+thread pool. It changes how work runs rather than expressing a business policy.
+
+This is mainly useful for fire-and-forget style command work, background notifications, and subscribers that should not
+block the current thread.
 
 ```csharp
 IExecutable<string, Unit> log =
   Executable.Create((string text) => Console.WriteLine(text))
-    .WithPolicy(policy => policy.OnThreadPool());
+    .OnThreadPool();
 ```
 
 ## 8. Context, Safety, and Error Handling

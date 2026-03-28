@@ -6,6 +6,7 @@ using Interactions.Handling;
 using Interactions.Internal;
 using Interactions.Operations;
 using Interactions.Policies;
+using Interactions.Subscribers;
 
 namespace Interactions;
 
@@ -456,6 +457,23 @@ public static partial class ExecutableExtensions {
   public static ICommand<T> AsCommand<T>(this ICommand<T> command) {
     command.ThrowIfNullReference();
     return command;
+  }
+
+  [Pure]
+  public static ISubscriber<T> AsSubscriber<T>(this IExecutable<T, Unit> executable) {
+    executable.ThrowIfNullReference();
+    return new ExecutableSubscriber<T>(executable);
+  }
+
+  [Pure]
+  public static ISubscriber<T> AsSubscriber<T>(this ISubscriber<T> subscriber) {
+    subscriber.ThrowIfNullReference();
+    return subscriber;
+  }
+
+  [Pure]
+  public static IExecutable<T, Unit> OnThreadPool<T>(this IExecutable<T, Unit> executable) {
+    return executable.Apply(new ThreadPoolOperator<T>());
   }
 
 }
