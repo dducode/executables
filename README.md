@@ -44,14 +44,15 @@
       `OutMap(...)`](#55-adapting-contracts-with-map-inmap-and-outmap)
     - [5.6. Observing Results with `Tap(...)`](#56-observing-results-with-tap)
     - [5.7. Building Reusable Pipelines with `Pipe(...)`](#57-building-reusable-pipelines-with-pipe)
+    - [5.8. Connecting Queries with `Connect(...)`](#58-connecting-queries-with-connect)
+    - [5.9. Composing Commands with `Compose(...)`](#59-composing-commands-with-compose)
 - [6. Handleables and Handlers](#6-handleables-and-handlers)
     - [6.1. Missing-Handler Behavior](#61-missing-handler-behavior)
     - [6.2. Subscription Lifetime](#62-subscription-lifetime)
     - [6.3. One-Time Subscriptions](#63-one-time-subscriptions)
     - [6.4. Parameterless Operations](#64-parameterless-operations)
     - [6.5. Handleables and Merging](#65-handleables-and-merging)
-    - [6.6. Composing Commands](#66-composing-commands)
-    - [6.7. Handler Lifecycle and Disposal](#67-handler-lifecycle-and-disposal)
+    - [6.6. Handler Lifecycle and Disposal](#66-handler-lifecycle-and-disposal)
 - [7. Policies and Execution Control](#7-policies-and-execution-control)
     - [7.1. Applying Policies with `WithPolicy(...)`](#71-applying-policies-with-withpolicy)
     - [7.2. Input and Output Validation](#72-input-and-output-validation)
@@ -553,6 +554,82 @@ IExecutable<int, string> pipeline =
     .Pipe(executable => executable.Then(value => $"Value: {value}"));
 ```
 
+### 5.8. Connecting Queries with `Connect(...)`
+
+`Connect(...)` composes two queries into one query by passing the output of the first query into the input of the
+second query.
+
+It supports sync-to-sync, async-to-async, and mixed sync/async combinations.
+
+```csharp
+IQuery<string, int> parse =
+  Executable.Create((string text) => int.Parse(text))
+    .AsQuery();
+
+IQuery<int, string> format =
+  Executable.Create((int value) => $"Value: {value}")
+    .AsQuery();
+
+IQuery<string, string> chained = parse.Connect(format);
+string output = chained.Send("42");
+```
+
+```csharp
+IAsyncQuery<string, string> mixed =
+  parse.Connect(
+    AsyncExecutable.Create(async (int value, CancellationToken token) =>
+    {
+      await Task.Delay(1, token);
+      return $"Async: {value}";
+    }).AsQuery());
+```
+
+### 5.9. Composing Commands with `Compose(...)`
+
+Commands are composed at the interface level through `Compose(...)`. This keeps command composition focused on the
+command contract rather than on a specific concrete implementation.
+
+`Compose(...)` supports:
+
+- `ICommand<T> + ICommand<T> -> ICommand<T>`
+- `ICommand<T> + IAsyncCommand<T> -> IAsyncCommand<T>`
+- `IAsyncCommand<T> + ICommand<T> -> IAsyncCommand<T>`
+- `IAsyncCommand<T> + IAsyncCommand<T> -> IAsyncCommand<T>`
+
+Composite commands use short-circuit semantics: the second command is not executed when the first command returns
+`false`.
+
+```csharp
+ICommand<string> first =
+  Executable.Create((string value) =>
+  {
+    Console.WriteLine($"First: {value}");
+    return true;
+  }).AsCommand();
+
+ICommand<string> second =
+  Executable.Create((string value) =>
+  {
+    Console.WriteLine($"Second: {value}");
+    return true;
+  }).AsCommand();
+
+ICommand<string> combined = first.Compose(second);
+combined.Execute("Run");
+```
+
+```csharp
+IAsyncCommand<string> asyncSecond =
+  AsyncExecutable.Create(async (string value, CancellationToken token) =>
+  {
+    await Task.Delay(1, token);
+    return true;
+  }).AsCommand();
+
+IAsyncCommand<string> mixed = first.Compose(asyncSecond);
+await mixed.Execute("Run");
+```
+
 ## 6. Handleables and Handlers
 
 ### 6.1. Missing-Handler Behavior
@@ -631,34 +708,7 @@ merged.Handle(value => Console.WriteLine(value));
 handleable. The extension overloads also allow attaching plain delegates directly, without manually converting them to
 handlers first.
 
-### 6.6. Composing Commands
-
-Commands are composed at the interface level through `ICommand<T>.Compose(...)`. This keeps command composition focused
-on the command contract rather than on a specific concrete implementation.
-
-```csharp
-ICommand<string> first =
-  Executable.Create((string value) =>
-  {
-    Console.WriteLine($"First: {value}");
-    return true;
-  }).AsCommand();
-
-ICommand<string> second =
-  Executable.Create((string value) =>
-  {
-    Console.WriteLine($"Second: {value}");
-    return true;
-  }).AsCommand();
-
-ICommand<string> combined = first.Compose(second);
-combined.Execute("Run");
-```
-
-Use `Merge(...)` when the goal is to attach one handler to multiple handleables. Use `Compose(...)` when the goal is to
-combine command behavior behind one `ICommand<T>`.
-
-### 6.7. Handler Lifecycle and Disposal
+### 6.6. Handler Lifecycle and Disposal
 
 `Handler<TIn, TOut>` and `AsyncHandler<TIn, TOut>` share a common disposal model through `DisposableHandler`. A handler
 exposes a `Disposed` flag, tracks all active attachment handles, and automatically detaches from connected handleables
@@ -869,6 +919,19 @@ IExecutable<string, Unit> log =
 ### 11.1. Static Entry Points
 
 ### 11.2. Most Important Extension Methods
+
+- `Executable.Create(...)`, `AsyncExecutable.Create(...)`: static entry points for creating executables.
+- `AsCommand()`, `AsQuery()`, `AsHandler()`, `AsSubscriber()`: conversion methods on executable/query/command types.
+- `Then(...)`, `Fork(...)`, `Merge(...)`, `Map(...)`, `Pipe(...)`, `Tap(...)`: composition methods on
+  `IExecutable<...>` / `IAsyncExecutable<...>`.
+- `Connect(...)`: query composition on `IQuery<...>` / `IAsyncQuery<...>` (`sync/sync`, `sync/async`,
+  `async/sync`, `async/async`).
+- `Compose(...)`: command composition on `ICommand<T>` / `IAsyncCommand<T>` (`sync/sync`, `sync/async`,
+  `async/sync`, `async/async`).
+- `WithPolicy(...)`: policy composition on `IExecutable<...>` / `IAsyncExecutable<...>`.
+- `WithContext(...)`, `WithResult()`, `SuppressException()`: execution operators on executable types.
+- `DisposeOnUnhandledException()`, `OnDispose(...)`: lifecycle helpers on `Handler<...>` / `AsyncHandler<...>`.
+- `OnThreadPool()`: execution operator for `IExecutable<T, Unit>`.
 
 ### 11.3. Most Important Return Types
 

@@ -23,6 +23,7 @@
   &lt;Assembly Path="C:\Users\Denis\.nuget\packages\xunit.extensibility.core\2.9.2\lib\netstandard1.1\xunit.core.dll" /&gt;&#xD;
   &lt;Assembly Path="C:\Users\Denis\.nuget\packages\system.threading.tasks.extensions\4.6.3\lib\net462\System.Threading.Tasks.Extensions.dll" /&gt;&#xD;
 &lt;/AssemblyExplorer&gt;</s:String>
+	<s:Boolean x:Key="/Default/Environment/UnitTesting/CreateUnitTestDialog/ShowAdvancedOptions/@EntryValue">True</s:Boolean>
 	<s:String x:Key="/Default/Environment/UnitTesting/CreateUnitTestDialog/TestProjectMapping/=24B79985_002D074B_002D4FE6_002DA0E0_002DF15CEB1A7829/@EntryIndexedValue">C74EB7E5-15BD-4D77-B33C-3C08A0E29930</s:String>
 	<s:String x:Key="/Default/Environment/UnitTesting/CreateUnitTestDialog/TestProjectMapping/=E8B8DF54_002DB2F4_002D4C8E_002D990E_002D14DC845FAEB2/@EntryIndexedValue">AFDE3D79-674A-4C96-A82D-07C0D8F4619E</s:String>
 	<s:String x:Key="/Default/Environment/UnitTesting/CreateUnitTestDialog/TestTemplateMapping/=xUnit/@EntryIndexedValue">33ff99d8-b1ad-4ed5-a4fd-376b97c2c841</s:String>

@@ -57,6 +57,7 @@ public static partial class ExecutableExtensions {
   /// <exception cref="ArgumentNullException"><paramref name="second"/> is <see langword="null"/>.</exception>
   [Pure]
   public static IAsyncExecutable<T1, T3> Then<T1, T2, T3>(this IAsyncExecutable<T1, T2> first, IExecutable<T2, T3> second) {
+    ExceptionsHelper.ThrowIfNull(second, nameof(second));
     return first.Then(second.ToAsyncExecutable());
   }
 
