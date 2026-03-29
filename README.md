@@ -1,10 +1,10 @@
-# Interactions
+# Executables
 
 <details>
 <summary>Table of contents</summary>
 
 - [1. Overview](#1-overview)
-    - [1.1. What the Interactions Is](#11-what-the-interactions-is)
+    - [1.1. What the Executables Is](#11-what-the-executables-is)
     - [1.2. What Problems It Helps Solve](#12-what-problems-it-helps-solve)
     - [1.3. Design Goals](#13-design-goals)
     - [1.4. When to Use It](#14-when-to-use-it)
@@ -23,7 +23,7 @@
     - [3.5. `IEvent<T>`](#35-ieventt)
     - [3.6. Handlers and Subscribers](#36-handlers-and-subscribers)
     - [3.7. `Unit`, `Optional<T>`, and `Result<T>`](#37-unit-optionalt-and-resultt)
-    - [3.8. Interaction Context](#38-interaction-context)
+    - [3.8. Executable Context](#38-executable-context)
     - [3.9. History, Undo, and Redo](#39-history-undo-and-redo)
 - [4. Creating API Objects](#4-creating-api-objects)
     - [4.1. Creating Executables with `Executable.Create(...)`](#41-creating-executables-with-executablecreate)
@@ -105,9 +105,9 @@
 
 ## 1. Overview
 
-### 1.1. What the Interactions Is
+### 1.1. What the Executables Is
 
-`interactions` is a composable .NET library for modeling application behavior as reusable executable units. Instead of
+`executables` is a composable .NET library for modeling application behavior as reusable executable units. Instead of
 centering the design around framework-specific handlers, service classes, or ad hoc delegate chains, it gives you a
 small set of abstractions for describing work, executing it, composing it, and decorating it with cross-cutting rules.
 
@@ -146,7 +146,7 @@ from simple executable wrappers and moving toward richer pipelines only when nee
 
 ### 1.4. When to Use It
 
-`interactions` is a good fit when you want a clear application-layer execution model without committing to a heavy
+`executables` is a good fit when you want a clear application-layer execution model without committing to a heavy
 architectural framework. Typical use cases include UI action processing, request orchestration, domain operation
 pipelines, validation-heavy flows, reusable query logic, event notification chains, and command models with undo/redo
 behavior.
@@ -173,13 +173,13 @@ It may also be the wrong tool if you are specifically looking for:
 - a reactive stream library,
 - an opinionated application architecture that dictates project structure.
 
-`interactions` is strongest as a focused execution and composition library, not as a complete platform.
+`executables` is strongest as a focused execution and composition library, not as a complete platform.
 
 ## 2. Conceptual Model
 
 ### 2.1. Executables as the Core Abstraction
 
-The central idea behind `interactions` is that application behavior can be represented as executable objects with a
+The central idea behind `executables` is that application behavior can be represented as executable objects with a
 well-defined input and output contract. Instead of treating logic as "just a method" or "just a handler", the library
 treats it as a first-class value that can be reused, wrapped, transformed, and composed.
 
@@ -198,7 +198,7 @@ executors provide a direct execution boundary when the user wants to invoke the 
 
 ### 2.3. Commands, Queries, and Events
 
-`interactions` treats commands, queries, and events as related forms of application behavior rather than isolated
+`executables` treats commands, queries, and events as related forms of application behavior rather than isolated
 patterns.
 
 - commands represent actions that perform work,
@@ -343,9 +343,9 @@ IExecutable<string, Result<int>> parseResult =
     .WithResult();
 ```
 
-### 3.8. Interaction Context
+### 3.8. Executable Context
 
-The interaction context carries execution-scoped metadata such as correlation and nested call information. It is useful
+The executable context carries execution-scoped metadata such as correlation and nested call information. It is useful
 when a pipeline needs ambient context without manually threading metadata through every method signature.
 
 This becomes especially valuable in larger flows with logging, tracing, or context-aware policies.
@@ -1050,16 +1050,16 @@ IAsyncExecutable<int, int> flow =
 
 ### 8.1. Running with `WithContext(...)`
 
-`WithContext(...)` runs an executable inside a new `InteractionContext`. You can initialize that context with
+`WithContext(...)` runs an executable inside a new `ExecutableContext`. You can initialize that context with
 `ContextWriter` (`Name`, `Set(...)`) before the main logic starts.
 
-Inside execution, the current context is available through `InteractionContext.Current`.
+Inside execution, the current context is available through `ExecutableContext.Current`.
 
 ```csharp
 IQuery<int, string> query =
   Executable.Create((int id) =>
   {
-    string tenant = InteractionContext.Current.Get<string>("tenant");
+    string tenant = ExecutableContext.Current.Get<string>("tenant");
     return $"{tenant}:{id}";
   })
   .WithContext(context =>
@@ -1079,14 +1079,14 @@ Values are resolved from the current context first, then up the parent chain.
 
 ```csharp
 IQuery<Unit, Guid> inner =
-  Executable.Create(() => InteractionContext.Current.CorrelationId)
+  Executable.Create(() => ExecutableContext.Current.CorrelationId)
     .WithContext(context => context.Name = "Inner")
     .AsQuery();
 
 IQuery<Unit, Guid> outer =
   Executable.Create(() =>
   {
-    Guid outerCorrelation = InteractionContext.Current.CorrelationId;
+    Guid outerCorrelation = ExecutableContext.Current.CorrelationId;
     Guid innerCorrelation = inner.Send();
     return outerCorrelation == innerCorrelation ? outerCorrelation : Guid.Empty;
   })
@@ -1151,12 +1151,12 @@ This works for both sync and async executables.
 
 ### 8.5. Disposal and Lifetime Considerations
 
-`WithContext(...)` always restores the previous `InteractionContext.Current` in `finally`, even when initialization or
+`WithContext(...)` always restores the previous `ExecutableContext.Current` in `finally`, even when initialization or
 execution throws. The temporary context is disposed at the end of the call.
 
 That means:
 
-- `InteractionContext.Current` should be treated as execution-scoped ambient state,
+- `ExecutableContext.Current` should be treated as execution-scoped ambient state,
 - do not cache context instances outside the running call,
 - after the call completes, outer code sees the previous context (often `null`).
 

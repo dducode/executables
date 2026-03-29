@@ -1,0 +1,15 @@
+using System.Diagnostics.Contracts;
+using Executables.Core.Fallbacks;
+using Executables.Internal;
+
+namespace Executables.Fallbacks;
+
+public static class FallbackHandler {
+
+  [Pure]
+  public static IFallbackHandler<T1, TException, T2> Create<T1, TException, T2>(Func<T1, TException, T2> fallback) where TException : Exception {
+    ExceptionsHelper.ThrowIfNull(fallback, nameof(fallback));
+    return new AnonymousFallbackHandler<T1, TException, T2>(fallback);
+  }
+
+}
