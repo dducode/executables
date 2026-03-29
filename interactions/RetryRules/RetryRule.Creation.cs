@@ -10,16 +10,6 @@ namespace Interactions.RetryRules;
 public static class RetryRule {
 
   /// <summary>
-  /// Creates a rule that never retries.
-  /// </summary>
-  /// <typeparam name="TEx">Exception type handled by this rule.</typeparam>
-  /// <returns>Identity retry rule.</returns>
-  [Pure]
-  public static IRetryRule<TEx> Identity<TEx>() where TEx : Exception {
-    return IdentityRule<TEx>.Instance;
-  }
-
-  /// <summary>
   /// Creates a rule with exponential delay between retries.
   /// </summary>
   /// <typeparam name="TEx">Exception type handled by this rule.</typeparam>

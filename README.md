@@ -62,6 +62,9 @@
     - [7.4. Retry, Timeout, and Fallback Patterns](#74-retry-timeout-and-fallback-patterns)
     - [7.5. Preventing Reentrancy](#75-preventing-reentrancy)
     - [7.6. Running Work on the Thread Pool](#76-running-work-on-the-thread-pool)
+    - [7.7. Validator API: Primitives and Composition](#77-validator-api-primitives-and-composition)
+    - [7.8. Guard API: Factory and Composition](#78-guard-api-factory-and-composition)
+    - [7.9. Retry Rules API](#79-retry-rules-api)
 - [8. Context, Safety, and Error Handling](#8-context-safety-and-error-handling)
     - [8.1. Running with `WithContext(...)`](#81-running-with-withcontext)
     - [8.2. Correlation and Nested Execution Contexts](#82-correlation-and-nested-execution-contexts)
@@ -963,6 +966,86 @@ IExecutable<string, Unit> log =
     .OnThreadPool();
 ```
 
+### 7.7. Validator API: Primitives and Composition
+
+The `Validator` API can be used directly, not only through policy shorthand methods.
+
+Primitive validators are the direct comparison predicates:
+
+- `Equal`, `MoreThan`, `LessThan`, `MoreThanOrEqual`, `LessThanOrEqual`.
+
+Composition validators include `And(...)`, `Or(...)`, and `Validator.Not(...)`. Error messages can be customized with
+`OverrideMessage(...)`.
+
+Derived/domain-sugar validators are built from primitives and composition:
+
+- `NotEqual` (negated `Equal`),
+- `ZeroEqual`, `ZeroNotEqual`, `MoreThanZero`, `LessThanZeroOrEqual`,
+- `InRange` / `OutRange`,
+- `NotEmptyString`, `NotEmptyCollection`.
+
+Specialized validators:
+
+- `NotNull`,
+- `StringLength(...)`, `CollectionCount(...)`, `All(...)`, `Any(...)`, `Is<T>()`, `Match(...)`,
+- `Create(predicate, errorMessage)` for custom rules.
+
+```csharp
+Validator<int> ageValidator =
+  Validator.InRange(18, 100, rightInclusive: true)
+    .And(Validator.NotEqual(42))
+    .Or(Validator.Equal(120))
+    .OverrideMessage("Age is not allowed");
+
+IExecutable<int, string> flow =
+  Executable.Create((int age) => $"Accepted: {age}")
+    .WithPolicy(policy => policy.ValidateInput(ageValidator));
+```
+
+### 7.8. Guard API: Factory and Composition
+
+Besides predicate overloads on policy builders, guards have a dedicated API.
+
+- `Guard.Create(condition, message)` creates a guard from a predicate,
+- `Guard.Identity()` always allows access,
+- `Guard.Manual(message)` creates a `ToggleGuard` with runtime-switchable access (`Deny()` blocks, `Allow()` allows),
+- `guardA.Compose(guardB)` combines guards with logical AND semantics.
+
+```csharp
+ToggleGuard maintenance = Guard.Manual("Service is unavailable");
+Guard licensed = Guard.Create(() => hasLicense, "License required");
+Guard guard = maintenance.Compose(licensed);
+
+IExecutable<Unit, string> run =
+  Executable.Create(() => "OK")
+    .WithPolicy(policy => policy.Guard(guard));
+
+maintenance.Deny(); // next call will fail with AccessDeniedException
+```
+
+### 7.9. Retry Rules API
+
+Retry behavior is configured in async policies through `IRetryRule<TException>`.
+
+- `RetryRule.Create(...)` builds a custom rule from delegate,
+- `RetryRule.ExponentialBackoff<TEx>(...)` provides delay-based retries.
+
+```csharp
+IRetryRule<InvalidOperationException> rule =
+  RetryRule.ExponentialBackoff<InvalidOperationException>(
+    TimeSpan.FromMilliseconds(50),
+    maxAttempts: 5);
+// Up to 5 retries with exponential backoff delays.
+
+IAsyncExecutable<int, int> flow =
+  AsyncExecutable.Create(async (int value, CancellationToken token) =>
+  {
+    await Task.Delay(10, token);
+    return value * 2;
+  })
+  .WithPolicy(policy => policy.Retry(rule));
+```
+
 ## 8. Context, Safety, and Error Handling
 
 ### 8.1. Running with `WithContext(...)`
@@ -1152,15 +1235,91 @@ rewriting composition code.
 
 ### 10.1. Building a Simple Processing Pipeline
 
+Start from a small executable, then compose steps with `Then(...)`, and expose the final chain as a query.
+
+```csharp
+IQuery<string, string> normalizeAndFormat =
+  Executable.Create((string text) => text.Trim())
+    .Then(text => text.ToUpperInvariant())
+    .Then(text => $"Value: {text}")
+    .AsQuery();
+```
+
 ### 10.2. Wrapping Existing Delegates into the Library Model
+
+Existing delegates can be wrapped first, then reused across command/query/handler APIs without rewriting logic.
+
+```csharp
+Func<int, bool> canProcess = value => value > 0;
+IExecutable<int, bool> executable = Executable.Create(canProcess);
+
+ICommand<int> command = executable.AsCommand();
+Handler<int, bool> handler = executable.AsHandler();
+```
 
 ### 10.3. Adding Cross-Cutting Rules Around Business Logic
 
+Keep business logic focused and attach cross-cutting behavior with policies and operators.
+
+```csharp
+IExecutable<string, Result<int>> parse =
+  Executable.Create((string text) => int.Parse(text))
+    .WithPolicy(policy =>
+    {
+      policy.ValidateInput(text => !string.IsNullOrWhiteSpace(text), "Value is required");
+      policy.Fallback<FormatException>((text, ex) => 0);
+    })
+    .WithResult();
+```
+
 ### 10.4. Using Events for Notification Flows
+
+Use `Event<T>` when one publisher should notify multiple subscribers through a selected publisher strategy.
+
+```csharp
+var changed = new Event<string>();
+
+changed.Handle(EventPublisher.Sequential<string>());
+changed.Subscribe(value => Console.WriteLine($"A: {value}"));
+changed.Subscribe(value => Console.WriteLine($"B: {value}"));
+
+changed.Publish("Updated");
+```
 
 ### 10.5. Implementing Undo/Redo Behavior
 
+Use `ReversibleCommand<TInput, TChange>` when a command must produce reversible changes and keep history.
+
+```csharp
+var values = new List<int>();
+var command = new ReversibleCommand<int, int>();
+
+command.Handle(ReversibleHandler.Create<int>(
+  execution: value => values.Add(value),
+  undo: value => values.Remove(value)));
+
+command.Execute(10);
+command.Undo();
+command.Redo();
+```
+
 ### 10.6. Integrating with UI Actions or Application Services
+
+Map UI/application inputs to commands and queries, then keep orchestration in executable composition instead of in UI
+callbacks.
+
+```csharp
+ICommand<string> saveName =
+  Executable.Create((string name) => !string.IsNullOrWhiteSpace(name))
+    .AsCommand();
+
+IQuery<int, string> loadName =
+  Executable.Create((int id) => $"User-{id}")
+    .AsQuery();
+
+bool saved = saveName.Execute("Denis");
+string name = loadName.Send(1);
+```
 
 ## 11. API Quick Reference
 

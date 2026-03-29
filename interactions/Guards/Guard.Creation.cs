@@ -19,11 +19,11 @@ public abstract partial class Guard {
   /// Creates a manually controlled guard.
   /// </summary>
   /// <param name="errorMessage">Message returned when guard denies access.</param>
-  /// <returns>Guard that can be opened and closed programmatically.</returns>
+  /// <returns>Guard that can deny and allow an access programmatically.</returns>
   [Pure]
-  public static ManualGuard Manual(string errorMessage) {
+  public static ToggleGuard Manual(string errorMessage) {
     ExceptionsHelper.ThrowIfNullOrEmpty(errorMessage, nameof(errorMessage));
-    return new ManualGuard(errorMessage);
+    return new ToggleGuard(errorMessage);
   }
 
   /// <summary>
