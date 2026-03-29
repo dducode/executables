@@ -46,6 +46,8 @@
     - [5.7. Building Reusable Pipelines with `Pipe(...)`](#57-building-reusable-pipelines-with-pipe)
     - [5.8. Connecting Queries with `Connect(...)`](#58-connecting-queries-with-connect)
     - [5.9. Composing Commands with `Compose(...)`](#59-composing-commands-with-compose)
+    - [5.10. Pipelines and Middlewares](#510-pipelines-and-middlewares)
+    - [5.11. Branching Execution with `Branch` and `AsyncBranch`](#511-branching-execution-with-branch-and-asyncbranch)
 - [6. Handleables and Handlers](#6-handleables-and-handlers)
     - [6.1. Missing-Handler Behavior](#61-missing-handler-behavior)
     - [6.2. Subscription Lifetime](#62-subscription-lifetime)
@@ -629,6 +631,94 @@ IAsyncCommand<string> mixed = first.Compose(asyncSecond);
 await mixed.Execute("Run");
 ```
 
+### 5.10. Pipelines and Middlewares
+
+`Pipeline` and `AsyncPipeline` are builder APIs for middleware-style composition. Each middleware receives input and a
+`next` delegate, can transform data before and after `next`, and can stop the chain by not calling it.
+
+This model is useful when you want explicit around-execution behavior (logging, timing, normalization, enrichment)
+without manually nesting decorators.
+
+For `Use(...)` overloads, explicitly typing lambda parameters is recommended to avoid overload ambiguity.
+
+`Use(...)` chains are unbounded and fully type-safe: each step can change types and choose the most convenient `next`
+delegate shape (function/action, parameterized/parameterless). For each adjacent pair, contracts must match: the
+`next` delegate used in step `N` is defined by step `N + 1`.
+
+The main limitation is that one chain cannot mix sync and async middleware: use either `Pipeline...` or
+`AsyncPipeline...` for a given chain.
+
+```csharp
+IQuery<string, string> query = Pipeline<string, string>
+  .Use((string text, Func<TimeSpan, int> next) =>
+  {
+    TimeSpan parsed = TimeSpan.Parse(text);
+    int seconds = next(parsed);
+    return $"Seconds: {seconds}";
+  })
+  .Use((TimeSpan span, Func<double, int> next) =>
+  {
+    double minutes = span.TotalMinutes;
+    return next(minutes);
+  })
+  .End(minutes => (int)(minutes * 60))
+  .AsQuery();
+```
+
+```csharp
+IAsyncQuery<string, string> asyncQuery = AsyncPipeline<string, string>
+  .Use(async (string text, AsyncFunc<int, int> next, CancellationToken token) =>
+  {
+    await Task.Delay(10, token);
+    int doubled = await next(text.Trim().Length, token);
+    return $"Length: {doubled}";
+  })
+  .End(async (length, token) =>
+  {
+    await Task.Delay(10, token);
+    return length * 2;
+  })
+  .AsQuery();
+```
+
+### 5.11. Branching Execution with `Branch` and `AsyncBranch`
+
+For condition-based routing, the library provides `Branch...` and `AsyncBranch...`. They build an executable from
+`If(...)`, optional `ElseIf(...)`, and terminal `Else(...)`.
+
+Semantics:
+
+- conditions are evaluated in order,
+- only the first matching branch is executed,
+- if none match, `Else(...)` is executed.
+
+```csharp
+int state = 1;
+
+IQuery<Unit, string> stateText = Branch<string>
+  .If(() => state == 0, () => "Init")
+  .ElseIf(() => state == 1, () => "Running")
+  .Else(() => "Unknown")
+  .AsQuery();
+```
+
+```csharp
+int state = 1;
+
+IAsyncQuery<Unit, string> asyncStateText = AsyncBranch<string>
+  .If(() => state == 0, async token =>
+  {
+    await Task.Delay(10, token);
+    return "Init";
+  })
+  .Else(async token =>
+  {
+    await Task.Delay(10, token);
+    return "Unknown";
+  })
+  .AsQuery();
+```
+
 ## 6. Handleables and Handlers
 
 ### 6.1. Missing-Handler Behavior
@@ -946,9 +1036,9 @@ Optional<int> response = parse.Send("oops");
 
 if (response.HasValue)
   Console.WriteLine(response.Value);
-  else
-    Console.WriteLine(response.ValueOrDefault); // default(int) == 0
-  ```
+else 
+  Console.WriteLine(response.ValueOrDefault); // default(int) == 0
+```
 
 ### 8.4. Wrapping Execution with `WithResult()`
 
@@ -993,13 +1083,70 @@ For handler lifetimes and attachment disposal, use the lifecycle rules from sect
 
 ### 9.1. `IExecutable` vs `IAsyncExecutable`
 
+`IExecutable<TIn, TOut>` is a synchronous contract. It is simpler when work is CPU-bound and completes immediately.
+
+`IAsyncExecutable<TIn, TOut>` is an asynchronous contract. It is designed for I/O and long-running operations and
+supports cancellation tokens.
+
+In practice:
+
+- sync path returns `TOut`,
+- async path returns `ValueTask<TOut>`.
+
 ### 9.2. `ToAsyncExecutable()`
+
+`ToAsyncExecutable()` wraps a synchronous executable into an async proxy, so it can participate in async chains without
+rewriting existing logic.
+
+It adapts the contract, not the business behavior.
+
+```csharp
+IExecutable<int, int> square = Executable.Create((int x) => x * x);
+IAsyncExecutable<int, int> squareAsync = square.ToAsyncExecutable();
+
+int value = await squareAsync.GetExecutor().Execute(5); // 25
+```
 
 ### 9.3. `ToAsyncCommand()` and `ToAsyncQuery()`
 
+`ToAsyncCommand()` and `ToAsyncQuery()` do the same contract adaptation for command and query interfaces.
+
+```csharp
+ICommand<string> save = Executable.Create((string value) => value.Length > 0).AsCommand();
+IAsyncCommand<string> saveAsync = save.ToAsyncCommand();
+
+IQuery<int, string> getName = Executable.Create((int id) => $"User-{id}").AsQuery();
+IAsyncQuery<int, string> getNameAsync = getName.ToAsyncQuery();
+```
+
 ### 9.4. Mixing Sync and Async Chains
 
+The API supports mixed composition directly:
+
+- `IExecutable.Then(IAsyncExecutable)` produces `IAsyncExecutable`,
+- `IAsyncExecutable.Then(IExecutable)` stays `IAsyncExecutable`,
+- `IQuery.Connect(IAsyncQuery)` and `IAsyncQuery.Connect(IQuery)` are supported,
+- `ICommand.Compose(IAsyncCommand)` and `IAsyncCommand.Compose(ICommand)` are supported.
+
+```csharp
+IExecutable<string, int> parse = Executable.Create((string text) => int.Parse(text));
+
+IAsyncExecutable<string, string> mixed =
+  parse.Then(async (int x, CancellationToken token) =>
+  {
+    await Task.Delay(1, token);
+    return $"Value: {x}";
+  });
+```
+
 ### 9.5. Choosing the Right API Style
+
+Use sync by default when operations are fast and local. Use async when execution can block on external resources or
+must support cancellation.
+
+A practical approach is to keep core pure transforms synchronous, then switch to async at boundaries (HTTP, DB, file
+I/O, messaging). If a flow may become async soon, converting with `ToAsync...()` lets you migrate incrementally without
+rewriting composition code.
 
 ## 10. Common Usage Patterns
 
