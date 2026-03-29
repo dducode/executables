@@ -1303,22 +1303,55 @@ command.Undo();
 command.Redo();
 ```
 
+When change data is not equal to input, use `Change<T>` (or your own change model) to keep previous/new state
+explicitly.
+
+```csharp
+int current = 0;
+var assign = new ReversibleCommand<int, Change<int>>();
+
+assign.Handle(ReversibleHandler.Create<int, Change<int>>(
+  execution: value =>
+  {
+    var change = new Change<int>(current, value);
+    current = value;
+    return change;
+  },
+  undo: change => current = change.Old,
+  redo: change => current = change.New));
+
+assign.Execute(10); // current = 10
+assign.Undo();      // current = 0
+assign.Redo();      // current = 10
+```
+
 ### 10.6. Integrating with UI Actions or Application Services
 
 Map UI/application inputs to commands and queries, then keep orchestration in executable composition instead of in UI
 callbacks.
 
 ```csharp
-ICommand<string> saveName =
-  Executable.Create((string name) => !string.IsNullOrWhiteSpace(name))
+public readonly record struct User(int Id, string Name);
+
+var users = new Dictionary<int, User>();
+
+ICommand<User> saveUser =
+  Executable.Create((User user) =>
+  {
+    if (string.IsNullOrWhiteSpace(user.Name))
+      return false;
+
+    users[user.Id] = user;
+    return true;
+  })
     .AsCommand();
 
-IQuery<int, string> loadName =
-  Executable.Create((int id) => $"User-{id}")
+IQuery<int, User> loadUser =
+  Executable.Create((int id) => users.TryGetValue(id, out User user) ? user : throw new UnknownUserException())
     .AsQuery();
 
-bool saved = saveName.Execute("Denis");
-string name = loadName.Send(1);
+bool saved = saveUser.Execute(new User(1, "Denis"));
+User user = loadUser.Send(1); // User { Id = 1, Name = "Denis" }
 ```
 
 ## 11. API Quick Reference
