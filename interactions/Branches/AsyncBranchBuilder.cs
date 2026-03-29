@@ -27,6 +27,9 @@ public readonly struct AsyncBranchBuilder<T1, T2> {
   /// <param name="condition">Condition that selects this branch.</param>
   /// <param name="executable">Executable invoked when <paramref name="condition"/> returns <see langword="true"/>.</param>
   /// <returns>Updated branch builder.</returns>
+  /// <exception cref="ArgumentNullException">
+  /// <paramref name="condition"/> or <paramref name="executable"/> is <see langword="null"/>.
+  /// </exception>
   public AsyncBranchBuilder<T1, T2> ElseIf(Func<T1, bool> condition, IAsyncExecutable<T1, T2> executable) {
     ExceptionsHelper.ThrowIfNull(condition, nameof(condition));
     ExceptionsHelper.ThrowIfNull(executable, nameof(executable));
@@ -39,6 +42,7 @@ public readonly struct AsyncBranchBuilder<T1, T2> {
   /// </summary>
   /// <param name="executable">Executable used when no branch condition matches.</param>
   /// <returns>Composed asynchronous executable with all branch conditions.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="executable"/> is <see langword="null"/>.</exception>
   [Pure]
   public IAsyncExecutable<T1, T2> Else(IAsyncExecutable<T1, T2> executable) {
     ExceptionsHelper.ThrowIfNull(executable, nameof(executable));
