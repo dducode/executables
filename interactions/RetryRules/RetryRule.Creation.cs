@@ -25,7 +25,15 @@ public static class RetryRule {
   /// <typeparam name="TEx">Exception type handled by this rule.</typeparam>
   /// <param name="startTime">Initial delay for first retry.</param>
   /// <param name="maxAttempts">Maximum allowed failed attempts.</param>
+  /// <param name="factor">Backoff multiplier for each subsequent retry delay.</param>
+  /// <param name="jitter">Randomization factor in range [0, 1).</param>
   /// <returns>Exponential backoff retry rule.</returns>
+  /// <exception cref="ArgumentException">
+  /// <paramref name="startTime"/> is less than or equal to zero;
+  /// <paramref name="maxAttempts"/> is less than or equal to zero;
+  /// or <paramref name="factor"/> is less than or equal to zero.
+  /// </exception>
+  /// <exception cref="ArgumentOutOfRangeException"><paramref name="jitter"/> is outside [0, 1).</exception>
   [Pure]
   public static IRetryRule<TEx> ExponentialBackoff<TEx>(TimeSpan startTime, int maxAttempts, float factor = 2, float jitter = 0) where TEx : Exception {
     ExceptionsHelper.ThrowIfLessOrEqual(startTime, TimeSpan.Zero, nameof(startTime));

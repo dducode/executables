@@ -63,10 +63,9 @@
 - [8. Context, Safety, and Error Handling](#8-context-safety-and-error-handling)
     - [8.1. Running with `WithContext(...)`](#81-running-with-withcontext)
     - [8.2. Correlation and Nested Execution Contexts](#82-correlation-and-nested-execution-contexts)
-    - [8.3. Wrapping Execution with `WithResult()`](#83-wrapping-execution-with-withresult)
-    - [8.4. Suppressing Exceptions](#84-suppressing-exceptions)
-    - [8.5. Optional-Based Error Handling](#85-optional-based-error-handling)
-    - [8.6. Disposal and Lifetime Considerations](#86-disposal-and-lifetime-considerations)
+    - [8.3. Suppressing Exceptions with `Optional<T>`](#83-suppressing-exceptions-with-optionalt)
+    - [8.4. Wrapping Execution with `WithResult()`](#84-wrapping-execution-with-withresult)
+    - [8.5. Disposal and Lifetime Considerations](#85-disposal-and-lifetime-considerations)
 - [9. Synchronous and Asynchronous Usage](#9-synchronous-and-asynchronous-usage)
     - [9.1. `IExecutable` vs `IAsyncExecutable`](#91-iexecutable-vs-iasyncexecutable)
     - [9.2. `ToAsyncExecutable()`](#92-toasyncexecutable)
@@ -571,7 +570,7 @@ IQuery<int, string> format =
     .AsQuery();
 
 IQuery<string, string> chained = parse.Connect(format);
-string output = chained.Send("42");
+string output = chained.Send("42"); // "Value: 42"
 ```
 
 ```csharp
@@ -878,15 +877,117 @@ IExecutable<string, Unit> log =
 
 ### 8.1. Running with `WithContext(...)`
 
+`WithContext(...)` runs an executable inside a new `InteractionContext`. You can initialize that context with
+`ContextWriter` (`Name`, `Set(...)`) before the main logic starts.
+
+Inside execution, the current context is available through `InteractionContext.Current`.
+
+```csharp
+IQuery<int, string> query =
+  Executable.Create((int id) =>
+  {
+    string tenant = InteractionContext.Current.Get<string>("tenant");
+    return $"{tenant}:{id}";
+  })
+  .WithContext(context =>
+  {
+    context.Name = "GetUser";
+    context.Set("tenant", "eu-1");
+  })
+  .AsQuery();
+```
+
 ### 8.2. Correlation and Nested Execution Contexts
 
-### 8.3. Wrapping Execution with `WithResult()`
+Nested `WithContext(...)` calls create nested contexts. The nested context gets a new `ContextId`, increased `Depth`,
+and keeps the same `CorrelationId` from the parent context.
 
-### 8.4. Suppressing Exceptions
+Values are resolved from the current context first, then up the parent chain.
 
-### 8.5. Optional-Based Error Handling
+```csharp
+IQuery<Unit, Guid> inner =
+  Executable.Create(() => InteractionContext.Current.CorrelationId)
+    .WithContext(context => context.Name = "Inner")
+    .AsQuery();
 
-### 8.6. Disposal and Lifetime Considerations
+IQuery<Unit, Guid> outer =
+  Executable.Create(() =>
+  {
+    Guid outerCorrelation = InteractionContext.Current.CorrelationId;
+    Guid innerCorrelation = inner.Send();
+    return outerCorrelation == innerCorrelation ? outerCorrelation : Guid.Empty;
+  })
+  .WithContext(context => context.Name = "Outer")
+  .AsQuery();
+```
+
+### 8.3. Suppressing Exceptions with `Optional<T>`
+
+`SuppressException().OfType<TEx>()` suppresses only the selected exception type and converts output to `Optional<T>`.
+Other exception types still propagate.
+
+```csharp
+IQuery<string, Optional<int>> parse =
+  Executable.Create((string text) => int.Parse(text))
+    .SuppressException()
+    .OfType<FormatException>()
+    .AsQuery();
+```
+
+You can chain multiple suppressions for different exception types.
+
+`Optional<T>` is the lightweight result shape for "value exists / value is absent" flows.
+
+- check `HasValue` before reading `Value`,
+- use `ValueOrDefault` when a fallback default is acceptable.
+
+```csharp
+Optional<int> response = parse.Send("oops");
+
+if (response.HasValue)
+  Console.WriteLine(response.Value);
+  else
+    Console.WriteLine(response.ValueOrDefault); // default(int) == 0
+  ```
+
+### 8.4. Wrapping Execution with `WithResult()`
+
+`WithResult()` converts exceptions into `Result<T>` so callers can handle failures without `try/catch` at every call
+site.
+
+Unlike `Optional<T>`, `Result<T>` does not hide the error. On failure it stores the original exception in
+`Result<T>.Exception`, so error details are preserved and can be inspected or rethrown through `ThrowIfFailure()`.
+
+```csharp
+IQuery<string, Result<int>> parse =
+  Executable.Create((string text) => int.Parse(text))
+    .WithResult()
+    .AsQuery();
+
+Result<int> ok = parse.Send("42");   // IsSuccess == true
+Result<int> fail = parse.Send("bad"); // IsFailure == true
+
+if (fail.IsFailure)
+{
+  Console.WriteLine(fail.Exception.GetType().Name); // FormatException
+  // fail.ThrowIfFailure(); // rethrows original exception
+}
+```
+
+This works for both sync and async executables.
+
+### 8.5. Disposal and Lifetime Considerations
+
+`WithContext(...)` always restores the previous `InteractionContext.Current` in `finally`, even when initialization or
+execution throws. The temporary context is disposed at the end of the call.
+
+That means:
+
+- `InteractionContext.Current` should be treated as execution-scoped ambient state,
+- do not cache context instances outside the running call,
+- after the call completes, outer code sees the previous context (often `null`).
+
+For handler lifetimes and attachment disposal, use the lifecycle rules from section 6.6.
 
 ## 9. Synchronous and Asynchronous Usage
 
