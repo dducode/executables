@@ -459,18 +459,30 @@ public static partial class ExecutableExtensions {
     return command;
   }
 
+  /// <summary>
+  /// Converts an executable to a subscriber.
+  /// </summary>
+  /// <returns>Subscriber wrapping the executable.</returns>
   [Pure]
   public static ISubscriber<T> AsSubscriber<T>(this IExecutable<T, Unit> executable) {
     executable.ThrowIfNullReference();
     return new ExecutableSubscriber<T>(executable);
   }
 
+  /// <summary>
+  /// Returns the same subscriber instance.
+  /// </summary>
+  /// <returns>The original subscriber.</returns>
   [Pure]
   public static ISubscriber<T> AsSubscriber<T>(this ISubscriber<T> subscriber) {
     subscriber.ThrowIfNullReference();
     return subscriber;
   }
 
+  /// <summary>
+  /// Schedules executable calls on the thread pool.
+  /// </summary>
+  /// <returns>Thread-pool scheduled executable.</returns>
   [Pure]
   public static IExecutable<T, Unit> OnThreadPool<T>(this IExecutable<T, Unit> executable) {
     return executable.Apply(new ThreadPoolOperator<T>());

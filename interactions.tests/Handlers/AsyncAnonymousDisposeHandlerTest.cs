@@ -14,7 +14,7 @@ public class AsyncAnonymousDisposeHandlerTest {
   }
 
   [Fact]
-  public void DisposeHandler() {
+  public void WrapperDisposesInner() {
     var disposed = false;
     AsyncHandler<Unit, Unit> inner = AsyncExecutable.Identity().AsHandler();
     AsyncHandler<Unit, Unit> handler = inner.OnDispose(() => disposed = true);
@@ -22,6 +22,20 @@ public class AsyncAnonymousDisposeHandlerTest {
     handler.Dispose();
 
     Assert.True(disposed);
+    Assert.True(inner.Disposed);
+    Assert.True(handler.Disposed);
+  }
+
+  [Fact]
+  public void InnerDisposesWrapper() {
+    var disposed = false;
+    AsyncHandler<Unit, Unit> inner = AsyncExecutable.Identity().AsHandler();
+    AsyncHandler<Unit, Unit> handler = inner.OnDispose(() => disposed = true);
+
+    inner.Dispose();
+
+    Assert.True(disposed);
+    Assert.True(handler.Disposed);
     Assert.True(inner.Disposed);
   }
 

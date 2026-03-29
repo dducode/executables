@@ -2,19 +2,24 @@ using Interactions.Handling;
 
 namespace Interactions.Core.Handlers;
 
-internal sealed class AnonymousDisposeHandler<T1, T2>(Handler<T1, T2> inner, Action dispose) : Handler<T1, T2> {
+internal sealed class AnonymousDisposeHandler<T1, T2> : Handler<T1, T2> {
+
+  private readonly Handler<T1, T2> _inner;
+  private readonly Action _dispose;
+
+  public AnonymousDisposeHandler(Handler<T1, T2> inner, Action dispose) {
+    _inner = inner;
+    _dispose = dispose;
+    RegisterHandle(_inner);
+    _inner.RegisterHandle(this);
+  }
 
   protected override T2 HandleCore(T1 input) {
-    return inner.Handle(input);
+    return _inner.Handle(input);
   }
 
   protected override void DisposeCore() {
-    try {
-      dispose();
-    }
-    finally {
-      inner.Dispose();
-    }
+    _dispose();
   }
 
 }

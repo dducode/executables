@@ -14,14 +14,28 @@ public class AnonymousDisposeHandlerTest {
   }
 
   [Fact]
-  public void DisposeHandler() {
+  public void WrapperDisposesInner() {
     var disposed = false;
     Handler<Unit, Unit> inner = Executable.Identity().AsHandler();
-    Handler<Unit, Unit> handler = inner.OnDispose(() => disposed = true);
+    Handler<Unit, Unit> wrapper = inner.OnDispose(() => disposed = true);
 
-    handler.Dispose();
+    wrapper.Dispose();
 
     Assert.True(disposed);
+    Assert.True(inner.Disposed);
+    Assert.True(wrapper.Disposed);
+  }
+
+  [Fact]
+  public void InnerDisposesWrapper() {
+    var disposed = false;
+    Handler<Unit, Unit> inner = Executable.Identity().AsHandler();
+    Handler<Unit, Unit> wrapper = inner.OnDispose(() => disposed = true);
+
+    inner.Dispose();
+
+    Assert.True(disposed);
+    Assert.True(wrapper.Disposed);
     Assert.True(inner.Disposed);
   }
 
