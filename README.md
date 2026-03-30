@@ -16,15 +16,9 @@
     - [2.4. Composition Over Inheritance](#24-composition-over-inheritance)
     - [2.5. Sync and Async as Parallel APIs](#25-sync-and-async-as-parallel-apis)
 - [3. Core Concepts for Users](#3-core-concepts-for-users)
-    - [3.1. `IExecutable<TIn, TOut>`](#31-iexecutabletin-tout)
-    - [3.2. `IExecutor<TIn, TOut>`](#32-iexecutortin-tout)
-    - [3.3. `ICommand<T>`](#33-icommandt)
-    - [3.4. `IQuery<TIn, TOut>`](#34-iquerytin-tout)
-    - [3.5. `IEvent<T>`](#35-ieventt)
-    - [3.6. Handlers and Subscribers](#36-handlers-and-subscribers)
-    - [3.7. `Unit`, `Optional<T>`, and `Result<T>`](#37-unit-optionalt-and-resultt)
-    - [3.8. Executable Context](#38-executable-context)
-    - [3.9. History, Undo, and Redo](#39-history-undo-and-redo)
+    - [3.1. Executables and Executors](#31-executables-and-executors)
+    - [3.2. Handleables: Query, Command, and Event](#32-handleables-query-command-and-event)
+    - [3.3. Operators and Policies](#33-operators-and-policies)
 - [4. Creating API Objects](#4-creating-api-objects)
     - [4.1. Creating Executables with `Executable.Create(...)`](#41-creating-executables-with-executablecreate)
     - [4.2. Creating Async Executables with
@@ -46,8 +40,7 @@
     - [5.7. Building Reusable Pipelines with `Pipe(...)`](#57-building-reusable-pipelines-with-pipe)
     - [5.8. Connecting Queries with `Connect(...)`](#58-connecting-queries-with-connect)
     - [5.9. Composing Commands with `Compose(...)`](#59-composing-commands-with-compose)
-    - [5.10. Pipelines and Middlewares](#510-pipelines-and-middlewares)
-    - [5.11. Branching Execution with `Branch` and `AsyncBranch`](#511-branching-execution-with-branch-and-asyncbranch)
+    - [5.10. Branching Execution with `Branch` and `AsyncBranch`](#510-branching-execution-with-branch-and-asyncbranch)
 - [6. Handleables and Handlers](#6-handleables-and-handlers)
     - [6.1. Missing-Handler Behavior](#61-missing-handler-behavior)
     - [6.2. Subscription Lifetime](#62-subscription-lifetime)
@@ -55,51 +48,59 @@
     - [6.4. Parameterless Operations](#64-parameterless-operations)
     - [6.5. Handleables and Merging](#65-handleables-and-merging)
     - [6.6. Handler Lifecycle and Disposal](#66-handler-lifecycle-and-disposal)
-- [7. Policies and Execution Control](#7-policies-and-execution-control)
-    - [7.1. Applying Policies with `WithPolicy(...)`](#71-applying-policies-with-withpolicy)
-    - [7.2. Input and Output Validation](#72-input-and-output-validation)
-    - [7.3. Guard Conditions](#73-guard-conditions)
-    - [7.4. Retry, Timeout, and Fallback Patterns](#74-retry-timeout-and-fallback-patterns)
-    - [7.5. Preventing Reentrancy](#75-preventing-reentrancy)
-    - [7.6. Running Work on the Thread Pool](#76-running-work-on-the-thread-pool)
-    - [7.7. Validator API: Primitives and Composition](#77-validator-api-primitives-and-composition)
-    - [7.8. Guard API: Factory and Composition](#78-guard-api-factory-and-composition)
-    - [7.9. Retry Rules API](#79-retry-rules-api)
-- [8. Context, Safety, and Error Handling](#8-context-safety-and-error-handling)
-    - [8.1. Running with `WithContext(...)`](#81-running-with-withcontext)
-    - [8.2. Correlation and Nested Execution Contexts](#82-correlation-and-nested-execution-contexts)
-    - [8.3. Suppressing Exceptions with `Optional<T>`](#83-suppressing-exceptions-with-optionalt)
-    - [8.4. Wrapping Execution with `WithResult()`](#84-wrapping-execution-with-withresult)
-    - [8.5. Disposal and Lifetime Considerations](#85-disposal-and-lifetime-considerations)
-- [9. Synchronous and Asynchronous Usage](#9-synchronous-and-asynchronous-usage)
-    - [9.1. `IExecutable` vs `IAsyncExecutable`](#91-iexecutable-vs-iasyncexecutable)
-    - [9.2. `ToAsyncExecutable()`](#92-toasyncexecutable)
-    - [9.3. `ToAsyncCommand()` and `ToAsyncQuery()`](#93-toasynccommand-and-toasyncquery)
-    - [9.4. Mixing Sync and Async Chains](#94-mixing-sync-and-async-chains)
-    - [9.5. Choosing the Right API Style](#95-choosing-the-right-api-style)
-- [10. Common Usage Patterns](#10-common-usage-patterns)
-    - [10.1. Building a Simple Processing Pipeline](#101-building-a-simple-processing-pipeline)
-    - [10.2. Wrapping Existing Delegates into the Library Model](#102-wrapping-existing-delegates-into-the-library-model)
-    - [10.3. Adding Cross-Cutting Rules Around Business Logic](#103-adding-cross-cutting-rules-around-business-logic)
-    - [10.4. Using Events for Notification Flows](#104-using-events-for-notification-flows)
-    - [10.5. Implementing Undo/Redo Behavior](#105-implementing-undoredo-behavior)
-    - [10.6. Integrating with UI Actions or Application Services](#106-integrating-with-ui-actions-or-application-services)
-- [11. API Quick Reference](#11-api-quick-reference)
-    - [11.1. Static Entry Points](#111-static-entry-points)
-    - [11.2. Most Important Extension Methods](#112-most-important-extension-methods)
-    - [11.3. Most Important Return Types](#113-most-important-return-types)
-    - [11.4. Recommended Starting Points for New Users](#114-recommended-starting-points-for-new-users)
-- [12. Practical Notes](#12-practical-notes)
-    - [12.1. Target Frameworks](#121-target-frameworks)
-    - [12.2. Package Usage Expectations](#122-package-usage-expectations)
-    - [12.3. Thread-Safety Notes](#123-thread-safety-notes)
-    - [12.4. Performance and Allocation Considerations](#124-performance-and-allocation-considerations)
-    - [12.5. Limitations and Tradeoffs](#125-limitations-and-tradeoffs)
-- [13. Suggested Expansion Order](#13-suggested-expansion-order)
-    - [13.1. Overview and Core Concepts First](#131-overview-and-core-concepts-first)
-    - [13.2. Creation and Composition API Next](#132-creation-and-composition-api-next)
-    - [13.3. Policies, Context, and Error Handling After That](#133-policies-context-and-error-handling-after-that)
-    - [13.4. Code Examples Where They Matter Most](#134-code-examples-where-they-matter-most)
+- [7. Execution Operators](#7-execution-operators)
+    - [7.1. Operator Model](#71-operator-model)
+    - [7.2. Applying Operators with `Apply(...)`](#72-applying-operators-with-apply)
+    - [7.3. Operator Factories: `Create(...)`, `Map(...)`](#73-operator-factories-create-map)
+    - [7.4. Context and Result Operators](#74-context-and-result-operators)
+    - [7.5. Exception and Scheduling Operators](#75-exception-and-scheduling-operators)
+    - [7.6. Cache and Metrics Operators](#76-cache-and-metrics-operators)
+    - [7.7. Pipelines and Middlewares](#77-pipelines-and-middlewares)
+    - [7.8. Writing Custom Operators](#78-writing-custom-operators)
+- [8. Policies and Execution Control](#8-policies-and-execution-control)
+    - [8.1. Applying Policies with `WithPolicy(...)`](#81-applying-policies-with-withpolicy)
+    - [8.2. Input and Output Validation](#82-input-and-output-validation)
+    - [8.3. Guard Conditions](#83-guard-conditions)
+    - [8.4. Retry, Timeout, and Fallback Patterns](#84-retry-timeout-and-fallback-patterns)
+    - [8.5. Preventing Reentrancy](#85-preventing-reentrancy)
+    - [8.6. Validator API: Primitives and Composition](#86-validator-api-primitives-and-composition)
+    - [8.7. Guard API: Factory and Composition](#87-guard-api-factory-and-composition)
+    - [8.8. Retry Rules API](#88-retry-rules-api)
+- [9. Context, Safety, and Error Handling](#9-context-safety-and-error-handling)
+    - [9.1. Running with `WithContext(...)`](#91-running-with-withcontext)
+    - [9.2. Correlation and Nested Execution Contexts](#92-correlation-and-nested-execution-contexts)
+    - [9.3. Suppressing Exceptions with `Optional<T>`](#93-suppressing-exceptions-with-optionalt)
+    - [9.4. Wrapping Execution with `WithResult()`](#94-wrapping-execution-with-withresult)
+    - [9.5. Disposal and Lifetime Considerations](#95-disposal-and-lifetime-considerations)
+- [10. Synchronous and Asynchronous Usage](#10-synchronous-and-asynchronous-usage)
+    - [10.1. `IExecutable` vs `IAsyncExecutable`](#101-iexecutable-vs-iasyncexecutable)
+    - [10.2. `ToAsyncExecutable()`](#102-toasyncexecutable)
+    - [10.3. `ToAsyncCommand()` and `ToAsyncQuery()`](#103-toasynccommand-and-toasyncquery)
+    - [10.4. Mixing Sync and Async Chains](#104-mixing-sync-and-async-chains)
+    - [10.5. Choosing the Right API Style](#105-choosing-the-right-api-style)
+- [11. Common Usage Patterns](#11-common-usage-patterns)
+    - [11.1. Building a Simple Processing Pipeline](#111-building-a-simple-processing-pipeline)
+    - [11.2. Wrapping Existing Delegates into the Library Model](#112-wrapping-existing-delegates-into-the-library-model)
+    - [11.3. Adding Cross-Cutting Rules Around Business Logic](#113-adding-cross-cutting-rules-around-business-logic)
+    - [11.4. Using Events for Notification Flows](#114-using-events-for-notification-flows)
+    - [11.5. Implementing Undo/Redo Behavior](#115-implementing-undoredo-behavior)
+    - [11.6. Integrating with UI Actions or Application Services](#116-integrating-with-ui-actions-or-application-services)
+- [12. API Quick Reference](#12-api-quick-reference)
+    - [12.1. Static Entry Points](#121-static-entry-points)
+    - [12.2. Most Important Extension Methods](#122-most-important-extension-methods)
+    - [12.3. Most Important Return Types](#123-most-important-return-types)
+    - [12.4. Recommended Starting Points for New Users](#124-recommended-starting-points-for-new-users)
+- [13. Practical Notes](#13-practical-notes)
+    - [13.1. Target Frameworks](#131-target-frameworks)
+    - [13.2. Package Usage Expectations](#132-package-usage-expectations)
+    - [13.3. Thread-Safety Notes](#133-thread-safety-notes)
+    - [13.4. Performance and Allocation Considerations](#134-performance-and-allocation-considerations)
+    - [13.5. Limitations and Tradeoffs](#135-limitations-and-tradeoffs)
+- [14. Suggested Expansion Order](#14-suggested-expansion-order)
+    - [14.1. Overview and Core Concepts First](#141-overview-and-core-concepts-first)
+    - [14.2. Creation and Composition API Next](#142-creation-and-composition-api-next)
+    - [14.3. Policies, Context, and Error Handling After That](#143-policies-context-and-error-handling-after-that)
+    - [14.4. Code Examples Where They Matter Most](#144-code-examples-where-they-matter-most)
 
 </details>
 
@@ -242,121 +243,53 @@ without losing conceptual consistency.
 
 ## 3. Core Concepts for Users
 
-### 3.1. `IExecutable<TIn, TOut>`
+### 3.1. Executables and Executors
 
-`IExecutable<TIn, TOut>` is the core abstraction of the library. It represents a reusable operation that accepts a value
-of type `TIn` and produces a value of type `TOut`.
+The first layer is the execution model itself. `IExecutable<TIn, TOut>` represents behavior as a reusable typed value,
+while `IExecutor<TIn, TOut>` is the runtime invoker that performs `Execute(...)`.
 
-In practice, this is the type you compose, decorate, and expose through the rest of the API.
+That split is the foundation of the API design. You build and compose behavior at the executable level, then cross an
+explicit execution boundary only when you need to run it. This keeps composition, adaptation, and decoration
+(`Then/Fork/Map/Pipe/Apply/WithPolicy`) predictable and strongly typed.
 
-### 3.2. `IExecutor<TIn, TOut>`
+In practical terms, this layer gives you:
 
-An executor is the runtime object that actually performs the work. `IExecutable<TIn, TOut>` describes an operation,
-while `IExecutor<TIn, TOut>` invokes it through `Execute(...)`.
+- stable contracts for reusable business operations,
+- clear separation between pipeline definition and invocation,
+- symmetric sync/async modeling without changing the mental model.
 
-Most users work with executables first and only access the executor when they want an explicit execution step. For
-tuple-based multi-argument executors, `Execute(...)` also supports partial application, so an executor can be curried
-into another executor with fewer remaining arguments.
+### 3.2. Handleables: Query, Command, and Event
 
-```csharp
-IExecutable<int, int> square = Executable.Create((int x) => x * x);
-IExecutor<int, int> executor = square.GetExecutor();
+The second layer exposes domain-facing interaction contracts on top of the execution model. Instead of exposing raw
+executables everywhere, this layer gives explicit API shapes:
 
-int result = executor.Execute(4); // 16
+- commands (`ICommand<T>` / `IAsyncCommand<T>`) for action semantics,
+- queries (`IQuery<TIn, TOut>` / `IAsyncQuery<TIn, TOut>`) for request/response semantics,
+- events (`IEvent<T>`) for publish/subscribe semantics.
 
-IExecutor<(int, int), int> sum =
-  Executable.Create((int a, int b) => a + b).GetExecutor();
+Under the hood, base implementations (`Command`, `Query`, `Event`) are handleables. The core attachment contract is
+`IHandleable<TIn, TOut, THandler>` (and async `IAsyncHandleable<...>`): behavior is provided externally through
+`Handle(...)`, and attachment lifetime is controlled through returned `IDisposable`.
 
-IExecutor<int, int> add10 = sum.Execute(10);
-int result2 = add10.Execute(5); // 15
-```
+This is why one interaction contract can stay stable while its runtime behavior changes by swapping handlers. The
+result is a clean division of responsibilities: contracts stay at the application boundary, execution logic remains
+replaceable.
 
-### 3.3. `ICommand<T>`
+### 3.3. Operators and Policies
 
-A command models an action whose primary purpose is doing work rather than returning data. Commands return `bool` to
-indicate whether execution was accepted and performed.
+The third layer is operator composition over executors.
 
-In the base implementation, `Command<T>` is a handleable object. It delegates execution to an attached
-`Handler<T, Unit>`. If no handler is attached, `Execute(...)` returns `false`.
+Operators wrap execution and can:
 
-This is useful for UI actions, state changes, and application operations with command-like semantics.
+- preserve contracts (`BehaviorOperator` / `AsyncBehaviorOperator`),
+- or adapt contracts (`ExecutionOperator` / `AsyncExecutionOperator`).
 
-### 3.4. `IQuery<TIn, TOut>`
+This is the mechanism behind context propagation, result wrapping, exception suppression, mapping, caching, metrics,
+thread scheduling, and other cross-cutting behavior.
 
-A query models a read-style operation. It accepts input and returns data through `Send(...)`.
-
-In the base implementation, `Query<TIn, TOut>` is also handleable. It delegates to an attached `Handler<TIn, TOut>`.
-If no handler is attached, `Send(...)` throws `MissingHandlerException`.
-
-Use queries when the operation is conceptually about obtaining a result rather than performing a command.
-
-### 3.5. `IEvent<T>`
-
-An event is a publish-subscribe executable. It lets publishers emit values and subscribers react to them.
-
-In the base implementation, `Event<T>` keeps track of subscribers internally, but publication still runs through an
-attached handler. On `Publish(...)`, the event creates a `Publishing<T>` value that contains the message and the current
-subscriber list, then passes it to `Handler<Publishing<T>, Unit>`. If there are no subscribers, the event does nothing.
-`MissingHandlerException` is thrown only when subscribers exist but no handler is attached.
-
-This is useful for notification flows and loosely coupled reactions inside an application.
-
-### 3.6. Handlers and Subscribers
-
-Handlers are the concrete execution layer behind the base command, query, and event types.
-
-- `Command<T>` is a `Handleable<T, Unit>`,
-- `Query<TIn, TOut>` is a `Handleable<TIn, TOut>`,
-- `Event<T>` is a `Handleable<Publishing<T>, Unit>`.
-
-`Handleable<...>` allows one handler to be attached through `Handle(...)` and returns an `IDisposable` that can detach
-it later. In other words, the API object defines the interaction shape, and the attached handler defines the behavior.
-
-Subscribers are the receiving side of events. `Event<T>` owns the subscriber collection, while the attached handler owns
-the publication logic that decides how those subscribers are notified.
-
-This matters because the library supports two complementary styles:
-
-- create pipelines from executables and convert them into commands or queries,
-- work directly with handleable objects and attach handlers to them.
-
-The second style explains how the base `Command`, `Query`, and `Event` implementations actually operate.
-
-### 3.7. `Unit`, `Optional<T>`, and `Result<T>`
-
-These types model common execution cases without relying on ad hoc conventions:
-
-- `Unit` represents "no meaningful value",
-- `Optional<T>` represents an optional value, typically produced when selected exception types are suppressed,
-- `Result<T>` represents either a successful value or a captured failure.
-
-They make pipelines more explicit and easier to compose.
-
-```csharp
-IExecutable<string, Optional<int>> parseOptional =
-  Executable.Create((string text) => int.Parse(text))
-    .SuppressException()
-    .OfType<FormatException>();
-
-IExecutable<string, Result<int>> parseResult =
-  Executable.Create((string text) => int.Parse(text))
-    .WithResult();
-```
-
-### 3.8. Executable Context
-
-The executable context carries execution-scoped metadata such as correlation and nested call information. It is useful
-when a pipeline needs ambient context without manually threading metadata through every method signature.
-
-This becomes especially valuable in larger flows with logging, tracing, or context-aware policies.
-
-### 3.9. History, Undo, and Redo
-
-The library includes support for reversible command scenarios through history tracking and undo/redo behavior. This is
-useful in UI workflows and stateful application actions where reversing previous changes is part of the model.
-
-The main user-facing concept here is `ReversibleCommand<TInput, TChange>`, which stores change history and supports
-`Undo()` and `Redo()`.
+Policies are a focused operator family for execution rules: validation, guards, fallback, retry, timeout, and
+reentrancy control. So policies are not a separate architecture branch; they are a semantic specialization inside the
+operator layer.
 
 ## 4. Creating API Objects
 
@@ -634,57 +567,7 @@ IAsyncCommand<string> mixed = first.Compose(asyncSecond);
 await mixed.Execute("Run");
 ```
 
-### 5.10. Pipelines and Middlewares
-
-`Pipeline` and `AsyncPipeline` are builder APIs for middleware-style composition. Each middleware receives input and a
-`next` delegate, can transform data before and after `next`, and can stop the chain by not calling it.
-
-This model is useful when you want explicit around-execution behavior (logging, timing, normalization, enrichment)
-without manually nesting decorators.
-
-For `Use(...)` overloads, explicitly typing lambda parameters is recommended to avoid overload ambiguity.
-
-`Use(...)` chains are unbounded and fully type-safe: each step can change types and choose the most convenient `next`
-delegate shape (function/action, parameterized/parameterless). For each adjacent pair, contracts must match: the
-`next` delegate used in step `N` is defined by step `N + 1`.
-
-The main limitation is that one chain cannot mix sync and async middleware: use either `Pipeline...` or
-`AsyncPipeline...` for a given chain.
-
-```csharp
-IQuery<string, string> query = Pipeline<string, string>
-  .Use((string text, Func<TimeSpan, int> next) =>
-  {
-    TimeSpan parsed = TimeSpan.Parse(text);
-    int seconds = next(parsed);
-    return $"Seconds: {seconds}";
-  })
-  .Use((TimeSpan span, Func<double, int> next) =>
-  {
-    double minutes = span.TotalMinutes;
-    return next(minutes);
-  })
-  .End(minutes => (int)(minutes * 60))
-  .AsQuery();
-```
-
-```csharp
-IAsyncQuery<string, string> asyncQuery = AsyncPipeline<string, string>
-  .Use(async (string text, AsyncFunc<int, int> next, CancellationToken token) =>
-  {
-    await Task.Delay(10, token);
-    int doubled = await next(text.Trim().Length, token);
-    return $"Length: {doubled}";
-  })
-  .End(async (length, token) =>
-  {
-    await Task.Delay(10, token);
-    return length * 2;
-  })
-  .AsQuery();
-```
-
-### 5.11. Branching Execution with `Branch` and `AsyncBranch`
+### 5.10. Branching Execution with `Branch` and `AsyncBranch`
 
 For condition-based routing, the library provides `Branch...` and `AsyncBranch...`. They build an executable from
 `If(...)`, optional `ElseIf(...)`, and terminal `Else(...)`.
@@ -860,9 +743,198 @@ second.Send(10);
 // so it is detached from both `first` and `second`.
 ```
 
-## 7. Policies and Execution Control
+## 7. Execution Operators
 
-### 7.1. Applying Policies with `WithPolicy(...)`
+### 7.1. Operator Model
+
+Operators are wrappers around executors. They define how execution is transformed before and after the wrapped
+executable runs.
+
+The API is built around four base abstractions:
+
+- `ExecutionOperator<TInOp, TInExec, TOutExec, TOutOp>`,
+- `BehaviorOperator<TIn, TOut>`,
+- `AsyncExecutionOperator<TInOp, TInExec, TOutExec, TOutOp>`,
+- `AsyncBehaviorOperator<TIn, TOut>`.
+
+`BehaviorOperator` variants keep the same contract (`TIn -> TOut`). `ExecutionOperator` variants can adapt input and
+output contracts around the wrapped executor.
+
+### 7.2. Applying Operators with `Apply(...)`
+
+`Apply(...)` is the low-level attachment point for operators.
+
+- `executable.Apply(operator)` and `operator.Apply(executable)` are both supported for sync and async APIs,
+- the returned executable keeps strong typing across all transformations.
+
+```csharp
+IExecutable<string, string> pipeline =
+  Executable.Create((int value) => value * 2)
+    .Apply(ExecutionOperator.Map(
+      Executable.Create((string text) => int.Parse(text)),
+      Executable.Create((int value) => $"Value: {value}")));      
+```
+
+### 7.3. Operator Factories: `Create(...)`, `Map(...)`
+
+For explicit operator construction, the static `ExecutionOperator` / `AsyncExecutionOperator` APIs provide:
+
+- `Create(...)` for custom operator logic from a delegate,
+- `Map(...)` for contract adaptation around another executable.
+
+This factory style is useful when operator behavior should be reused as a standalone unit instead of being inlined in
+an extension method chain.
+
+```csharp
+ExecutionOperator<string, int, int, string> formatSquared =
+  ExecutionOperator.Create((string text, IExecutor<int, int> next) =>
+  {
+    int value = int.Parse(text);
+    int squared = next.Execute(value);
+    return $"Squared: {squared}";
+  });
+
+IExecutable<int, int> squared = Executable.Create((int value) => value * value);
+
+IExecutable<string, string> pipeline = squared.Apply(formatSquared);
+pipeline = formatSquared.Apply(squared);
+
+pipeline = Executable.Create((int value) => value * 2)
+  .Map((string text) => int.Parse(text), value => $"Value: {value}");
+```
+
+### 7.4. Context and Result Operators
+
+High-level operator-based extensions include:
+
+- `WithContext(...)` for context-scoped execution (`ExecutableContext`),
+- `WithResult()` for converting exceptions to `Result<T>`.
+
+These are execution decorators, not business operations. They keep core logic focused while adding predictable runtime
+behavior around it.
+
+```csharp
+IExecutable<int, Result<string>> query =
+  Executable.Create((int id) =>
+  {
+    string tenant = ExecutableContext.Current.Get<string>("tenant");
+    return $"{tenant}:{id}";
+  })
+  .WithContext(context => context.Set("tenant", "eu-1"))
+  .WithResult();
+```
+
+### 7.5. Exception and Scheduling Operators
+
+Additional operator-based extensions:
+
+- `SuppressException().OfType<TEx>()` to convert selected exceptions to `Optional<T>`,
+- `OnThreadPool()` for scheduling `IExecutable<T, Unit>` on the thread pool.
+
+Both modify execution semantics without changing business contracts.
+
+```csharp
+IExecutable<string, Optional<int>> parse =
+  Executable.Create((string text) => int.Parse(text))
+    .SuppressException()
+    .OfType<FormatException>();
+
+IExecutable<string, Unit> notify =
+  Executable.Create((string message) => Console.WriteLine(message))
+    .OnThreadPool();
+```
+
+### 7.6. Cache and Metrics Operators
+
+The low-level operator factory includes reusable runtime wrappers:
+
+- `ExecutionOperator.Cache(...)` / `AsyncExecutionOperator.Cache(...)`,
+- `ExecutionOperator.Metrics(...)` / `AsyncExecutionOperator.Metrics(...)`.
+
+For convenience, the same behavior is exposed as executable extension methods: `Cache(...)` and `Metrics(...)` for sync
+and async executable chains.
+
+```csharp
+ICacheStorage<int, string> cacheStorage = /* your storage */;
+IMetrics<int, string> metrics = /* your metrics sink */;
+
+IExecutable<int, string> loadUser =
+  Executable.Create((int id) => $"User-{id}")
+    .Cache(cacheStorage)
+    .Metrics(metrics, tag: "users.load");
+```
+
+### 7.7. Pipelines and Middlewares
+
+`Pipeline` and `AsyncPipeline` are builder APIs for middleware-style composition. Each middleware is an execution
+operator that receives input plus a `next` delegate, can transform data before and after `next`, and can stop the chain
+by not calling it.
+
+This model is useful when you want explicit around-execution behavior (logging, timing, normalization, enrichment)
+without manually nesting decorators.
+
+For `Use(...)` overloads, explicitly typing lambda parameters is recommended to avoid overload ambiguity.
+
+`Use(...)` chains are unbounded and fully type-safe: each step can change types and choose the most convenient `next`
+delegate shape (function/action, parameterized/parameterless). For each adjacent pair, contracts must match: the
+`next` delegate used in step `N` is defined by step `N + 1`.
+
+The main limitation is that one chain cannot mix sync and async middleware: use either `Pipeline...` or
+`AsyncPipeline...` for a given chain.
+
+```csharp
+IQuery<string, string> query = Pipeline<string, string>
+  .Use((string text, Func<TimeSpan, int> next) =>
+  {
+    TimeSpan parsed = TimeSpan.Parse(text);
+    int seconds = next(parsed);
+    return $"Seconds: {seconds}";
+  })
+  .Use((TimeSpan span, Func<double, int> next) =>
+  {
+    double minutes = span.TotalMinutes;
+    return next(minutes);
+  })
+  .End(minutes => (int)(minutes * 60))
+  .AsQuery();
+```
+
+```csharp
+IAsyncQuery<string, string> asyncQuery = AsyncPipeline<string, string>
+  .Use(async (string text, AsyncFunc<int, int> next, CancellationToken token) =>
+  {
+    await Task.Delay(10, token);
+    int doubled = await next(text.Trim().Length, token);
+    return $"Length: {doubled}";
+  })
+  .End(async (length, token) =>
+  {
+    await Task.Delay(10, token);
+    return length * 2;
+  })
+  .AsQuery();
+```
+
+### 7.8. Writing Custom Operators
+
+When built-in operators are not enough, create a custom operator by:
+
+1. inheriting from one of the base operator types, or
+2. using `ExecutionOperator.Create(...)` / `AsyncExecutionOperator.Create(...)` for delegate-based operators.
+
+This keeps custom execution behavior explicit and composable, while preserving the same typed `Apply(...)` model used
+by the rest of the library.
+
+```csharp
+IExecutable<string, string> trimmed =
+  Executable.Create((string value) => value)
+    .Apply(ExecutionOperator.Create((string input, IExecutor<string, string> next) =>
+      next.Execute(input.Trim())));
+```
+
+## 8. Policies and Execution Control
+
+### 8.1. Applying Policies with `WithPolicy(...)`
 
 `WithPolicy(...)` wraps an executable with a policy pipeline built through `PolicyBuilder<TIn, TOut>` or
 `AsyncPolicyBuilder<TIn, TOut>`. This is the main entry point for validation, guards, fallback behavior, retry rules,
@@ -880,7 +952,7 @@ IExecutable<string, int> parse =
     });
 ```
 
-### 7.2. Input and Output Validation
+### 8.2. Input and Output Validation
 
 Validation policies are applied through `Validate(...)`, `ValidateInput(...)`, and `ValidateOutput(...)`. They are a
 better place for contract checks than embedding validation directly into handler logic.
@@ -895,7 +967,7 @@ IExecutable<string, int> parseLength =
     });
 ```
 
-### 7.3. Guard Conditions
+### 8.3. Guard Conditions
 
 Guards block execution when some external condition is not satisfied. Unlike validators, they usually express access or
 state constraints rather than input correctness. When a guard denies execution, the policy throws
@@ -909,7 +981,7 @@ IExecutable<Unit, string> run =
     .WithPolicy(policy => policy.Guard(() => isEnabled, "Operation is disabled"));
 ```
 
-### 7.4. Retry, Timeout, and Fallback Patterns
+### 8.4. Retry, Timeout, and Fallback Patterns
 
 The async policy builder supports retry and timeout control, while both sync and async builders support fallback.
 
@@ -933,7 +1005,7 @@ IAsyncExecutable<int, string> load =
   });
 ```
 
-### 7.5. Preventing Reentrancy
+### 8.5. Preventing Reentrancy
 
 `PreventReentrance()` blocks nested re-entry into the same executable. Its main purpose is to prevent a call from
 invoking the same executable again while the original call is still in progress.
@@ -952,21 +1024,7 @@ recursive =
     .WithPolicy(policy => policy.PreventReentrance());
 ```
 
-### 7.6. Running Work on the Thread Pool
-
-For synchronous `Unit`-returning operations, `OnThreadPool()` is an executable operator that offloads execution to the
-thread pool. It changes how work runs rather than expressing a business policy.
-
-This is mainly useful for fire-and-forget style command work, background notifications, and subscribers that should not
-block the current thread.
-
-```csharp
-IExecutable<string, Unit> log =
-  Executable.Create((string text) => Console.WriteLine(text))
-    .OnThreadPool();
-```
-
-### 7.7. Validator API: Primitives and Composition
+### 8.6. Validator API: Primitives and Composition
 
 The `Validator` API can be used directly, not only through policy shorthand methods.
 
@@ -1002,7 +1060,7 @@ IExecutable<int, string> flow =
     .WithPolicy(policy => policy.ValidateInput(ageValidator));
 ```
 
-### 7.8. Guard API: Factory and Composition
+### 8.7. Guard API: Factory and Composition
 
 Besides predicate overloads on policy builders, guards have a dedicated API.
 
@@ -1023,7 +1081,7 @@ IExecutable<Unit, string> run =
 maintenance.Deny(); // next call will fail with AccessDeniedException
 ```
 
-### 7.9. Retry Rules API
+### 8.8. Retry Rules API
 
 Retry behavior is configured in async policies through `IRetryRule<TException>`.
 
@@ -1046,9 +1104,9 @@ IAsyncExecutable<int, int> flow =
   .WithPolicy(policy => policy.Retry(rule));
 ```
 
-## 8. Context, Safety, and Error Handling
+## 9. Context, Safety, and Error Handling
 
-### 8.1. Running with `WithContext(...)`
+### 9.1. Running with `WithContext(...)`
 
 `WithContext(...)` runs an executable inside a new `ExecutableContext`. You can initialize that context with
 `ContextWriter` (`Name`, `Set(...)`) before the main logic starts.
@@ -1070,7 +1128,7 @@ IQuery<int, string> query =
   .AsQuery();
 ```
 
-### 8.2. Correlation and Nested Execution Contexts
+### 9.2. Correlation and Nested Execution Contexts
 
 Nested `WithContext(...)` calls create nested contexts. The nested context gets a new `ContextId`, increased `Depth`,
 and keeps the same `CorrelationId` from the parent context.
@@ -1094,7 +1152,7 @@ IQuery<Unit, Guid> outer =
   .AsQuery();
 ```
 
-### 8.3. Suppressing Exceptions with `Optional<T>`
+### 9.3. Suppressing Exceptions with `Optional<T>`
 
 `SuppressException().OfType<TEx>()` suppresses only the selected exception type and converts output to `Optional<T>`.
 Other exception types still propagate.
@@ -1123,7 +1181,7 @@ else
   Console.WriteLine(response.ValueOrDefault); // default(int) == 0
 ```
 
-### 8.4. Wrapping Execution with `WithResult()`
+### 9.4. Wrapping Execution with `WithResult()`
 
 `WithResult()` converts exceptions into `Result<T>` so callers can handle failures without `try/catch` at every call
 site.
@@ -1149,7 +1207,7 @@ if (fail.IsFailure)
 
 This works for both sync and async executables.
 
-### 8.5. Disposal and Lifetime Considerations
+### 9.5. Disposal and Lifetime Considerations
 
 `WithContext(...)` always restores the previous `ExecutableContext.Current` in `finally`, even when initialization or
 execution throws. The temporary context is disposed at the end of the call.
@@ -1162,9 +1220,9 @@ That means:
 
 For handler lifetimes and attachment disposal, use the lifecycle rules from section 6.6.
 
-## 9. Synchronous and Asynchronous Usage
+## 10. Synchronous and Asynchronous Usage
 
-### 9.1. `IExecutable` vs `IAsyncExecutable`
+### 10.1. `IExecutable` vs `IAsyncExecutable`
 
 `IExecutable<TIn, TOut>` is a synchronous contract. It is simpler when work is CPU-bound and completes immediately.
 
@@ -1176,7 +1234,7 @@ In practice:
 - sync path returns `TOut`,
 - async path returns `ValueTask<TOut>`.
 
-### 9.2. `ToAsyncExecutable()`
+### 10.2. `ToAsyncExecutable()`
 
 `ToAsyncExecutable()` wraps a synchronous executable into an async proxy, so it can participate in async chains without
 rewriting existing logic.
@@ -1190,7 +1248,7 @@ IAsyncExecutable<int, int> squareAsync = square.ToAsyncExecutable();
 int value = await squareAsync.GetExecutor().Execute(5); // 25
 ```
 
-### 9.3. `ToAsyncCommand()` and `ToAsyncQuery()`
+### 10.3. `ToAsyncCommand()` and `ToAsyncQuery()`
 
 `ToAsyncCommand()` and `ToAsyncQuery()` do the same contract adaptation for command and query interfaces.
 
@@ -1202,7 +1260,7 @@ IQuery<int, string> getName = Executable.Create((int id) => $"User-{id}").AsQuer
 IAsyncQuery<int, string> getNameAsync = getName.ToAsyncQuery();
 ```
 
-### 9.4. Mixing Sync and Async Chains
+### 10.4. Mixing Sync and Async Chains
 
 The API supports mixed composition directly:
 
@@ -1222,7 +1280,7 @@ IAsyncExecutable<string, string> mixed =
   });
 ```
 
-### 9.5. Choosing the Right API Style
+### 10.5. Choosing the Right API Style
 
 Use sync by default when operations are fast and local. Use async when execution can block on external resources or
 must support cancellation.
@@ -1231,9 +1289,9 @@ A practical approach is to keep core pure transforms synchronous, then switch to
 I/O, messaging). If a flow may become async soon, converting with `ToAsync...()` lets you migrate incrementally without
 rewriting composition code.
 
-## 10. Common Usage Patterns
+## 11. Common Usage Patterns
 
-### 10.1. Building a Simple Processing Pipeline
+### 11.1. Building a Simple Processing Pipeline
 
 Start from a small executable, then compose steps with `Then(...)`, and expose the final chain as a query.
 
@@ -1245,7 +1303,7 @@ IQuery<string, string> normalizeAndFormat =
     .AsQuery();
 ```
 
-### 10.2. Wrapping Existing Delegates into the Library Model
+### 11.2. Wrapping Existing Delegates into the Library Model
 
 Existing delegates can be wrapped first, then reused across command/query/handler APIs without rewriting logic.
 
@@ -1257,7 +1315,7 @@ ICommand<int> command = executable.AsCommand();
 Handler<int, bool> handler = executable.AsHandler();
 ```
 
-### 10.3. Adding Cross-Cutting Rules Around Business Logic
+### 11.3. Adding Cross-Cutting Rules Around Business Logic
 
 Keep business logic focused and attach cross-cutting behavior with policies and operators.
 
@@ -1272,7 +1330,7 @@ IExecutable<string, Result<int>> parse =
     .WithResult();
 ```
 
-### 10.4. Using Events for Notification Flows
+### 11.4. Using Events for Notification Flows
 
 Use `Event<T>` when one publisher should notify multiple subscribers through a selected publisher strategy.
 
@@ -1286,7 +1344,7 @@ changed.Subscribe(value => Console.WriteLine($"B: {value}"));
 changed.Publish("Updated");
 ```
 
-### 10.5. Implementing Undo/Redo Behavior
+### 11.5. Implementing Undo/Redo Behavior
 
 Use `ReversibleCommand<TInput, TChange>` when a command must produce reversible changes and keep history.
 
@@ -1325,7 +1383,7 @@ assign.Undo();      // current = 0
 assign.Redo();      // current = 10
 ```
 
-### 10.6. Integrating with UI Actions or Application Services
+### 11.6. Integrating with UI Actions or Application Services
 
 Map UI/application inputs to commands and queries, then keep orchestration in executable composition instead of in UI
 callbacks.
@@ -1354,11 +1412,11 @@ bool saved = saveUser.Execute(new User(1, "Denis"));
 User user = loadUser.Send(1); // User { Id = 1, Name = "Denis" }
 ```
 
-## 11. API Quick Reference
+## 12. API Quick Reference
 
-### 11.1. Static Entry Points
+### 12.1. Static Entry Points
 
-### 11.2. Most Important Extension Methods
+### 12.2. Most Important Extension Methods
 
 - `Executable.Create(...)`, `AsyncExecutable.Create(...)`: static entry points for creating executables.
 - `AsCommand()`, `AsQuery()`, `AsHandler()`, `AsSubscriber()`: conversion methods on executable/query/command types.
@@ -1370,31 +1428,32 @@ User user = loadUser.Send(1); // User { Id = 1, Name = "Denis" }
   `async/sync`, `async/async`).
 - `WithPolicy(...)`: policy composition on `IExecutable<...>` / `IAsyncExecutable<...>`.
 - `WithContext(...)`, `WithResult()`, `SuppressException()`: execution operators on executable types.
+- `Cache(...)`, `Metrics(...)`: operator shortcuts on `IExecutable<...>` / `IAsyncExecutable<...>`.
 - `DisposeOnUnhandledException()`, `OnDispose(...)`: lifecycle helpers on `Handler<...>` / `AsyncHandler<...>`.
 - `OnThreadPool()`: execution operator for `IExecutable<T, Unit>`.
 
-### 11.3. Most Important Return Types
+### 12.3. Most Important Return Types
 
-### 11.4. Recommended Starting Points for New Users
+### 12.4. Recommended Starting Points for New Users
 
-## 12. Practical Notes
+## 13. Practical Notes
 
-### 12.1. Target Frameworks
+### 13.1. Target Frameworks
 
-### 12.2. Package Usage Expectations
+### 13.2. Package Usage Expectations
 
-### 12.3. Thread-Safety Notes
+### 13.3. Thread-Safety Notes
 
-### 12.4. Performance and Allocation Considerations
+### 13.4. Performance and Allocation Considerations
 
-### 12.5. Limitations and Tradeoffs
+### 13.5. Limitations and Tradeoffs
 
-## 13. Suggested Expansion Order
+## 14. Suggested Expansion Order
 
-### 13.1. Overview and Core Concepts First
+### 14.1. Overview and Core Concepts First
 
-### 13.2. Creation and Composition API Next
+### 14.2. Creation and Composition API Next
 
-### 13.3. Policies, Context, and Error Handling After That
+### 14.3. Policies, Context, and Error Handling After That
 
-### 13.4. Code Examples Where They Matter Most
+### 14.4. Code Examples Where They Matter Most
