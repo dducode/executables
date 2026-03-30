@@ -4,7 +4,7 @@ using Executables.Internal;
 
 namespace Executables.Enumeration;
 
-public static partial class ExecutableEnumerableExtensions {
+public static class ExecutableEnumerableExtensions {
 
   /// <summary>
   /// Lazily applies a query to each element of an enumerable sequence.

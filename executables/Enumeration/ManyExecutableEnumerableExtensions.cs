@@ -4,7 +4,7 @@ using Executables.Internal;
 
 namespace Executables.Enumeration;
 
-public static partial class ExecutableEnumerableExtensions {
+public static class ManyExecutableEnumerableExtensions {
 
   /// <summary>
   /// Lazily applies a query that returns sequences and flattens the combined results.

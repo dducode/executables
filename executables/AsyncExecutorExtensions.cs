@@ -3,7 +3,7 @@ using Executables.Internal;
 
 namespace Executables;
 
-public static partial class ExecutorExtensions {
+public static class AsyncExecutorExtensions {
 
   /// <summary>
   /// Executes a parameterless async executor.

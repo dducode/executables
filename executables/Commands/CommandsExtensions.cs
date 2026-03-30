@@ -4,7 +4,7 @@ using Executables.Internal;
 
 namespace Executables.Commands;
 
-public static partial class CommandsExtensions {
+public static class CommandsExtensions {
 
   /// <summary>
   /// Executes a parameterless command.

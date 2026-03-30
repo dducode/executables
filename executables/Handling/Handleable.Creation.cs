@@ -5,14 +5,32 @@ using Executables.Lifecycle;
 
 namespace Executables.Handling;
 
+/// <summary>
+/// Factory methods for creating handleables.
+/// </summary>
 public static class Handleable {
 
+  /// <summary>
+  /// Creates a handleable from a registration delegate.
+  /// </summary>
+  /// <param name="handling">Delegate that registers a handler and returns a handle for unregistering it.</param>
+  /// <returns>Handleable backed by <paramref name="handling"/>.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="handling"/> is <see langword="null"/>.</exception>
   [Pure]
   public static IHandleable<T1, T2> Create<T1, T2>(Func<Handler<T1, T2>, IDisposable> handling) {
     ExceptionsHelper.ThrowIfNull(handling, nameof(handling));
     return new AnonymousHandleable<T1, T2>(handling);
   }
 
+  /// <summary>
+  /// Creates a handleable from an event with add and remove accessors.
+  /// </summary>
+  /// <param name="add">Action that subscribes a delegate to the source event.</param>
+  /// <param name="remove">Action that unsubscribes a delegate from the source event.</param>
+  /// <returns>Handleable wrapping the event subscription lifecycle.</returns>
+  /// <exception cref="ArgumentNullException">
+  /// <paramref name="add"/> or <paramref name="remove"/> is <see langword="null"/>.
+  /// </exception>
   [Pure]
   public static IHandleable<T1, T2> FromEvent<T1, T2>(Action<Func<T1, T2>> add, Action<Func<T1, T2>> remove) {
     ExceptionsHelper.ThrowIfNull(add, nameof(add));
@@ -24,6 +42,15 @@ public static class Handleable {
     });
   }
 
+  /// <summary>
+  /// Creates a handleable from an event with typed action handlers.
+  /// </summary>
+  /// <param name="add">Action that subscribes a delegate to the source event.</param>
+  /// <param name="remove">Action that unsubscribes a delegate from the source event.</param>
+  /// <returns>Handleable wrapping the event subscription lifecycle.</returns>
+  /// <exception cref="ArgumentNullException">
+  /// <paramref name="add"/> or <paramref name="remove"/> is <see langword="null"/>.
+  /// </exception>
   [Pure]
   public static IHandleable<T, Unit> FromEvent<T>(Action<Action<T>> add, Action<Action<T>> remove) {
     ExceptionsHelper.ThrowIfNull(add, nameof(add));
@@ -36,6 +63,15 @@ public static class Handleable {
     });
   }
 
+  /// <summary>
+  /// Creates a handleable from a parameterless event.
+  /// </summary>
+  /// <param name="add">Action that subscribes a delegate to the source event.</param>
+  /// <param name="remove">Action that unsubscribes a delegate from the source event.</param>
+  /// <returns>Handleable wrapping the event subscription lifecycle.</returns>
+  /// <exception cref="ArgumentNullException">
+  /// <paramref name="add"/> or <paramref name="remove"/> is <see langword="null"/>.
+  /// </exception>
   [Pure]
   public static IHandleable<Unit, Unit> FromEvent(Action<Action> add, Action<Action> remove) {
     ExceptionsHelper.ThrowIfNull(add, nameof(add));

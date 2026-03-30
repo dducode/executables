@@ -4,7 +4,7 @@ using Executables.Internal;
 
 namespace Executables.Queries;
 
-public static partial class QueriesExtensions {
+public static class QueriesExtensions {
 
   /// <summary>
   /// Sends a parameterless query.

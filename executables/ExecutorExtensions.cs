@@ -3,7 +3,7 @@ using Executables.Internal;
 
 namespace Executables;
 
-public static partial class ExecutorExtensions {
+public static class ExecutorExtensions {
 
   /// <summary>
   /// Executes a parameterless executor.

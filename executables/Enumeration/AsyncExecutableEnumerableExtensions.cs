@@ -5,7 +5,7 @@ using Executables.Internal;
 
 namespace Executables.Enumeration;
 
-public static partial class ExecutableEnumerableExtensions {
+public static class AsyncExecutableEnumerableExtensions {
 
   /// <summary>
   /// Lazily applies an asynchronous query to each element of an asynchronous sequence.

@@ -2,7 +2,7 @@ using Executables.Validation;
 
 namespace Executables.Policies;
 
-public static partial class PolicyBuilderExtensions {
+public static class AsyncPolicyBuilderExtensions {
 
   /// <summary>
   /// Creates a policy that validates only invocation input.

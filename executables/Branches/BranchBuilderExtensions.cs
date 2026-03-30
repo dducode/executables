@@ -3,7 +3,7 @@ using Executables.Internal;
 
 namespace Executables.Branches;
 
-public static partial class BranchBuilderExtensions {
+public static class BranchBuilderExtensions {
 
   /// <summary>
   /// Adds a conditional branch backed by a delegate.

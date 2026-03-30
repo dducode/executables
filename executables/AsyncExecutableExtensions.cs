@@ -1,4 +1,5 @@
 using System.Diagnostics.Contracts;
+using Executables.Analytics;
 using Executables.Context;
 using Executables.Core.Executables;
 using Executables.Core.Operators;
@@ -9,7 +10,7 @@ using Executables.Policies;
 
 namespace Executables;
 
-public static partial class ExecutableExtensions {
+public static class AsyncExecutableExtensions {
 
   /// <summary>
   /// Returns the same asynchronous executable instance.
@@ -437,6 +438,31 @@ public static partial class ExecutableExtensions {
     executable.ThrowIfNullReference();
     ExceptionsHelper.ThrowIfNull(pipe, nameof(pipe));
     return pipe(executable);
+  }
+
+  /// <summary>
+  /// Adds asynchronous cache behavior to an executable.
+  /// </summary>
+  /// <param name="executable">Source asynchronous executable.</param>
+  /// <param name="storage">Cache storage used to resolve and persist values.</param>
+  /// <returns>Asynchronous executable with caching behavior.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="storage"/> is <see langword="null"/>.</exception>
+  [Pure]
+  public static IAsyncExecutable<T1, T2> Cache<T1, T2>(this IAsyncExecutable<T1, T2> executable, ICacheStorage<T1, T2> storage) {
+    return executable.Apply(AsyncExecutionOperator.Cache(storage));
+  }
+
+  /// <summary>
+  /// Adds asynchronous metrics behavior to an executable.
+  /// </summary>
+  /// <param name="executable">Source asynchronous executable.</param>
+  /// <param name="metrics">Metrics sink used to record execution information.</param>
+  /// <param name="tag">Optional tag passed to all metrics callbacks.</param>
+  /// <returns>Asynchronous executable with metrics behavior.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="metrics"/> is <see langword="null"/>.</exception>
+  [Pure]
+  public static IAsyncExecutable<T1, T2> Metrics<T1, T2>(this IAsyncExecutable<T1, T2> executable, IMetrics<T1, T2> metrics, string tag = null) {
+    return executable.Apply(AsyncExecutionOperator.Metrics(metrics, tag));
   }
 
   /// <summary>

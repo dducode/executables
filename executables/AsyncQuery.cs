@@ -2,15 +2,31 @@ using Executables.Handling;
 
 namespace Executables;
 
+/// <summary>
+/// Represents an asynchronous query that returns a result.
+/// </summary>
+/// <typeparam name="T1">Type of the query input.</typeparam>
+/// <typeparam name="T2">Type of the query result.</typeparam>
 public interface IAsyncQuery<in T1, T2> : IAsyncExecutable<T1, T2> {
 
+  /// <summary>
+  /// Sends the query.
+  /// </summary>
+  /// <param name="input">Query input.</param>
+  /// <param name="token">Cancellation token.</param>
+  /// <returns>Asynchronous query result.</returns>
   ValueTask<T2> Send(T1 input, CancellationToken token = default);
 
 }
 
-public class AsyncQuery<T1, T2> : AsyncHandleable<T1, T2>, IAsyncQuery<T1, T2> {
+/// <summary>
+/// Default asynchronous query implementation backed by a registered handler.
+/// </summary>
+/// <typeparam name="T1">Type of the query input.</typeparam>
+/// <typeparam name="T2">Type of the query result.</typeparam>
+public sealed class AsyncQuery<T1, T2> : AsyncHandleable<T1, T2>, IAsyncQuery<T1, T2> {
 
-  public virtual ValueTask<T2> Send(T1 input, CancellationToken token = default) {
+  public ValueTask<T2> Send(T1 input, CancellationToken token = default) {
     AsyncHandler<T1, T2> handler = Handler;
     if (handler == null)
       throw new MissingHandlerException("Cannot handle query");

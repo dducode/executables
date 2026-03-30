@@ -4,7 +4,7 @@ using Executables.Internal;
 
 namespace Executables.Pipelines;
 
-public static partial class PipelineBuilderExtensions {
+public static class AsyncPipelineBuilderExtensions {
 
   /// <summary>
   /// Appends async middleware step expressed as function with next func.

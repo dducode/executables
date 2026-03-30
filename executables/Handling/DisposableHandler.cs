@@ -2,14 +2,23 @@ using Executables.Internal;
 
 namespace Executables.Handling;
 
+/// <summary>
+/// Base class for handlers with disposable lifetime management.
+/// </summary>
 public abstract class DisposableHandler : IDisposable {
 
+  /// <summary>
+  /// Gets whether the handler has been disposed.
+  /// </summary>
   public bool Disposed => Volatile.Read(ref _disposeState) != 0;
 
   private readonly List<IDisposable> _handles = [];
   private readonly object _lock = new();
   private int _disposeState;
 
+  /// <summary>
+  /// Disposes the handler and all registered handles.
+  /// </summary>
   public void Dispose() {
     if (Interlocked.Exchange(ref _disposeState, 1) != 0)
       return;
@@ -18,6 +27,9 @@ public abstract class DisposableHandler : IDisposable {
     DisposeCore();
   }
 
+  /// <summary>
+  /// Allows derived classes to release their own resources during disposal.
+  /// </summary>
   protected virtual void DisposeCore() { }
 
   internal void RegisterHandle(IDisposable handle) {

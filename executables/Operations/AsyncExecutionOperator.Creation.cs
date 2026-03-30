@@ -23,14 +23,14 @@ public static class AsyncExecutionOperator {
   }
 
   /// <summary>
-  /// Creates an asynchronous metrics operator that records execution metrics for the wrapped executor.
+  /// Creates an asynchronous metrics operator that records call, success, failure and latency for the wrapped executor.
   /// </summary>
   /// <param name="metrics">Metrics sink used to record execution information.</param>
-  /// <param name="tag">Optional tag associated with recorded metrics.</param>
+  /// <param name="tag">Optional tag passed to all <see cref="IMetrics{T1,T2}"/> callbacks.</param>
   /// <returns>Metrics operator.</returns>
   /// <exception cref="ArgumentNullException"><paramref name="metrics"/> is <see langword="null"/>.</exception>
   [Pure]
-  public static AsyncBehaviorOperator<T1, T2> Metrics<T1, T2>(this IMetrics<T1, T2> metrics, string tag = null) {
+  public static AsyncBehaviorOperator<T1, T2> Metrics<T1, T2>(IMetrics<T1, T2> metrics, string tag = null) {
     ExceptionsHelper.ThrowIfNull(metrics, nameof(metrics));
     return new AsyncMetricsOperator<T1, T2>(metrics, tag);
   }

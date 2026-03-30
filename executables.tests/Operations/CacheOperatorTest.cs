@@ -17,7 +17,7 @@ public class CacheOperatorTest {
         count++;
         return TimeSpan.FromSeconds(seconds);
       })
-      .Apply(ExecutionOperator.Cache(new Cache()))
+      .Cache(new Cache())
       .AsQuery();
 
     Assert.Equal(TimeSpan.FromSeconds(10), query.Send(10));
@@ -38,7 +38,7 @@ public class CacheOperatorTest {
         count++;
         return ValueTask.FromResult(TimeSpan.FromSeconds(seconds));
       })
-      .Apply(AsyncExecutionOperator.Cache(new Cache()))
+      .Cache(new Cache())
       .AsQuery();
 
     Assert.Equal(TimeSpan.FromSeconds(10), await query.Send(10));

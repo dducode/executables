@@ -2,15 +2,28 @@ using Executables.Handling;
 
 namespace Executables;
 
+/// <summary>
+/// Represents a command that may succeed or fail.
+/// </summary>
+/// <typeparam name="T">Type of the command input.</typeparam>
 public interface ICommand<in T> : IExecutable<T, bool> {
 
+  /// <summary>
+  /// Executes the command.
+  /// </summary>
+  /// <param name="input">Command input.</param>
+  /// <returns><see langword="true"/> when a handler was invoked; otherwise, <see langword="false"/>.</returns>
   bool Execute(T input);
 
 }
 
-public class Command<T> : Handleable<T, Unit>, ICommand<T> {
+/// <summary>
+/// Default command implementation backed by a registered handler.
+/// </summary>
+/// <typeparam name="T">Type of the command input.</typeparam>
+public sealed class Command<T> : Handleable<T, Unit>, ICommand<T> {
 
-  public virtual bool Execute(T input) {
+  public bool Execute(T input) {
     Handler<T, Unit> handler = Handler;
     if (handler == null)
       return false;

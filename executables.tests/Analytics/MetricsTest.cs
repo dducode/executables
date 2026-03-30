@@ -1,6 +1,5 @@
 using AutoFixture;
 using Executables.Analytics;
-using Executables.Operations;
 using Executables.Policies;
 using Executables.Validation;
 using JetBrains.Annotations;
@@ -14,15 +13,14 @@ public class MetricsTest(ITestOutputHelper outputHelper) {
   [Fact]
   public void RegularCall() {
     var fixture = new Fixture();
-    BehaviorOperator<int, TimeSpan> metrics = ExecutionOperator.Metrics(Metrics.Create(
-      (int input) => outputHelper.WriteLine($"{nameof(input)}: {input}"),
-      (TimeSpan output) => outputHelper.WriteLine($"{nameof(output)}: {output}"),
-      latency: latency => outputHelper.WriteLine($"{nameof(latency)}: {latency.Ticks}\n"))
-    );
 
-    IQuery<int, TimeSpan> query = Executable.Create((int seconds) => TimeSpan.FromSeconds(seconds))
-      .Apply(metrics)
-      .AsQuery();
+    IQuery<int, TimeSpan> query = Executable
+      .Create((int seconds) => TimeSpan.FromSeconds(seconds))
+      .Metrics(Metrics.Create(
+        (int input) => outputHelper.WriteLine($"{nameof(input)}: {input}"),
+        (TimeSpan output) => outputHelper.WriteLine($"{nameof(output)}: {output}"),
+        latency: latency => outputHelper.WriteLine($"{nameof(latency)}: {latency.Ticks}\n"))
+      ).AsQuery();
 
     for (var i = 0; i < 5; i++)
       query.Send(fixture.Create<int>());
@@ -30,18 +28,15 @@ public class MetricsTest(ITestOutputHelper outputHelper) {
 
   [Fact]
   public void CallWithException() {
-    BehaviorOperator<int, TimeSpan> metrics = ExecutionOperator.Metrics(Metrics.Create(
-      (int input) => outputHelper.WriteLine($"{nameof(input)}: {input}"),
-      (TimeSpan output) => outputHelper.WriteLine($"{nameof(output)}: {output}"),
-      error => outputHelper.WriteLine($"{nameof(error)}: {error}"),
-      latency => outputHelper.WriteLine($"{nameof(latency)}: {latency.Ticks}\n"))
-    );
-
     IQuery<int, TimeSpan> query = Executable
       .Create((int seconds) => TimeSpan.FromSeconds(seconds))
       .WithPolicy(builder => builder.ValidateInput(Validator.MoreThanZero))
-      .Apply(metrics)
-      .AsQuery();
+      .Metrics(Metrics.Create(
+        (int input) => outputHelper.WriteLine($"{nameof(input)}: {input}"),
+        (TimeSpan output) => outputHelper.WriteLine($"{nameof(output)}: {output}"),
+        error => outputHelper.WriteLine($"{nameof(error)}: {error}"),
+        latency => outputHelper.WriteLine($"{nameof(latency)}: {latency.Ticks}\n"))
+      ).AsQuery();
 
     query.Send(10);
     Assert.Throws<InvalidInputException>(() => query.Send(-10));

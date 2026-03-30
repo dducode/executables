@@ -2,15 +2,29 @@ using Executables.Handling;
 
 namespace Executables;
 
+/// <summary>
+/// Represents an asynchronous command that may succeed or fail.
+/// </summary>
+/// <typeparam name="T">Type of the command input.</typeparam>
 public interface IAsyncCommand<in T> : IAsyncExecutable<T, bool> {
 
+  /// <summary>
+  /// Executes the command.
+  /// </summary>
+  /// <param name="input">Command input.</param>
+  /// <param name="token">Cancellation token.</param>
+  /// <returns><see langword="true"/> when a handler completed successfully; otherwise, <see langword="false"/>.</returns>
   ValueTask<bool> Execute(T input, CancellationToken token = default);
 
 }
 
-public class AsyncCommand<T> : AsyncHandleable<T, Unit>, IAsyncCommand<T> {
+/// <summary>
+/// Default asynchronous command implementation backed by a registered handler.
+/// </summary>
+/// <typeparam name="T">Type of the command input.</typeparam>
+public sealed class AsyncCommand<T> : AsyncHandleable<T, Unit>, IAsyncCommand<T> {
 
-  public virtual ValueTask<bool> Execute(T input, CancellationToken token = default) {
+  public ValueTask<bool> Execute(T input, CancellationToken token = default) {
     if (token.IsCancellationRequested)
       return new ValueTask<bool>(false);
 

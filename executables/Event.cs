@@ -5,19 +5,37 @@ using Executables.Subscribers;
 
 namespace Executables;
 
+/// <summary>
+/// Represents an event that can be published to subscribers.
+/// </summary>
+/// <typeparam name="T">Type of the published value.</typeparam>
 public interface IEvent<T> : IExecutable<T, Unit> {
 
+  /// <summary>
+  /// Publishes an event value to current subscribers.
+  /// </summary>
+  /// <param name="input">Published value.</param>
   void Publish(T input);
+
+  /// <summary>
+  /// Subscribes a subscriber to the event.
+  /// </summary>
+  /// <param name="subscriber">Subscriber to add.</param>
+  /// <returns>Handle that unsubscribes the subscriber when disposed.</returns>
   IDisposable Subscribe(ISubscriber<T> subscriber);
 
 }
 
-public class Event<T> : Handleable<Publishing<T>, Unit>, IEvent<T> {
+/// <summary>
+/// Default event implementation backed by a publishing handler and a subscriber collection.
+/// </summary>
+/// <typeparam name="T">Type of the published value.</typeparam>
+public sealed class Event<T> : Handleable<Publishing<T>, Unit>, IEvent<T> {
 
   private readonly HashSet<ISubscriber<T>> _subscribers = [];
   private readonly object _lock = new();
 
-  public virtual void Publish(T input) {
+  public void Publish(T input) {
     List<ISubscriber<T>> subscribers = Pool<List<ISubscriber<T>>>.Get();
     using var handle = new ListHandle<ISubscriber<T>>(subscribers);
 

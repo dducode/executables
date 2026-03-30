@@ -11,15 +11,6 @@ namespace Executables.Operations;
 public static class ExecutionOperator {
 
   /// <summary>
-  /// Returns an operator that simply forwards execution to the wrapped executor.
-  /// </summary>
-  /// <returns>Identity operator.</returns>
-  [Pure]
-  public static ExecutionOperator<T1, T1, T2, T2> Identity<T1, T2>() {
-    return IdentityOperator<T1, T2>.Instance;
-  }
-
-  /// <summary>
   /// Creates a cache operator that reuses results stored in the provided cache storage.
   /// </summary>
   /// <param name="storage">Cache storage used to resolve and persist values.</param>
@@ -32,14 +23,14 @@ public static class ExecutionOperator {
   }
 
   /// <summary>
-  /// Creates a metrics operator that records execution metrics for the wrapped executor.
+  /// Creates a metrics operator that records call, success, failure and latency for the wrapped executor.
   /// </summary>
   /// <param name="metrics">Metrics sink used to record execution information.</param>
-  /// <param name="tag">Optional tag associated with recorded metrics.</param>
+  /// <param name="tag">Optional tag passed to all <see cref="IMetrics{T1,T2}"/> callbacks.</param>
   /// <returns>Metrics operator.</returns>
   /// <exception cref="ArgumentNullException"><paramref name="metrics"/> is <see langword="null"/>.</exception>
   [Pure]
-  public static BehaviorOperator<T1, T2> Metrics<T1, T2>(this IMetrics<T1, T2> metrics, string tag = null) {
+  public static BehaviorOperator<T1, T2> Metrics<T1, T2>(IMetrics<T1, T2> metrics, string tag = null) {
     ExceptionsHelper.ThrowIfNull(metrics, nameof(metrics));
     return new MetricsOperator<T1, T2>(metrics, tag);
   }
