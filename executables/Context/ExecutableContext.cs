@@ -2,22 +2,61 @@ using System.Runtime.CompilerServices;
 
 namespace Executables.Context;
 
+/// <summary>
+/// Represents a read-only executable context.
+/// </summary>
 public interface IReadonlyContext : IFormattable {
 
+  /// <summary>
+  /// Parent context, or <see langword="null"/> for the root context.
+  /// </summary>
   IReadonlyContext Parent { get; }
+
+  /// <summary>
+  /// Context name.
+  /// </summary>
   string Name { get; }
+
+  /// <summary>
+  /// Correlation identifier shared by related contexts.
+  /// </summary>
   Guid CorrelationId { get; }
+
+  /// <summary>
+  /// Unique context identifier.
+  /// </summary>
   long ContextId { get; }
+
+  /// <summary>
+  /// Nesting depth relative to the root context.
+  /// </summary>
   int Depth { get; }
+
+  /// <summary>
+  /// Root context of the current hierarchy.
+  /// </summary>
   IReadonlyContext Root { get; }
 
+  /// <summary>
+  /// Tries to get a value from the current context or its ancestors.
+  /// </summary>
   bool TryGet<T>(object key, out T value);
+
+  /// <summary>
+  /// Tries to get a value from the current context only.
+  /// </summary>
   bool TryGetLocal<T>(object key, out T value);
 
 }
 
+/// <summary>
+/// Provides access to the current executable context through <see cref="Current"/>.
+/// </summary>
 public sealed class ExecutableContext : IDisposable, IReadonlyContext {
 
+  /// <summary>
+  /// Current ambient executable context.
+  /// </summary>
   public static IReadonlyContext Current {
     get => _current.Value;
     internal set => _current.Value = value;

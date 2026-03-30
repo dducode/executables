@@ -4,6 +4,9 @@ using Executables.Internal;
 
 namespace Executables;
 
+/// <summary>
+/// Factory methods for creating asynchronous executables.
+/// </summary>
 public static class AsyncExecutable {
 
   /// <summary>

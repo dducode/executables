@@ -4,6 +4,9 @@ using Executables.Internal;
 
 namespace Executables;
 
+/// <summary>
+/// Factory methods for creating executables.
+/// </summary>
 public static class Executable {
 
   /// <summary>
