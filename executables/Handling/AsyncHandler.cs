@@ -34,10 +34,32 @@ public abstract class AsyncHandler<T1, T2> : DisposableHandler, IAsyncExecutable
   /// </summary>
   protected abstract ValueTask<T2> HandleCore(T1 input, CancellationToken token = default);
 
-  public readonly struct Executor(AsyncHandler<T1, T2> handler) : IAsyncExecutor<T1, T2> {
+  public readonly struct Executor(AsyncHandler<T1, T2> handler) : IAsyncExecutor<T1, T2>, IEquatable<Executor> {
+
+    private readonly AsyncHandler<T1, T2> _handler = handler;
 
     public ValueTask<T2> Execute(T1 input, CancellationToken token = default) {
-      return handler.Handle(input, token);
+      return _handler.Handle(input, token);
+    }
+
+    public bool Equals(Executor other) {
+      return _handler.Equals(other._handler);
+    }
+
+    public override bool Equals(object obj) {
+      return obj is Executor other && Equals(other);
+    }
+
+    public override int GetHashCode() {
+      return _handler.GetHashCode();
+    }
+
+    public static bool operator ==(Executor left, Executor right) {
+      return left.Equals(right);
+    }
+
+    public static bool operator !=(Executor left, Executor right) {
+      return !(left == right);
     }
 
   }

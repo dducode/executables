@@ -31,10 +31,32 @@ public abstract class Handler<T1, T2> : DisposableHandler, IExecutable<T1, T2> {
   /// </summary>
   protected abstract T2 HandleCore(T1 input);
 
-  public readonly struct Executor(Handler<T1, T2> handler) : IExecutor<T1, T2> {
+  public readonly struct Executor(Handler<T1, T2> handler) : IExecutor<T1, T2>, IEquatable<Executor> {
+
+    private readonly Handler<T1, T2> _handler = handler;
 
     public T2 Execute(T1 input) {
-      return handler.Handle(input);
+      return _handler.Handle(input);
+    }
+
+    public bool Equals(Executor other) {
+      return _handler.Equals(other._handler);
+    }
+
+    public override bool Equals(object obj) {
+      return obj is Executor other && Equals(other);
+    }
+
+    public override int GetHashCode() {
+      return _handler.GetHashCode();
+    }
+
+    public static bool operator ==(Executor left, Executor right) {
+      return left.Equals(right);
+    }
+
+    public static bool operator !=(Executor left, Executor right) {
+      return !(left == right);
     }
 
   }

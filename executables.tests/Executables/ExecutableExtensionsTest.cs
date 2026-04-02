@@ -42,7 +42,7 @@ public class ExecutableExtensionsTest {
   public void ThrowNullArgumentExceptionAsync() {
     Assert.Throws<NullReferenceException>(() => ((IAsyncExecutable<Unit, Unit>)null).Then(Executable.Identity()));
 
-    IAsyncExecutable<Unit, Unit> identity = AsyncExecutable.Identity();
+    IAsyncExecutable<Unit, Unit> identity = Executable.Identity().ToAsyncExecutable();
 
     Assert.Throws<NullReferenceException>(() => identity.Then((IExecutable<Unit, Unit>)null));
     Assert.Throws<ArgumentNullException>(() => identity.Then((Func<Unit, Unit>)null));
@@ -52,7 +52,7 @@ public class ExecutableExtensionsTest {
     Assert.Throws<ArgumentNullException>(() => identity.Fork((IAsyncExecutable<Unit, Unit>)null, (IAsyncExecutable<Unit, Unit>)null));
     Assert.Throws<ArgumentNullException>(() => identity.Fork((AsyncFunc<Unit, Unit>)null, (AsyncFunc<Unit, Unit>)null));
 
-    IAsyncExecutable<Unit, (Unit, Unit)> fork = identity.Fork(AsyncExecutable.Identity(), AsyncExecutable.Identity());
+    IAsyncExecutable<Unit, (Unit, Unit)> fork = identity.Fork(Executable.Identity().ToAsyncExecutable(), Executable.Identity().ToAsyncExecutable());
     Assert.Throws<ArgumentNullException>(() => fork.First((IAsyncExecutable<Unit, Unit>)null));
     Assert.Throws<ArgumentNullException>(() => fork.First((AsyncFunc<Unit, Unit>)null));
     Assert.Throws<ArgumentNullException>(() => fork.Second((IAsyncExecutable<Unit, Unit>)null));

@@ -25,7 +25,7 @@ public class AsyncCommandTest {
   public async Task ExecuteWithoutHandler() {
     var command = new AsyncCommand<Unit>();
     Assert.False(await command.Execute());
-    IDisposable handle = command.Handle(AsyncExecutable.Identity().AsHandler());
+    IDisposable handle = command.Handle(Executable.Identity().ToAsyncExecutable().AsHandler());
     Assert.True(await command.Execute());
     handle.Dispose();
     Assert.False(await command.Execute());
@@ -53,9 +53,9 @@ public class AsyncCommandTest {
   [Fact]
   public void AddHandlerWhenOtherExists() {
     var command = new AsyncCommand<Unit>();
-    using (command.Handle(AsyncExecutable.Identity().AsHandler()))
-      Assert.Throws<InvalidOperationException>(() => command.Handle(AsyncExecutable.Identity().AsHandler()));
-    command.Handle(AsyncExecutable.Identity().AsHandler());
+    using (command.Handle(Executable.Identity().ToAsyncExecutable().AsHandler()))
+      Assert.Throws<InvalidOperationException>(() => command.Handle(Executable.Identity().ToAsyncExecutable().AsHandler()));
+    command.Handle(Executable.Identity().ToAsyncExecutable().AsHandler());
   }
 
 }

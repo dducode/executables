@@ -32,8 +32,6 @@ public static class AsyncExecutableExtensions {
   public static IAsyncExecutable<T1, T3> Then<T1, T2, T3>(this IAsyncExecutable<T1, T2> first, IAsyncExecutable<T2, T3> second) {
     first.ThrowIfNullReference();
     ExceptionsHelper.ThrowIfNull(second, nameof(second));
-    if (first is AsyncIdentityExecutable<T1>)
-      return (IAsyncExecutable<T1, T3>)second;
     return new AsyncCompositeExecutable<T1, T2, T3>(first, second);
   }
 
@@ -46,6 +44,42 @@ public static class AsyncExecutableExtensions {
   /// <exception cref="ArgumentNullException"><paramref name="next"/> is <see langword="null"/>.</exception>
   [Pure]
   public static IAsyncExecutable<T1, T3> Then<T1, T2, T3>(this IAsyncExecutable<T1, T2> executable, AsyncFunc<T2, T3> next) {
+    return executable.Then(AsyncExecutable.Create(next));
+  }
+
+  /// <summary>
+  /// Appends a parameterless asynchronous delegate to an asynchronous executable pipeline.
+  /// </summary>
+  /// <param name="executable">Executable invoked first.</param>
+  /// <param name="next">Parameterless asynchronous delegate invoked after <paramref name="executable"/> completes.</param>
+  /// <returns>Composed asynchronous executable.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="next"/> is <see langword="null"/>.</exception>
+  [Pure]
+  public static IAsyncExecutable<T1, T2> Then<T1, T2>(this IAsyncExecutable<T1, Unit> executable, AsyncFunc<T2> next) {
+    return executable.Then(AsyncExecutable.Create(next));
+  }
+
+  /// <summary>
+  /// Appends an asynchronous action to an asynchronous executable pipeline.
+  /// </summary>
+  /// <param name="executable">Executable invoked first.</param>
+  /// <param name="next">Asynchronous action invoked with the result of <paramref name="executable"/>.</param>
+  /// <returns>Composed asynchronous executable.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="next"/> is <see langword="null"/>.</exception>
+  [Pure]
+  public static IAsyncExecutable<T1, Unit> Then<T1, T2>(this IAsyncExecutable<T1, T2> executable, AsyncAction<T2> next) {
+    return executable.Then(AsyncExecutable.Create(next));
+  }
+
+  /// <summary>
+  /// Appends a parameterless asynchronous action to an asynchronous executable pipeline.
+  /// </summary>
+  /// <param name="executable">Executable invoked first.</param>
+  /// <param name="next">Parameterless asynchronous action invoked after <paramref name="executable"/> completes.</param>
+  /// <returns>Composed asynchronous executable.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="next"/> is <see langword="null"/>.</exception>
+  [Pure]
+  public static IAsyncExecutable<T, Unit> Then<T>(this IAsyncExecutable<T, Unit> executable, AsyncAction next) {
     return executable.Then(AsyncExecutable.Create(next));
   }
 
@@ -71,6 +105,42 @@ public static class AsyncExecutableExtensions {
   /// <exception cref="ArgumentNullException"><paramref name="next"/> is <see langword="null"/>.</exception>
   [Pure]
   public static IAsyncExecutable<T1, T3> Then<T1, T2, T3>(this IAsyncExecutable<T1, T2> executable, Func<T2, T3> next) {
+    return executable.Then(Executable.Create(next));
+  }
+
+  /// <summary>
+  /// Appends a parameterless synchronous delegate to an asynchronous executable.
+  /// </summary>
+  /// <param name="executable">Executable invoked first.</param>
+  /// <param name="next">Parameterless delegate invoked after <paramref name="executable"/> completes.</param>
+  /// <returns>Composed asynchronous executable.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="next"/> is <see langword="null"/>.</exception>
+  [Pure]
+  public static IAsyncExecutable<T1, T2> Then<T1, T2>(this IAsyncExecutable<T1, Unit> executable, Func<T2> next) {
+    return executable.Then(Executable.Create(next));
+  }
+
+  /// <summary>
+  /// Appends a synchronous action to an asynchronous executable.
+  /// </summary>
+  /// <param name="executable">Executable invoked first.</param>
+  /// <param name="next">Action invoked with the result of <paramref name="executable"/>.</param>
+  /// <returns>Composed asynchronous executable.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="next"/> is <see langword="null"/>.</exception>
+  [Pure]
+  public static IAsyncExecutable<T1, Unit> Then<T1, T2>(this IAsyncExecutable<T1, T2> executable, Action<T2> next) {
+    return executable.Then(Executable.Create(next));
+  }
+
+  /// <summary>
+  /// Appends a parameterless synchronous action to an asynchronous executable.
+  /// </summary>
+  /// <param name="executable">Executable invoked first.</param>
+  /// <param name="next">Parameterless action invoked after <paramref name="executable"/> completes.</param>
+  /// <returns>Composed asynchronous executable.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="next"/> is <see langword="null"/>.</exception>
+  [Pure]
+  public static IAsyncExecutable<T, Unit> Then<T>(this IAsyncExecutable<T, Unit> executable, Action next) {
     return executable.Then(Executable.Create(next));
   }
 
@@ -194,62 +264,6 @@ public static class AsyncExecutableExtensions {
   }
 
   /// <summary>
-  /// Races multiple asynchronous executables and returns the first completed result.
-  /// </summary>
-  /// <param name="executable">Executable that produces the shared race input.</param>
-  /// <param name="executables">Executables competing for the first result.</param>
-  /// <returns>Executable that returns the first completed result.</returns>
-  /// <exception cref="ArgumentNullException"><paramref name="executables"/> is <see langword="null"/>.</exception>
-  /// <exception cref="ArgumentException"><paramref name="executables"/> is empty.</exception>
-  [Pure]
-  public static IAsyncExecutable<T1, T3> Race<T1, T2, T3>(this IAsyncExecutable<T1, T2> executable, params IAsyncExecutable<T2, T3>[] executables) {
-    ExceptionsHelper.ThrowIfNullOrEmpty(executables, nameof(executables));
-    return executables.Length > 1 ? executable.Then(new RaceExecutable<T2, T3>(executables)) : executable.Then(executables[0]);
-  }
-
-  /// <summary>
-  /// Races multiple asynchronous delegates and returns the first completed result.
-  /// </summary>
-  /// <param name="executable">Executable that produces the shared race input.</param>
-  /// <param name="executables">Delegates competing for the first result.</param>
-  /// <returns>Executable that returns the first completed result.</returns>
-  /// <exception cref="ArgumentNullException"><paramref name="executables"/> is <see langword="null"/>.</exception>
-  /// <exception cref="ArgumentException"><paramref name="executables"/> is empty.</exception>
-  [Pure]
-  public static IAsyncExecutable<T1, T3> Race<T1, T2, T3>(this IAsyncExecutable<T1, T2> executable, params AsyncFunc<T2, T3>[] executables) {
-    ExceptionsHelper.ThrowIfNullOrEmpty(executables, nameof(executables));
-    return executables.Length > 1 ? executable.Race(executables.Select(AsyncExecutable.Create).ToArray()) : executable.Then(executables[0]);
-  }
-
-  /// <summary>
-  /// Races multiple asynchronous executables and returns the first successful result.
-  /// </summary>
-  /// <param name="executable">Executable that produces the shared race input.</param>
-  /// <param name="executables">Executables competing for the first successful result.</param>
-  /// <returns>Executable that returns the first successful result.</returns>
-  /// <exception cref="ArgumentNullException"><paramref name="executables"/> is <see langword="null"/>.</exception>
-  /// <exception cref="ArgumentException"><paramref name="executables"/> is empty.</exception>
-  [Pure]
-  public static IAsyncExecutable<T1, T3> RaceSuccess<T1, T2, T3>(this IAsyncExecutable<T1, T2> executable, params IAsyncExecutable<T2, T3>[] executables) {
-    ExceptionsHelper.ThrowIfNullOrEmpty(executables, nameof(executables));
-    return executables.Length > 1 ? executable.Then(new RaceSuccessExecutable<T2, T3>(executables)) : executable.Then(executables[0]);
-  }
-
-  /// <summary>
-  /// Races multiple asynchronous delegates and returns the first successful result.
-  /// </summary>
-  /// <param name="executable">Executable that produces the shared race input.</param>
-  /// <param name="executables">Delegates competing for the first successful result.</param>
-  /// <returns>Executable that returns the first successful result.</returns>
-  /// <exception cref="ArgumentNullException"><paramref name="executables"/> is <see langword="null"/>.</exception>
-  /// <exception cref="ArgumentException"><paramref name="executables"/> is empty.</exception>
-  [Pure]
-  public static IAsyncExecutable<T1, T3> RaceSuccess<T1, T2, T3>(this IAsyncExecutable<T1, T2> executable, params AsyncFunc<T2, T3>[] executables) {
-    ExceptionsHelper.ThrowIfNullOrEmpty(executables, nameof(executables));
-    return executables.Length > 1 ? executable.RaceSuccess(executables.Select(AsyncExecutable.Create).ToArray()) : executable.Then(executables[0]);
-  }
-
-  /// <summary>
   /// Adapts an asynchronous executable to different external input and output types by applying mappings around it.
   /// </summary>
   /// <param name="executable">Asynchronous executable being adapted.</param>
@@ -361,8 +375,7 @@ public static class AsyncExecutableExtensions {
   /// <exception cref="ArgumentNullException"><paramref name="init"/> is <see langword="null"/>.</exception>
   [Pure]
   public static IAsyncExecutable<T1, T2> WithContext<T1, T2>(this IAsyncExecutable<T1, T2> executable, ContextInit init) {
-    ExceptionsHelper.ThrowIfNull(init, nameof(init));
-    return executable.Apply(new AsyncContextOperator<T1, T2>(init));
+    return executable.Apply(AsyncExecutionOperator.Context<T1, T2>(init));
   }
 
   /// <summary>
@@ -388,18 +401,17 @@ public static class AsyncExecutableExtensions {
   /// <returns>Executable returning success or failure result.</returns>
   [Pure]
   public static IAsyncExecutable<T1, Result<T2>> WithResult<T1, T2>(this IAsyncExecutable<T1, T2> executable) {
-    return executable.Apply(new AsyncResultOperator<T1, T2>());
+    return executable.Apply(AsyncResultOperator<T1, T2>.Instance);
   }
 
   /// <summary>
-  /// Returns the same executable when result wrapping is already applied.
+  /// Wraps an executable already returning <see cref="Result{T}"/> so that thrown exceptions are also converted to <see cref="Result{T}"/>.
   /// </summary>
-  /// <param name="executable">Executable already returning <see cref="Result{T}" />.</param>
-  /// <returns>The original executable.</returns>
+  /// <param name="executable">Executable returning <see cref="Result{T}"/>.</param>
+  /// <returns>Executable that preserves returned results and converts thrown exceptions to failure results.</returns>
   [Pure]
   public static IAsyncExecutable<T1, Result<T2>> WithResult<T1, T2>(this IAsyncExecutable<T1, Result<T2>> executable) {
-    executable.ThrowIfNullReference();
-    return executable;
+    return executable.Apply(AsyncResultFlattenOperator<T1, T2>.Instance);
   }
 
   /// <summary>
@@ -419,9 +431,9 @@ public static class AsyncExecutableExtensions {
   /// <param name="executable">Executable to configure.</param>
   /// <returns>Provider for selecting exception types to suppress.</returns>
   [Pure]
-  public static SuppressExceptionAsyncOptionalOperatorProvider<T1, T2> SuppressException<T1, T2>(this IAsyncExecutable<T1, Optional<T2>> executable) {
+  public static SuppressExceptionAsyncFlattenOperatorProvider<T1, T2> SuppressException<T1, T2>(this IAsyncExecutable<T1, Optional<T2>> executable) {
     executable.ThrowIfNullReference();
-    return new SuppressExceptionAsyncOptionalOperatorProvider<T1, T2>(executable);
+    return new SuppressExceptionAsyncFlattenOperatorProvider<T1, T2>(executable);
   }
 
   /// <summary>
@@ -463,6 +475,19 @@ public static class AsyncExecutableExtensions {
   [Pure]
   public static IAsyncExecutable<T1, T2> Metrics<T1, T2>(this IAsyncExecutable<T1, T2> executable, IMetrics<T1, T2> metrics, string tag = null) {
     return executable.Apply(AsyncExecutionOperator.Metrics(metrics, tag));
+  }
+
+  /// <summary>
+  /// Maps exceptions of a specific type thrown by an asynchronous executable.
+  /// </summary>
+  /// <param name="executable">Source executable.</param>
+  /// <param name="map">Function that maps the caught exception to a new exception.</param>
+  /// <returns>Asynchronous executable with exception mapping behavior.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="map"/> is <see langword="null"/>.</exception>
+  [Pure]
+  public static IAsyncExecutable<T1, T2> MapException<T1, T2, TFrom>(this IAsyncExecutable<T1, T2> executable, Func<TFrom, Exception> map)
+    where TFrom : Exception {
+    return executable.Apply(AsyncExecutionOperator.MapException<T1, T2, TFrom>(map));
   }
 
   /// <summary>

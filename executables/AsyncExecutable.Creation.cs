@@ -7,19 +7,7 @@ namespace Executables;
 /// <summary>
 /// Factory methods for creating asynchronous executables.
 /// </summary>
-public static class AsyncExecutable {
-
-  /// <summary>
-  /// Returns an async executable that returns its input unchanged.
-  /// </summary>
-  public static IAsyncExecutable<T, T> Identity<T>() {
-    return AsyncIdentityExecutable<T>.Instance;
-  }
-
-  /// <inheritdoc cref="Identity{T}" />
-  public static IAsyncExecutable<Unit, Unit> Identity() {
-    return Identity<Unit>();
-  }
+public static partial class AsyncExecutable {
 
   /// <summary>
   /// Creates an async executable from an async function with four arguments.

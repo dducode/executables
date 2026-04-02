@@ -12,8 +12,7 @@ public class RaceExecutableTest {
   [InlineData(100, 10, 11, 1)]
   public async Task SimpleRace(int firstDelay, int secondDelay, int expected, int value) {
     IAsyncQuery<int, int> query = AsyncExecutable
-      .Identity<int>()
-      .Race(
+      .Race<int, int>(
         async (x, token) => {
           await Task.Delay(firstDelay, token);
           return x * 2;
@@ -32,8 +31,7 @@ public class RaceExecutableTest {
   [InlineData(50, 5)]
   public async Task ManyRace(int expected, int value) {
     IAsyncQuery<int, int> query = AsyncExecutable
-      .Identity<int>()
-      .Race(
+      .Race<int, int>(
         async (x, token) => {
           await Task.Delay(10, token);
           return x * 2;
@@ -61,8 +59,7 @@ public class RaceExecutableTest {
     var canceled = false;
 
     IAsyncQuery<int, int> query = AsyncExecutable
-      .Identity<int>()
-      .Race(
+      .Race<int, int>(
         async (x, token) => {
           try {
             await Task.Delay(100, token);
@@ -87,8 +84,7 @@ public class RaceExecutableTest {
   [Fact]
   public async Task ThrowExceptionWhenAnyFaulted() {
     IAsyncQuery<int, int> query = AsyncExecutable
-      .Identity<int>()
-      .Race(
+      .Race<int, int>(
         async (x, token) => {
           await Task.Delay(10, token);
           return x + 2;
@@ -108,8 +104,7 @@ public class RaceExecutableTest {
   [InlineData("woof", 50, 10)]
   public async Task CatEitherDogRace(string expectedSound, int catDelay, int dogDelay) {
     IAsyncQuery<Unit, string> query = AsyncExecutable
-      .Identity()
-      .Race(
+      .Race<Unit, Animal>(
         async ValueTask<Animal> (_, token) => {
           await Task.Delay(catDelay, token);
           return new Cat();

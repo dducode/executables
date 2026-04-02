@@ -53,10 +53,32 @@ public sealed class AsyncCommand<T> : AsyncHandleable<T, Unit>, IAsyncCommand<T>
     }
   }
 
-  public readonly struct Executor(IAsyncCommand<T> command) : IAsyncExecutor<T, bool> {
+  public readonly struct Executor(IAsyncCommand<T> command) : IAsyncExecutor<T, bool>, IEquatable<Executor> {
+
+    private readonly IAsyncCommand<T> _command = command;
 
     public ValueTask<bool> Execute(T input, CancellationToken token = default) {
-      return command.Execute(input, token);
+      return _command.Execute(input, token);
+    }
+
+    public bool Equals(Executor other) {
+      return _command.Equals(other._command);
+    }
+
+    public override bool Equals(object obj) {
+      return obj is Executor other && Equals(other);
+    }
+
+    public override int GetHashCode() {
+      return _command.GetHashCode();
+    }
+
+    public static bool operator ==(Executor left, Executor right) {
+      return left.Equals(right);
+    }
+
+    public static bool operator !=(Executor left, Executor right) {
+      return !(left == right);
     }
 
   }

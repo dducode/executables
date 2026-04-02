@@ -8,8 +8,9 @@ public class AsyncForkExecutableTest {
 
   [Fact]
   public async Task SimpleFork() {
-    IAsyncQuery<int, string> query = AsyncExecutable
+    IAsyncQuery<int, string> query = Executable
       .Identity<int>()
+      .ToAsyncExecutable()
       .Fork(
         async (x, token) => {
           await Task.Delay(10, token);
@@ -27,8 +28,9 @@ public class AsyncForkExecutableTest {
 
   [Fact]
   public async Task NestedFork() {
-    IAsyncExecutable<int, int> branchSum = AsyncExecutable
+    IAsyncExecutable<int, int> branchSum = Executable
       .Identity<int>()
+      .ToAsyncExecutable()
       .Fork(
         async (x, token) => {
           await Task.Delay(10, token);
@@ -40,8 +42,9 @@ public class AsyncForkExecutableTest {
         })
       .Merge((a, b, _) => new ValueTask<int>(a + b));
 
-    IAsyncExecutable<int, int> branchDiff = AsyncExecutable
+    IAsyncExecutable<int, int> branchDiff = Executable
       .Identity<int>()
+      .ToAsyncExecutable()
       .Fork(
         async (x, token) => {
           await Task.Delay(50, token);
@@ -53,8 +56,9 @@ public class AsyncForkExecutableTest {
         })
       .Merge((a, b, _) => new ValueTask<int>(a - b));
 
-    IAsyncQuery<int, string> query = AsyncExecutable
+    IAsyncQuery<int, string> query = Executable
       .Identity<int>()
+      .ToAsyncExecutable()
       .Fork(branchSum, branchDiff)
       .Merge((a, b, _) => new ValueTask<string>($"{a}:{b}"))
       .AsQuery();
@@ -64,8 +68,9 @@ public class AsyncForkExecutableTest {
 
   [Fact]
   public async Task ThrowExceptionWhenAnyFaulted() {
-    IAsyncQuery<int, string> firstFaulted = AsyncExecutable
+    IAsyncQuery<int, string> firstFaulted = Executable
       .Identity<int>()
+      .ToAsyncExecutable()
       .Fork(
         ValueTask<int> (_, _) => throw new InvalidOperationException(),
         async (x, token) => {
@@ -75,8 +80,9 @@ public class AsyncForkExecutableTest {
       .Merge((a, b, _) => new ValueTask<string>($"{a}:{b}"))
       .AsQuery();
 
-    IAsyncQuery<int, string> secondFaulted = AsyncExecutable
+    IAsyncQuery<int, string> secondFaulted = Executable
       .Identity<int>()
+      .ToAsyncExecutable()
       .Fork(
         async (x, token) => {
           await Task.Delay(10, token);
@@ -86,8 +92,9 @@ public class AsyncForkExecutableTest {
       .Merge((a, b, _) => new ValueTask<string>($"{a}:{b}"))
       .AsQuery();
 
-    IAsyncQuery<int, string> bothFaulted = AsyncExecutable
+    IAsyncQuery<int, string> bothFaulted = Executable
       .Identity<int>()
+      .ToAsyncExecutable()
       .Fork(
         ValueTask<int> (_, _) => throw new InvalidOperationException(),
         ValueTask<int> (_, _) => throw new InvalidOperationException())

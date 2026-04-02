@@ -1,4 +1,6 @@
-namespace Executables.Operations;
+using Executables.Operations;
+
+namespace Executables.Core.Operators;
 
 internal sealed class AsyncMap<T1, T2, T3, T4>(IExecutable<T1, T2> incoming, IExecutable<T3, T4> outgoing)
   : AsyncExecutionOperator<T1, T2, T3, T4> {

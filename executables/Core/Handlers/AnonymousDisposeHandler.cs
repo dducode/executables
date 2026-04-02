@@ -7,7 +7,7 @@ internal sealed class AnonymousDisposeHandler<T1, T2> : Handler<T1, T2> {
   private readonly Handler<T1, T2> _inner;
   private readonly Action _dispose;
 
-  public AnonymousDisposeHandler(Handler<T1, T2> inner, Action dispose) {
+  internal AnonymousDisposeHandler(Handler<T1, T2> inner, Action dispose) {
     _inner = inner;
     _dispose = dispose;
     RegisterHandle(_inner);

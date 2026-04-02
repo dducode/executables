@@ -1,4 +1,4 @@
-using Executables.Operations;
+using Executables.Core.Operators;
 using JetBrains.Annotations;
 
 namespace Executables.Tests;

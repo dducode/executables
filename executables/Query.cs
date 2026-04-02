@@ -38,10 +38,32 @@ public sealed class Query<T1, T2> : Handleable<T1, T2>, IQuery<T1, T2> {
     return GetExecutor();
   }
 
-  public readonly struct Executor(IQuery<T1, T2> query) : IExecutor<T1, T2> {
+  public readonly struct Executor(IQuery<T1, T2> query) : IExecutor<T1, T2>, IEquatable<Executor> {
+
+    private readonly IQuery<T1, T2> _query = query;
 
     public T2 Execute(T1 input) {
-      return query.Send(input);
+      return _query.Send(input);
+    }
+
+    public bool Equals(Executor other) {
+      return _query.Equals(other._query);
+    }
+
+    public override bool Equals(object obj) {
+      return obj is Executor other && Equals(other);
+    }
+
+    public override int GetHashCode() {
+      return _query.GetHashCode();
+    }
+
+    public static bool operator ==(Executor left, Executor right) {
+      return left.Equals(right);
+    }
+
+    public static bool operator !=(Executor left, Executor right) {
+      return !(left == right);
     }
 
   }

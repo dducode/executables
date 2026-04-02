@@ -40,10 +40,32 @@ public sealed class Command<T> : Handleable<T, Unit>, ICommand<T> {
     return GetExecutor();
   }
 
-  public readonly struct Executor(ICommand<T> command) : IExecutor<T, bool> {
+  public readonly struct Executor(ICommand<T> command) : IExecutor<T, bool>, IEquatable<Executor> {
+
+    private readonly ICommand<T> _command = command;
 
     public bool Execute(T input) {
-      return command.Execute(input);
+      return _command.Execute(input);
+    }
+
+    public bool Equals(Executor other) {
+      return _command.Equals(other._command);
+    }
+
+    public override bool Equals(object obj) {
+      return obj is Executor other && Equals(other);
+    }
+
+    public override int GetHashCode() {
+      return _command.GetHashCode();
+    }
+
+    public static bool operator ==(Executor left, Executor right) {
+      return left.Equals(right);
+    }
+
+    public static bool operator !=(Executor left, Executor right) {
+      return !(left == right);
     }
 
   }

@@ -6,7 +6,7 @@ namespace Executables;
 /// Represents either a successful value or a failure exception.
 /// </summary>
 /// <typeparam name="T">Successful value type.</typeparam>
-public readonly struct Result<T> {
+public readonly struct Result<T> : IEquatable<Result<T>> {
 
   /// <summary>
   /// Gets the successful value or throws when result is a failure.
@@ -83,7 +83,28 @@ public readonly struct Result<T> {
   /// </summary>
   /// <returns>String representation of current result.</returns>
   public override string ToString() {
-    return IsSuccess ? _value?.ToString() ?? "null" : Exception.ToString();
+    return IsSuccess ? _value?.ToString() ?? "Null" : Exception.ToString();
+  }
+
+  public bool Equals(Result<T> other) {
+    // Failure equality is based on the exact exception instance, not on exception type/message.
+    return EqualityComparer<T>.Default.Equals(_value, other._value) && EqualityComparer<Exception>.Default.Equals(Exception, other.Exception);
+  }
+
+  public override bool Equals(object obj) {
+    return obj is Result<T> other && Equals(other);
+  }
+
+  public override int GetHashCode() {
+    return IsSuccess ? EqualityComparer<T>.Default.GetHashCode(_value) : EqualityComparer<Exception>.Default.GetHashCode(Exception);
+  }
+
+  public static bool operator ==(Result<T> left, Result<T> right) {
+    return left.Equals(right);
+  }
+
+  public static bool operator !=(Result<T> left, Result<T> right) {
+    return !(left == right);
   }
 
 }

@@ -27,13 +27,13 @@ public static class ExecutableExtensions {
   /// </summary>
   /// <returns>Asynchronous proxy executable.</returns>
   [Pure]
-  public static IAsyncExecutable<T1, T2> ToAsyncExecutable<T1, T2>(this IExecutable<T1, T2> inner) {
-    inner.ThrowIfNullReference();
-    return new AsyncProxyExecutable<T1, T2>(inner);
+  public static IAsyncExecutable<T1, T2> ToAsyncExecutable<T1, T2>(this IExecutable<T1, T2> executable) {
+    executable.ThrowIfNullReference();
+    return new AsyncProxyExecutable<T1, T2>(executable);
   }
 
   /// <summary>
-  /// Composes two synchronous executables into a single pipeline.
+  /// Composes two executables into a single pipeline.
   /// </summary>
   /// <param name="first">Executable invoked first.</param>
   /// <param name="second">Executable invoked with the result of <paramref name="first"/>.</param>
@@ -43,13 +43,15 @@ public static class ExecutableExtensions {
   public static IExecutable<T1, T3> Then<T1, T2, T3>(this IExecutable<T1, T2> first, IExecutable<T2, T3> second) {
     first.ThrowIfNullReference();
     ExceptionsHelper.ThrowIfNull(second, nameof(second));
+#if !DEBUG
     if (first is IdentityExecutable<T1>)
       return (IExecutable<T1, T3>)second;
+#endif
     return new CompositeExecutable<T1, T2, T3>(first, second);
   }
 
   /// <summary>
-  /// Appends a synchronous delegate to an executable pipeline.
+  /// Appends a delegate to an executable pipeline.
   /// </summary>
   /// <param name="executable">Executable invoked first.</param>
   /// <param name="next">Delegate invoked with the result of <paramref name="executable"/>.</param>
@@ -57,6 +59,42 @@ public static class ExecutableExtensions {
   /// <exception cref="ArgumentNullException"><paramref name="next"/> is <see langword="null"/>.</exception>
   [Pure]
   public static IExecutable<T1, T3> Then<T1, T2, T3>(this IExecutable<T1, T2> executable, Func<T2, T3> next) {
+    return executable.Then(Executable.Create(next));
+  }
+
+  /// <summary>
+  /// Appends a parameterless delegate to an executable pipeline.
+  /// </summary>
+  /// <param name="executable">Executable invoked first.</param>
+  /// <param name="next">Parameterless delegate invoked after <paramref name="executable"/> completes.</param>
+  /// <returns>Composed executable.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="next"/> is <see langword="null"/>.</exception>
+  [Pure]
+  public static IExecutable<T1, T2> Then<T1, T2>(this IExecutable<T1, Unit> executable, Func<T2> next) {
+    return executable.Then(Executable.Create(next));
+  }
+
+  /// <summary>
+  /// Appends an action to an executable pipeline.
+  /// </summary>
+  /// <param name="executable">Executable invoked first.</param>
+  /// <param name="next">Action invoked with the result of <paramref name="executable"/>.</param>
+  /// <returns>Composed executable.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="next"/> is <see langword="null"/>.</exception>
+  [Pure]
+  public static IExecutable<T1, Unit> Then<T1, T2>(this IExecutable<T1, T2> executable, Action<T2> next) {
+    return executable.Then(Executable.Create(next));
+  }
+
+  /// <summary>
+  /// Appends a parameterless action to an executable pipeline.
+  /// </summary>
+  /// <param name="executable">Executable invoked first.</param>
+  /// <param name="next">Parameterless action invoked after <paramref name="executable"/> completes.</param>
+  /// <returns>Composed executable.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="next"/> is <see langword="null"/>.</exception>
+  [Pure]
+  public static IExecutable<T, Unit> Then<T>(this IExecutable<T, Unit> executable, Action next) {
     return executable.Then(Executable.Create(next));
   }
 
@@ -85,7 +123,43 @@ public static class ExecutableExtensions {
   }
 
   /// <summary>
-  /// Branches execution into two synchronous executables and returns both results.
+  /// Appends a parameterless asynchronous delegate to a synchronous executable.
+  /// </summary>
+  /// <param name="executable">Executable invoked first.</param>
+  /// <param name="next">Parameterless asynchronous delegate invoked after <paramref name="executable"/> completes.</param>
+  /// <returns>Composed asynchronous executable.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="next"/> is <see langword="null"/>.</exception>
+  [Pure]
+  public static IAsyncExecutable<T1, T2> Then<T1, T2>(this IExecutable<T1, Unit> executable, AsyncFunc<T2> next) {
+    return executable.ToAsyncExecutable().Then(AsyncExecutable.Create(next));
+  }
+
+  /// <summary>
+  /// Appends an asynchronous action to a synchronous executable.
+  /// </summary>
+  /// <param name="executable">Executable invoked first.</param>
+  /// <param name="next">Asynchronous action invoked with the result of <paramref name="executable"/>.</param>
+  /// <returns>Composed asynchronous executable.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="next"/> is <see langword="null"/>.</exception>
+  [Pure]
+  public static IAsyncExecutable<T1, Unit> Then<T1, T2>(this IExecutable<T1, T2> executable, AsyncAction<T2> next) {
+    return executable.ToAsyncExecutable().Then(AsyncExecutable.Create(next));
+  }
+
+  /// <summary>
+  /// Appends a parameterless asynchronous action to a synchronous executable.
+  /// </summary>
+  /// <param name="executable">Executable invoked first.</param>
+  /// <param name="next">Parameterless asynchronous action invoked after <paramref name="executable"/> completes.</param>
+  /// <returns>Composed asynchronous executable.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="next"/> is <see langword="null"/>.</exception>
+  [Pure]
+  public static IAsyncExecutable<T, Unit> Then<T>(this IExecutable<T, Unit> executable, AsyncAction next) {
+    return executable.ToAsyncExecutable().Then(AsyncExecutable.Create(next));
+  }
+
+  /// <summary>
+  /// Branches execution into two executables and returns both results.
   /// </summary>
   /// <param name="executable">Executable that produces the shared branch input.</param>
   /// <param name="firstBranch">First branch executable.</param>
@@ -309,8 +383,7 @@ public static class ExecutableExtensions {
   /// <exception cref="ArgumentNullException"><paramref name="init"/> is <see langword="null"/>.</exception>
   [Pure]
   public static IExecutable<T1, T2> WithContext<T1, T2>(this IExecutable<T1, T2> executable, ContextInit init) {
-    ExceptionsHelper.ThrowIfNull(init, nameof(init));
-    return executable.Apply(new ContextOperator<T1, T2>(init));
+    return executable.Apply(ExecutionOperator.Context<T1, T2>(init));
   }
 
   /// <summary>
@@ -336,18 +409,17 @@ public static class ExecutableExtensions {
   /// <returns>Executable returning success or failure result.</returns>
   [Pure]
   public static IExecutable<T1, Result<T2>> WithResult<T1, T2>(this IExecutable<T1, T2> executable) {
-    return executable.Apply(new ResultOperator<T1, T2>());
+    return executable.Apply(ResultOperator<T1, T2>.Instance);
   }
 
   /// <summary>
-  /// Returns the same executable when result wrapping is already applied.
+  /// Wraps an executable already returning <see cref="Result{T}"/> so that thrown exceptions are also converted to <see cref="Result{T}"/>.
   /// </summary>
-  /// <param name="executable">Executable already returning <see cref="Result{T}" />.</param>
-  /// <returns>The original executable.</returns>
+  /// <param name="executable">Executable returning <see cref="Result{T}"/>.</param>
+  /// <returns>Executable that preserves returned results and converts thrown exceptions to failure results.</returns>
   [Pure]
   public static IExecutable<T1, Result<T2>> WithResult<T1, T2>(this IExecutable<T1, Result<T2>> executable) {
-    executable.ThrowIfNullReference();
-    return executable;
+    return executable.Apply(ResultFlattenOperator<T1, T2>.Instance);
   }
 
   /// <summary>
@@ -362,14 +434,14 @@ public static class ExecutableExtensions {
   }
 
   /// <summary>
-  /// Starts configuration of exception suppression for executables returning <see cref="Optional{T}" />.
+  /// Starts configuration of exception suppression for executables returning <see cref="Optional{T}"/>.
   /// </summary>
   /// <param name="executable">Executable to configure.</param>
   /// <returns>Provider for selecting exception types to suppress.</returns>
   [Pure]
-  public static SuppressExceptionOptionalOperatorProvider<T1, T2> SuppressException<T1, T2>(this IExecutable<T1, Optional<T2>> executable) {
+  public static SuppressExceptionFlattenOperatorProvider<T1, T2> SuppressException<T1, T2>(this IExecutable<T1, Optional<T2>> executable) {
     executable.ThrowIfNullReference();
-    return new SuppressExceptionOptionalOperatorProvider<T1, T2>(executable);
+    return new SuppressExceptionFlattenOperatorProvider<T1, T2>(executable);
   }
 
   /// <summary>
@@ -423,6 +495,18 @@ public static class ExecutableExtensions {
   [Pure]
   public static IExecutable<T1, T2> Metrics<T1, T2>(this IExecutable<T1, T2> executable, IMetrics<T1, T2> metrics, string tag = null) {
     return executable.Apply(ExecutionOperator.Metrics(metrics, tag));
+  }
+
+  /// <summary>
+  /// Maps exceptions of a specific type thrown by an executable.
+  /// </summary>
+  /// <param name="executable">Source executable.</param>
+  /// <param name="map">Function that maps the caught exception to a new exception.</param>
+  /// <returns>Executable with exception mapping behavior.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="map"/> is <see langword="null"/>.</exception>
+  [Pure]
+  public static IExecutable<T1, T2> MapException<T1, T2, TFrom>(this IExecutable<T1, T2> executable, Func<TFrom, Exception> map) where TFrom : Exception {
+    return executable.Apply(ExecutionOperator.MapException<T1, T2, TFrom>(map));
   }
 
   /// <summary>
@@ -511,7 +595,19 @@ public static class ExecutableExtensions {
   /// <returns>Thread-pool scheduled executable.</returns>
   [Pure]
   public static IExecutable<T, Unit> OnThreadPool<T>(this IExecutable<T, Unit> executable) {
-    return executable.Apply(new ThreadPoolOperator<T>());
+    return executable.Apply(ThreadPoolOperator<T>.Instance);
+  }
+
+  /// <summary>
+  /// Throttles repeated executions within the specified interval.
+  /// </summary>
+  /// <param name="executable">Source executable.</param>
+  /// <param name="interval">Minimum interval between forwarded executions.</param>
+  /// <returns>Executable with throttling behavior.</returns>
+  /// <exception cref="ArgumentException"><paramref name="interval"/> is less than or equal to zero.</exception>
+  [Pure]
+  public static IExecutable<T, Unit> Throttle<T>(this IExecutable<T, Unit> executable, TimeSpan interval) {
+    return executable.Apply(ExecutionOperator.Throttle<T>(interval));
   }
 
 }

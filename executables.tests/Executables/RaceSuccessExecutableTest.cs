@@ -11,8 +11,7 @@ public class RaceSuccessExecutableTest {
   [InlineData(100, 10, 11, 1)]
   public async Task SimpleRace(int firstDelay, int secondDelay, int expected, int value) {
     IAsyncQuery<int, int> query = AsyncExecutable
-      .Identity<int>()
-      .RaceSuccess(
+      .RaceSuccess<int, int>(
         async (x, token) => {
           await Task.Delay(firstDelay, token);
           return x * 2;
@@ -31,8 +30,7 @@ public class RaceSuccessExecutableTest {
   [InlineData(50, 5)]
   public async Task ManyRace(int expected, int value) {
     IAsyncQuery<int, int> query = AsyncExecutable
-      .Identity<int>()
-      .RaceSuccess(
+      .RaceSuccess<int, int>(
         async (x, token) => {
           await Task.Delay(10, token);
           return x * 2;
@@ -58,8 +56,7 @@ public class RaceSuccessExecutableTest {
   [Fact]
   public async Task ReturnSuccessResultWhenAnyFaulted() {
     IAsyncQuery<int, int> query = AsyncExecutable
-      .Identity<int>()
-      .RaceSuccess(
+      .RaceSuccess<int, int>(
         (_, _) => throw new InvalidOperationException(),
         async (_, _) => throw new InvalidOperationException(),
         async (_, token) => {
@@ -82,8 +79,7 @@ public class RaceSuccessExecutableTest {
   [Fact]
   public async Task ThrowAggregateExceptionWhenAllFaulted() {
     IAsyncQuery<int, int> query = AsyncExecutable
-      .Identity<int>()
-      .RaceSuccess(
+      .RaceSuccess<int, int>(
         ValueTask<int> (_, _) => throw new InvalidOperationException(),
         async ValueTask<int> (_, _) => throw new OperationCanceledException()
       )
@@ -95,8 +91,7 @@ public class RaceSuccessExecutableTest {
   [Fact]
   public async Task ThrowAggregateExceptionWhenAllFaultedAsync() {
     IAsyncQuery<int, int> query = AsyncExecutable
-      .Identity<int>()
-      .RaceSuccess(
+      .RaceSuccess<int, int>(
         async ValueTask<int> (_, token) => {
           await Task.Delay(10, token);
           throw new InvalidOperationException();
@@ -115,8 +110,7 @@ public class RaceSuccessExecutableTest {
     var cts = new CancellationTokenSource();
 
     IAsyncQuery<int, int> query = AsyncExecutable
-      .Identity<int>()
-      .RaceSuccess(
+      .RaceSuccess<int, int>(
         ValueTask<int> (_, _) => throw new OperationCanceledException(),
         async ValueTask<int> (_, _) => throw new OperationCanceledException(),
         ValueTask<int> (_, token) => {
@@ -135,8 +129,7 @@ public class RaceSuccessExecutableTest {
     var canceledCount = 0;
 
     IAsyncQuery<int, int> query = AsyncExecutable
-      .Identity<int>()
-      .RaceSuccess(
+      .RaceSuccess<int, int>(
         async (x, token) => {
           try {
             await Task.Delay(50, token);

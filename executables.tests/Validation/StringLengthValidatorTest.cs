@@ -12,7 +12,7 @@ public class StringLengthValidatorTest {
   [InlineData("", false)]
   [InlineData(null, false)]
   [InlineData("test", true)]
-  public void NotEmptyStringTest(string? value, bool expected) {
+  public void NotEmptyStringTest(string value, bool expected) {
     Validator<string> validator = NotEmptyString;
     Assert.Equal(expected, validator.IsValid(value!));
   }

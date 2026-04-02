@@ -1,5 +1,6 @@
 using System.Diagnostics.Contracts;
 using Executables.Analytics;
+using Executables.Context;
 using Executables.Core.Operators;
 using Executables.Internal;
 
@@ -47,6 +48,42 @@ public static class ExecutionOperator {
     ExceptionsHelper.ThrowIfNull(incoming, nameof(incoming));
     ExceptionsHelper.ThrowIfNull(outgoing, nameof(outgoing));
     return new Map<T1, T2, T3, T4>(incoming, outgoing);
+  }
+
+  /// <summary>
+  /// Creates a context operator that runs execution inside a newly initialized context.
+  /// </summary>
+  /// <param name="init">Context initialization logic.</param>
+  /// <returns>Context execution operator.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="init"/> is <see langword="null"/>.</exception>
+  [Pure]
+  public static BehaviorOperator<T1, T2> Context<T1, T2>(ContextInit init) {
+    ExceptionsHelper.ThrowIfNull(init, nameof(init));
+    return new ContextOperator<T1, T2>(init);
+  }
+
+  /// <summary>
+  /// Creates an operator that maps exceptions of a specific type.
+  /// </summary>
+  /// <param name="map">Function that maps the caught exception to a new exception.</param>
+  /// <returns>Exception-mapping operator.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="map"/> is <see langword="null"/>.</exception>
+  [Pure]
+  public static BehaviorOperator<T1, T2> MapException<T1, T2, TFrom>(Func<TFrom, Exception> map) where TFrom : Exception {
+    ExceptionsHelper.ThrowIfNull(map, nameof(map));
+    return new ExceptionMap<T1, T2, TFrom>(map);
+  }
+
+  /// <summary>
+  /// Creates an operator that throttles repeated executions within the specified interval.
+  /// </summary>
+  /// <param name="interval">Minimum interval between forwarded executions.</param>
+  /// <returns>Throttle operator.</returns>
+  /// <exception cref="ArgumentException"><paramref name="interval"/> is less than or equal to zero.</exception>
+  [Pure]
+  public static BehaviorOperator<T, Unit> Throttle<T>(TimeSpan interval) {
+    ExceptionsHelper.ThrowIfLessOrEqual(interval, TimeSpan.Zero, nameof(interval));
+    return new ThrottleOperator<T>(interval);
   }
 
   /// <summary>

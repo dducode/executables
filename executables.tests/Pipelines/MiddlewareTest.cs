@@ -7,6 +7,7 @@ using Xunit.Abstractions;
 namespace Executables.Tests.Pipelines;
 
 [TestSubject(typeof(Middleware<,,,>))]
+[TestSubject(typeof(AsyncMiddleware<,,,>))]
 public class MiddlewareTest(ITestOutputHelper output) {
 
   [Fact]
@@ -17,7 +18,7 @@ public class MiddlewareTest(ITestOutputHelper output) {
     var secondEnd = false;
     var thirdEnd = false;
 
-    IQuery<Unit, Unit> query = Pipeline
+    IQuery<Unit, Unit> query = Executable
       .Use(next => {
         output.WriteLine("Start first");
         firstStarted = true;
@@ -47,7 +48,7 @@ public class MiddlewareTest(ITestOutputHelper output) {
   [InlineData("00:05:00", "00:05:05", 5)]
   [InlineData("00:00:10", "00:00:00", -10)]
   public void PipelineWithDifferentTypesTest(string input, string expected, int addedSeconds) {
-    IQuery<string, string> query = Pipeline<string, string>
+    IQuery<string, string> query = Executable
       .Use((string time, Func<TimeSpan, TimeSpan> next) => {
         TimeSpan timeSpan = TimeSpan.Parse(time);
         TimeSpan result = next.Invoke(timeSpan);
@@ -66,8 +67,8 @@ public class MiddlewareTest(ITestOutputHelper output) {
 
   [Fact]
   public void NeverInvokeNextMiddleware() {
-    IQuery<int, int> query = Pipeline<int, int>
-      .Use((x, _) => x * 2)
+    IQuery<int, int> query = Executable
+      .Use((int x, Action _) => x * 2)
       .End(() => Assert.Fail())
       .AsQuery();
 
@@ -78,7 +79,7 @@ public class MiddlewareTest(ITestOutputHelper output) {
   [InlineData("00:05:00", "00:05:05", 5)]
   [InlineData("00:00:10", "00:00:00", -10)]
   public void InvokePipelineWithContext(string input, string expected, int addedSeconds) {
-    IQuery<string, string> query = Pipeline<string, string>
+    IQuery<string, string> query = Executable
       .Use((string time, Func<TimeSpan, TimeSpan> next) => {
         TimeSpan timeSpan = TimeSpan.Parse(time);
         TimeSpan result = next.Invoke(timeSpan);
@@ -95,7 +96,7 @@ public class MiddlewareTest(ITestOutputHelper output) {
   [InlineData("00:05:00", "00:05:05", 5)]
   [InlineData("00:00:10", "00:00:00", -10)]
   public async Task AsyncPipelineTest(string input, string expected, int addedSeconds) {
-    IAsyncQuery<string, string> query = AsyncPipeline<string, string>
+    IAsyncQuery<string, string> query = AsyncExecutable
       .Use(async (string time, AsyncFunc<TimeSpan, TimeSpan> next, CancellationToken token) => {
         TimeSpan timeSpan = TimeSpan.Parse(time);
         await Task.Delay(50, token);
@@ -118,8 +119,8 @@ public class MiddlewareTest(ITestOutputHelper output) {
   public async Task AsyncPipelineCancel() {
     var cts = new CancellationTokenSource();
 
-    IAsyncQuery<int, int> query = AsyncPipeline<int, int>
-      .Use(async (num, next, token) => {
+    IAsyncQuery<int, int> query = AsyncExecutable
+      .Use(async (int num, AsyncAction next, CancellationToken token) => {
         await Task.Delay(50, token);
         await cts.CancelAsync();
         var ex = await Assert.ThrowsAsync<TaskCanceledException>(async () => await next.Invoke(token));

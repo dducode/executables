@@ -7,7 +7,7 @@ namespace Executables;
 /// <summary>
 /// Factory methods for creating executables.
 /// </summary>
-public static class Executable {
+public static partial class Executable {
 
   /// <summary>
   /// Returns an executable that returns its input unchanged.

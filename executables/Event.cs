@@ -74,11 +74,33 @@ public sealed class Event<T> : Handleable<Publishing<T>, Unit>, IEvent<T> {
       _subscribers.Remove(subscriber);
   }
 
-  public readonly struct Executor(IEvent<T> e) : IExecutor<T, Unit> {
+  public readonly struct Executor(IEvent<T> e) : IExecutor<T, Unit>, IEquatable<Executor> {
+
+    private readonly IEvent<T> _event = e;
 
     public Unit Execute(T input) {
-      e.Publish(input);
+      _event.Publish(input);
       return default;
+    }
+
+    public bool Equals(Executor other) {
+      return _event.Equals(other._event);
+    }
+
+    public override bool Equals(object obj) {
+      return obj is Executor other && Equals(other);
+    }
+
+    public override int GetHashCode() {
+      return _event.GetHashCode();
+    }
+
+    public static bool operator ==(Executor left, Executor right) {
+      return left.Equals(right);
+    }
+
+    public static bool operator !=(Executor left, Executor right) {
+      return !(left == right);
     }
 
   }

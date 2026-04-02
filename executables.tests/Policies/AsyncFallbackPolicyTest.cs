@@ -10,8 +10,9 @@ public class AsyncFallbackPolicyTest {
 
   [Fact]
   public async Task RegularExecution() {
-    IAsyncQuery<Unit, Unit> query = AsyncExecutable
+    IAsyncQuery<Unit, Unit> query = Executable
       .Identity()
+      .ToAsyncExecutable()
       .WithPolicy(builder => builder.Fallback<InvalidOperationException>((_, _) => default))
       .AsQuery();
 
@@ -21,8 +22,9 @@ public class AsyncFallbackPolicyTest {
   [Fact]
   public async Task Cancel() {
     var cts = new CancellationTokenSource();
-    IAsyncQuery<Unit, Unit> query = AsyncExecutable
+    IAsyncQuery<Unit, Unit> query = Executable
       .Identity()
+      .ToAsyncExecutable()
       .WithPolicy(builder => builder.Fallback<InvalidOperationException>((_, _) => default))
       .AsQuery();
 

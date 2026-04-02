@@ -1,5 +1,6 @@
 using System.Diagnostics.Contracts;
 using Executables.Analytics;
+using Executables.Context;
 using Executables.Core.Operators;
 using Executables.Internal;
 
@@ -47,6 +48,30 @@ public static class AsyncExecutionOperator {
     ExceptionsHelper.ThrowIfNull(incoming, nameof(incoming));
     ExceptionsHelper.ThrowIfNull(outgoing, nameof(outgoing));
     return new AsyncMap<T1, T2, T3, T4>(incoming, outgoing);
+  }
+
+  /// <summary>
+  /// Creates an asynchronous context operator that runs execution inside a newly initialized context.
+  /// </summary>
+  /// <param name="init">Context initialization logic.</param>
+  /// <returns>Asynchronous context execution operator.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="init"/> is <see langword="null"/>.</exception>
+  [Pure]
+  public static AsyncBehaviorOperator<T1, T2> Context<T1, T2>(ContextInit init) {
+    ExceptionsHelper.ThrowIfNull(init, nameof(init));
+    return new AsyncContextOperator<T1, T2>(init);
+  }
+
+  /// <summary>
+  /// Creates an asynchronous operator that maps exceptions of a specific type.
+  /// </summary>
+  /// <param name="map">Function that maps the caught exception to a new exception.</param>
+  /// <returns>Asynchronous exception-mapping operator.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="map"/> is <see langword="null"/>.</exception>
+  [Pure]
+  public static AsyncBehaviorOperator<T1, T2> MapException<T1, T2, TFrom>(Func<TFrom, Exception> map) where TFrom : Exception {
+    ExceptionsHelper.ThrowIfNull(map, nameof(map));
+    return new AsyncExceptionMap<T1, T2, TFrom>(map);
   }
 
   /// <summary>

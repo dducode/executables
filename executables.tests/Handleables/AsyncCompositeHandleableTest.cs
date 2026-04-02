@@ -23,7 +23,7 @@ public class AsyncCompositeHandleableTest {
       secondCalled = true;
       return handler;
     });
-    Assert.Throws<InvalidOperationException>(() => first.Merge(second).Handle(AsyncExecutable.Identity().AsHandler()));
+    Assert.Throws<InvalidOperationException>(() => first.Merge(second).Handle(Executable.Identity().ToAsyncExecutable().AsHandler()));
     Assert.False(secondCalled);
   }
 
@@ -32,7 +32,7 @@ public class AsyncCompositeHandleableTest {
     var firstDisposed = false;
     IAsyncHandleable<Unit, Unit> first = AsyncHandleable.Create((AsyncHandler<Unit, Unit> _) => Disposable.Create(() => firstDisposed = true));
     IAsyncHandleable<Unit, Unit> second = AsyncHandleable.Create((AsyncHandler<Unit, Unit> _) => throw new InvalidOperationException());
-    Assert.Throws<InvalidOperationException>(() => first.Merge(second).Handle(AsyncExecutable.Identity().AsHandler()));
+    Assert.Throws<InvalidOperationException>(() => first.Merge(second).Handle(Executable.Identity().ToAsyncExecutable().AsHandler()));
     Assert.True(firstDisposed);
   }
 

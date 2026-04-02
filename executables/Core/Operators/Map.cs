@@ -1,4 +1,6 @@
-namespace Executables.Operations;
+using Executables.Operations;
+
+namespace Executables.Core.Operators;
 
 internal sealed class Map<T1, T2, T3, T4>(IExecutable<T1, T2> incoming, IExecutable<T3, T4> outgoing) : ExecutionOperator<T1, T2, T3, T4> {
 
