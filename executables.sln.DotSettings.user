@@ -178,10 +178,5 @@
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=eb53d67b_002D0b0f_002D42e9_002D8e78_002Df87e6b7be184/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="PassNullProvider" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
-  &lt;TestAncestor&gt;&#xD;
-    &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Executables.Tests.Branches.BranchTest.PartialNestedBranch&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Executables.Tests.Executables.RaceExecutableTest.CatEitherDogRace&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Executables.Tests.Operators.ThrottleOperatorTest.ThrottleQuery&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Executables.Tests.Executables.CompositeExecutableTest.VisualizeGraph&lt;/TestId&gt;&#xD;
-  &lt;/TestAncestor&gt;&#xD;
+  &lt;Project Location="C:\.NETProjects\executables\executables.tests" Presentation="&amp;lt;executables.tests&amp;gt;" /&gt;&#xD;
 &lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>

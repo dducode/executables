@@ -6,14 +6,15 @@ Policies are a specialized operator family focused on execution rules rather tha
 
 `WithPolicy(...)` is the main entry point for policy composition.
 
+The builder supports both block-style configuration and fluent chaining. Fluent style is usually more compact for
+straight-line policy pipelines.
+
 ```csharp
 IExecutable<string, int> parse =
   Executable.Create((string text) => int.Parse(text))
-    .WithPolicy(policy =>
-    {
-      policy.ValidateInput(text => !string.IsNullOrWhiteSpace(text), "Value is required");
-      policy.Fallback<FormatException>((text, ex) => 0);
-    });
+    .WithPolicy(policy => policy
+      .ValidateInput(text => !string.IsNullOrWhiteSpace(text), "Value is required")
+      .Fallback<FormatException>((text, ex) => 0));
 ```
 
 ## Validation
@@ -23,11 +24,9 @@ Validation policies belong around executable boundaries, not inside handlers.
 ```csharp
 IExecutable<string, int> parseLength =
   Executable.Create((string text) => text.Trim().Length)
-    .WithPolicy(policy =>
-    {
-      policy.ValidateInput(text => text.Length <= 100, "Input is too long");
-      policy.ValidateOutput(length => length >= 0, "Length must be non-negative");
-    });
+    .WithPolicy(policy => policy
+      .ValidateInput(text => text.Length <= 100, "Input is too long")
+      .ValidateOutput(length => length >= 0, "Length must be non-negative"));
 ```
 
 ## Guards
@@ -53,13 +52,11 @@ IAsyncExecutable<int, string> load =
     await Task.Delay(50, token);
     return $"User-{id}";
   })
-  .WithPolicy(policy =>
-  {
-    policy.Timeout(TimeSpan.FromSeconds(2));
-    policy.Retry<TimeoutException>(
-      RetryRule.ExponentialBackoff<TimeoutException>(TimeSpan.FromMilliseconds(100), maxAttempts: 3));
-    policy.Fallback<TimeoutException>((id, ex) => "Unavailable");
-  });
+  .WithPolicy(policy => policy
+    .Timeout(TimeSpan.FromSeconds(2))
+    .Retry<TimeoutException>(
+      RetryRule.ExponentialBackoff<TimeoutException>(TimeSpan.FromMilliseconds(100), maxAttempts: 3))
+    .Fallback<TimeoutException>((id, ex) => $"User-{id} is temporarily unavailable"));
 ```
 
 ## Reentrancy Control

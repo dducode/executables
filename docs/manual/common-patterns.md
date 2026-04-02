@@ -25,11 +25,9 @@ Handler<int, bool> handler = executable.AsHandler();
 ```csharp
 IExecutable<string, Result<int>> parse =
   Executable.Create((string text) => int.Parse(text))
-    .WithPolicy(policy =>
-    {
-      policy.ValidateInput(text => !string.IsNullOrWhiteSpace(text), "Value is required");
-      policy.Fallback<FormatException>((text, ex) => 0);
-    })
+    .WithPolicy(policy => policy
+      .ValidateInput(text => !string.IsNullOrWhiteSpace(text), "Value is required")
+      .Fallback<FormatException>((text, ex) => 0))
     .WithResult();
 ```
 
