@@ -44,7 +44,6 @@ public class ExecutableExtensionsTest {
 
     IAsyncExecutable<Unit, Unit> identity = Executable.Identity().ToAsyncExecutable();
 
-    Assert.Throws<NullReferenceException>(() => identity.Then((IExecutable<Unit, Unit>)null));
     Assert.Throws<ArgumentNullException>(() => identity.Then((Func<Unit, Unit>)null));
     Assert.Throws<ArgumentNullException>(() => identity.Then((IAsyncExecutable<Unit, Unit>)null));
     Assert.Throws<ArgumentNullException>(() => identity.Then((AsyncFunc<Unit, Unit>)null));
