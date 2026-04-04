@@ -20,10 +20,10 @@ Operators are attached with `Apply(...)`.
 
 ```csharp
 IExecutable<string, string> pipeline =
-  Executable.Create((int value) => value * 2)
-    .Apply(ExecutionOperator.Map(
-      Executable.Create((string text) => int.Parse(text)),
-      Executable.Create((int value) => $"Value: {value}")));
+  Executable.Create((string text) => int.Parse(text))
+    .Apply(ExecutionOperator.MapException<int, int, FormatException>(
+      ex => new InvalidOperationException("Invalid number", ex)))
+    .Then(value => $"Value: {value}");
 ```
 
 ## Built-in High-Level Operators
@@ -49,9 +49,10 @@ IExecutable<string, Optional<int>> parse =
 For lower-level control, use:
 
 - `ExecutionOperator.Create(...)`
-- `ExecutionOperator.Map(...)`
 - `ExecutionOperator.Cache(...)`
 - `ExecutionOperator.Metrics(...)`
+- `ExecutionOperator.Context(...)`
+- `ExecutionOperator.MapException(...)`
 - async counterparts from `AsyncExecutionOperator`
 
 ```csharp

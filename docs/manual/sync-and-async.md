@@ -24,6 +24,7 @@ Mixed sync/async chains are supported directly:
 
 - sync executable followed by async executable,
 - async executable followed by sync executable,
+- `Then(...)` and `Compose(...)` across sync/async boundaries,
 - mixed query composition with `Connect(...)`,
 - mixed command composition with `Compose(...)`.
 
@@ -36,6 +37,18 @@ IAsyncExecutable<string, string> mixed =
     await Task.Delay(1, token);
     return $"Value: {x}";
   });
+```
+
+```csharp
+IAsyncExecutable<int, string> formatAsync =
+  AsyncExecutable.Create(async (int value, CancellationToken token) =>
+  {
+    await Task.Delay(1, token);
+    return $"Value: {value}";
+  });
+
+IAsyncExecutable<string, string> mixedReverse =
+  formatAsync.Compose((string text) => int.Parse(text));
 ```
 
 ## Choosing the Right Style

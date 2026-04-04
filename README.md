@@ -32,18 +32,20 @@ Result<int> result = parseLength.Send("  demo  ");
 
 ## Core Ideas
 
-The library is easiest to understand as three layers:
+The library is easiest to understand as a few related conceptual areas:
 
-1. `IExecutable<TIn, TOut>` and `IExecutor<TIn, TOut>` as the core execution model.
-2. `IQuery`, `ICommand`, `IEvent`, `IHandleable`, and handlers as interaction contracts.
-3. operators and policies as reusable execution decorators.
+1. `IExecutable<TIn, TOut>` and `IExecutor<TIn, TOut>` as the executable core.
+2. `IQuery` and `ICommand` as specialized executable contracts.
+3. `IEvent` and subscribers as the publication/subscription model.
+4. `IHandleable` and handlers as optional attachment-oriented abstractions.
+5. operators and policies as reusable execution decorators.
 
 Typical flow:
 
 1. create an executable from a delegate,
 2. compose it with other steps,
 3. adapt or decorate it,
-4. expose it as a query, command, event, or handler.
+4. expose it as a query, command, event-driven, or attachment-based API.
 
 ## When to Use It
 
@@ -65,9 +67,6 @@ composition or reusable execution rules.
 
 - [Manual](docs/manual/introduction.md)
 - [Getting Started](docs/manual/getting-started.md)
-- [DocFX configuration](docs/docfx.json)
-
-API reference is generated from XML documentation in the codebase and published together with the DocFX site.
 
 ## Installation
 

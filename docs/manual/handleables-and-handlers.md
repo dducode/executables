@@ -1,5 +1,9 @@
 # Handleables and Handlers
 
+This section covers the optional attachment-oriented part of the interaction layer.
+If your main focus is executable composition, you can read it later and return when you need explicit attachment and
+lifecycle control.
+
 ## Missing Handler Behavior
 
 Base interaction types do not all behave the same way when no handler is attached:

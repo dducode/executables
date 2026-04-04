@@ -1,36 +1,58 @@
 # Core Concepts
 
-## Three Layers
+## Conceptual Areas
 
-The library can be understood as three connected layers:
+`Executables` is easiest to understand as a small set of related conceptual areas rather than as one flat API surface.
 
-1. executables and executors as the core execution model,
-2. handleables and interaction contracts on top of that model,
-3. operators and policies that decorate execution.
-
-## Executables and Executors
+## Executable Core
 
 `IExecutable<TIn, TOut>` represents behavior as a reusable typed value. `IExecutor<TIn, TOut>` is the object that
 actually performs `Execute(...)`.
 
-This split matters because most composition happens at the executable level, while execution happens at the executor
-level.
+The asynchronous counterparts follow the same idea:
 
-## Handleables
+- `IAsyncExecutable<TIn, TOut>`
+- `IAsyncExecutor<TIn, TOut>`
 
-The interaction layer provides:
+This is the foundation for reusable, strongly typed application behavior. Most composition starts here through
+operators such as `Then(...)`, `Compose(...)`, `Fork(...)`, and related decorators.
+
+## Executable Contracts
+
+On top of the executable core, the library provides specialized execution contracts for request/response and
+action-oriented flows:
 
 - `ICommand<T>` / `IAsyncCommand<T>`,
 - `IQuery<TIn, TOut>` / `IAsyncQuery<TIn, TOut>`,
 - `IEvent<T>`.
 
-Under the hood, base implementations are handleables. The core attachment model is:
+`IQuery` and `ICommand` stay especially close to the executable model. In practice, they are executable-shaped APIs
+with more specific intent and usage.
+
+## Events and Subscribers
+
+Events have a slightly different role:
+
+- `IEvent<T>`.
+- `Event<T>`
+- `ISubscriber<T>`
+- event publishers and subscription APIs
+
+Unlike queries and commands, events are not just adapted from executables through a simple `As...` conversion. They
+belong to a publication/subscription model with their own runtime semantics.
+
+At the same time, this area still overlaps with the executable model, because executable logic can be adapted into
+subscribers and participate in event-driven flows.
+
+## Attachment Model
+
+The library also provides optional attachment-oriented abstractions:
 
 - `IHandleable<TIn, TOut, THandler>`,
 - `IAsyncHandleable<TIn, TOut, THandler>`.
 
-This means the contract and the runtime behavior can be separated: the interaction object owns the API shape, while a
-handler provides the actual execution logic.
+This part of the model is useful when API shape and attached behavior should be managed separately, or when behavior
+needs to be attached, shared, replaced, or merged explicitly.
 
 ## Operators and Policies
 
