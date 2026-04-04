@@ -17,25 +17,57 @@ public static class CommandsExtensions {
   }
 
   /// <summary>
-  /// Composes two commands into a single command.
+  /// Prepends a command to the current command.
   /// </summary>
-  /// <returns>Composite command that executes both commands.</returns>
-  /// <exception cref="ArgumentNullException"><paramref name="other"/> is <see langword="null"/>.</exception>
+  /// <param name="first">Command executed only if <paramref name="second"/> succeeds.</param>
+  /// <param name="second">Command executed first.</param>
+  /// <returns>Command that returns <see langword="true"/> only when both commands succeed.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="second"/> is <see langword="null"/>.</exception>
   [Pure]
-  public static ICommand<T> Compose<T>(this ICommand<T> command, ICommand<T> other) {
-    command.ThrowIfNullReference();
-    ExceptionsHelper.ThrowIfNull(other, nameof(other));
-    return new CompositeCommand<T>(command, other);
+  public static ICommand<T> Prepend<T>(this ICommand<T> first, ICommand<T> second) {
+    first.ThrowIfNullReference();
+    ExceptionsHelper.ThrowIfNull(second, nameof(second));
+    return new CompositeCommand<T>(first, second);
   }
 
   /// <summary>
-  /// Composes a synchronous command with an asynchronous command.
+  /// Appends a command to the current command.
   /// </summary>
-  /// <returns>Asynchronous composite command.</returns>
-  /// <exception cref="ArgumentNullException"><paramref name="other"/> is <see langword="null"/>.</exception>
+  /// <param name="first">Command executed first.</param>
+  /// <param name="second">Command executed only if <paramref name="first"/> succeeds.</param>
+  /// <returns>Command that returns <see langword="true"/> only when both commands succeed.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="second"/> is <see langword="null"/>.</exception>
   [Pure]
-  public static IAsyncCommand<T> Compose<T>(this ICommand<T> command, IAsyncCommand<T> other) {
-    return command.ToAsyncCommand().Compose(other);
+  public static ICommand<T> Append<T>(this ICommand<T> first, ICommand<T> second) {
+    first.ThrowIfNullReference();
+    ExceptionsHelper.ThrowIfNull(second, nameof(second));
+    return second.Prepend(first);
+  }
+
+  /// <summary>
+  /// Prepends an asynchronous command to the current synchronous command.
+  /// </summary>
+  /// <param name="first">Synchronous command executed only if <paramref name="second"/> succeeds.</param>
+  /// <param name="second">Asynchronous command executed first.</param>
+  /// <returns>Asynchronous command that returns <see langword="true"/> only when both commands succeed.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="second"/> is <see langword="null"/>.</exception>
+  [Pure]
+  public static IAsyncCommand<T> Prepend<T>(this ICommand<T> first, IAsyncCommand<T> second) {
+    return first.ToAsyncCommand().Prepend(second);
+  }
+
+  /// <summary>
+  /// Appends an asynchronous command to the current synchronous command.
+  /// </summary>
+  /// <param name="first">Command executed first.</param>
+  /// <param name="second">Asynchronous command executed only if <paramref name="first"/> succeeds.</param>
+  /// <returns>Asynchronous command that returns <see langword="true"/> only when both commands succeed.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="second"/> is <see langword="null"/>.</exception>
+  [Pure]
+  public static IAsyncCommand<T> Append<T>(this ICommand<T> first, IAsyncCommand<T> second) {
+    first.ThrowIfNullReference();
+    ExceptionsHelper.ThrowIfNull(second, nameof(second));
+    return second.Prepend(first.ToAsyncCommand());
   }
 
   /// <summary>

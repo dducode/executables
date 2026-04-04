@@ -1,4 +1,3 @@
-using AutoFixture;
 using Executables.Core.Executables;
 using JetBrains.Annotations;
 
@@ -8,60 +7,86 @@ namespace Executables.Tests.Executables;
 public class CompositeExecutableTest {
 
   [Fact]
-  public void GetPlayerMoneyFromStorageTest() {
-    var fixture = new Fixture();
-    var firstPlayerMoney = fixture.Create<decimal>();
-    var secondPlayerMoney = fixture.Create<decimal>();
+  public void CompositionLaw() {
+    IExecutable<int, int> f = Executable.Create((int x) => x * x);
+    IExecutable<string, int> g = Executable.Create((string s) => int.Parse(s));
 
-    var storage = new PlayerStorage();
-    storage.Add(new Player {
-      id = 0,
-      data = new PlayerData {
-        money = firstPlayerMoney
-      }
-    });
-    storage.Add(new Player {
-      id = 1,
-      data = new PlayerData {
-        money = secondPlayerMoney
-      }
-    });
+    IExecutor<string, int> first = f.Compose(g).GetExecutor();
+    IExecutor<string, int> second = g.Then(f).GetExecutor();
 
-    IQuery<int, decimal> query = Executable
-      .Create((int id) => storage.Get(id))
-      .Then(player => player.data)
-      .Then(data => data.money)
-      .AsQuery();
-
-    Assert.Equal(firstPlayerMoney, query.Send(0));
-    Assert.Equal(secondPlayerMoney, query.Send(1));
+    for (int i = -100; i < 100; i++) {
+      var input = i.ToString();
+      Assert.Equal(first.Execute(input), second.Execute(input));
+    }
   }
 
-}
+  [Fact]
+  public void AssociativeLaw() {
+    IExecutable<string, int> a = Executable.Create((string s) => int.Parse(s));
+    IExecutable<int, TimeSpan> b = Executable.Create((int x) => TimeSpan.FromSeconds(x));
+    IExecutable<TimeSpan, string> c = Executable.Create((TimeSpan time) => time.ToString());
 
-file class PlayerStorage {
+    IExecutor<string, string> directLeft = a.Then(b).Then(c).GetExecutor();
+    IExecutor<string, string> directRight = a.Then(b.Then(c)).GetExecutor();
+    IExecutor<string, string> reverseLeft = c.Compose(b).Compose(a).GetExecutor();
+    IExecutor<string, string> reverseRight = c.Compose(b.Compose(a)).GetExecutor();
 
-  private readonly Dictionary<int, Player> _storage = new();
-
-  public void Add(Player player) {
-    _storage.Add(player.id, player);
+    for (int i = -100; i < 100; i++) {
+      var input = i.ToString();
+      string expected = directLeft.Execute(input);
+      Assert.Equal(expected, directRight.Execute(input));
+      Assert.Equal(expected, reverseLeft.Execute(input));
+      Assert.Equal(expected, reverseRight.Execute(input));
+    }
   }
 
-  public Player Get(int id) {
-    return _storage[id];
+  [Fact]
+  public void DistributiveLaw() {
+    IExecutable<int, int> f = Executable.Create((int x) => x + x);
+    IExecutable<int, int> g = Executable.Create((int x) => x * x);
+    IExecutable<string, int> h = Executable.Create((string s) => int.Parse(s));
+
+    IExecutor<string, string> first = Executable.Fork(f, g).Compose(h)
+      .Merge((x, y) => $"{x}:{y}")
+      .GetExecutor();
+
+    IExecutor<string, string> second = Executable.Fork(f.Compose(h), g.Compose(h))
+      .Merge((x, y) => $"{x}:{y}")
+      .GetExecutor();
+
+    for (int i = -100; i < 100; i++) {
+      var input = i.ToString();
+      Assert.Equal(first.Execute(input), second.Execute(input));
+    }
   }
 
-}
+  [Fact]
+  public void IdentityLaw() {
+    IExecutable<int, int> id = Executable.Identity<int>();
 
-file class Player {
+    IExecutable<int, int> f = Executable.Create((int x) => x * x);
+    IExecutor<int, int> first = f.Then(id).GetExecutor();
+    IExecutor<int, int> second = id.Then(f).GetExecutor();
+    IExecutor<int, int> executor = f.GetExecutor();
 
-  public int id;
-  public PlayerData data;
+    for (int i = -100; i < 100; i++) {
+      Assert.Equal(executor.Execute(i), first.Execute(i));
+      Assert.Equal(executor.Execute(i), second.Execute(i));
+      Assert.Equal(first.Execute(i), second.Execute(i));
+    }
+  }
 
-}
+  [Fact]
+  public void ComplicatedComposition() {
+    IExecutor<int, int> executor = Executable
+      .Create((int x) => x * x)
+      .Compose((string s) => int.Parse(s))
+      .Then(x => x.ToString())
+      .Compose((int x) => x.ToString())
+      .Then(int.Parse)
+      .GetExecutor();
 
-file struct PlayerData {
-
-  public decimal money;
+    Assert.Equal(25, executor.Execute(5));
+  }
 
 }

@@ -22,11 +22,11 @@ public struct Unit : IEquatable<Unit> {
   }
 
   public override int GetHashCode() {
-    return 0;
+    return 1;
   }
 
   public override string ToString() {
-    return string.Empty;
+    return nameof(Unit);
   }
 
 }

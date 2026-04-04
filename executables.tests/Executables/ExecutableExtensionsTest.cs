@@ -24,15 +24,9 @@ public class ExecutableExtensionsTest {
     Assert.Throws<ArgumentNullException>(() => fork.First((Func<Unit, Unit>)null));
     Assert.Throws<ArgumentNullException>(() => fork.Second((IExecutable<Unit, Unit>)null));
     Assert.Throws<ArgumentNullException>(() => fork.Second((Func<Unit, Unit>)null));
-    Assert.Throws<ArgumentNullException>(() => fork.Merge((IExecutable<(Unit, Unit), Unit>)null));
     Assert.Throws<ArgumentNullException>(() => fork.Merge((Func<Unit, Unit, Unit>)null));
 
-    Assert.Throws<ArgumentNullException>(() => identity.Map((IExecutable<Unit, Unit>)null, (IExecutable<Unit, Unit>)null));
     Assert.Throws<ArgumentNullException>(() => identity.Map((Func<Unit, Unit>)null, (Func<Unit, Unit>)null));
-    Assert.Throws<ArgumentNullException>(() => identity.InMap((IExecutable<Unit, Unit>)null));
-    Assert.Throws<ArgumentNullException>(() => identity.OutMap((IExecutable<Unit, Unit>)null));
-    Assert.Throws<ArgumentNullException>(() => identity.InMap((Func<Unit, Unit>)null));
-    Assert.Throws<ArgumentNullException>(() => identity.OutMap((Func<Unit, Unit>)null));
 
     Assert.Throws<ArgumentNullException>(() => identity.Tap((Action<Unit>)null));
     Assert.Throws<ArgumentNullException>(() => identity.Tap(null));
@@ -56,15 +50,9 @@ public class ExecutableExtensionsTest {
     Assert.Throws<ArgumentNullException>(() => fork.First((AsyncFunc<Unit, Unit>)null));
     Assert.Throws<ArgumentNullException>(() => fork.Second((IAsyncExecutable<Unit, Unit>)null));
     Assert.Throws<ArgumentNullException>(() => fork.Second((AsyncFunc<Unit, Unit>)null));
-    Assert.Throws<ArgumentNullException>(() => fork.Merge((IAsyncExecutable<(Unit, Unit), Unit>)null));
-    Assert.Throws<ArgumentNullException>(() => fork.Merge((AsyncFunc<Unit, Unit, Unit>)null));
+    Assert.Throws<ArgumentNullException>(() => fork.Merge((Func<Unit, Unit, Unit>)null));
 
-    Assert.Throws<ArgumentNullException>(() => identity.Map((IExecutable<Unit, Unit>)null, (IExecutable<Unit, Unit>)null));
     Assert.Throws<ArgumentNullException>(() => identity.Map((Func<Unit, Unit>)null, (Func<Unit, Unit>)null));
-    Assert.Throws<ArgumentNullException>(() => identity.InMap((IExecutable<Unit, Unit>)null));
-    Assert.Throws<ArgumentNullException>(() => identity.OutMap((IExecutable<Unit, Unit>)null));
-    Assert.Throws<ArgumentNullException>(() => identity.InMap((Func<Unit, Unit>)null));
-    Assert.Throws<ArgumentNullException>(() => identity.OutMap((Func<Unit, Unit>)null));
 
     Assert.Throws<ArgumentNullException>(() => identity.Tap((Action<Unit>)null));
     Assert.Throws<ArgumentNullException>(() => identity.Tap(null));

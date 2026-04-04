@@ -1,9 +1,8 @@
-using Executables.Core.Operators;
 using JetBrains.Annotations;
 
 namespace Executables.Tests;
 
-[TestSubject(typeof(Map<,,,>))]
+[TestSubject(typeof(ExecutableExtensions))]
 public class MapTest {
 
   [Theory]
@@ -12,31 +11,7 @@ public class MapTest {
   public void Map(string expected, string value) {
     IQuery<string, string> query = Executable
       .Create((int x) => x * 2)
-      .Map(Executable.Create((string s) => int.Parse(s)), Executable.Create((int x) => x.ToString()))
-      .AsQuery();
-
-    Assert.Equal(expected, query.Send(value));
-  }
-
-  [Theory]
-  [InlineData(20, "10")]
-  [InlineData(30, "15")]
-  public void InMap(int expected, string value) {
-    IQuery<string, int> query = Executable
-      .Create((int x) => x * 2)
-      .InMap(Executable.Create((string s) => int.Parse(s)))
-      .AsQuery();
-
-    Assert.Equal(expected, query.Send(value));
-  }
-
-  [Theory]
-  [InlineData("20", 10)]
-  [InlineData("30", 15)]
-  public void OutMap(string expected, int value) {
-    IQuery<int, string> query = Executable
-      .Create((int x) => x * 2)
-      .OutMap(Executable.Create((int x) => x.ToString()))
+      .Map((string s) => int.Parse(s), x => x.ToString())
       .AsQuery();
 
     Assert.Equal(expected, query.Send(value));
@@ -48,7 +23,7 @@ public class MapTest {
   public void IdentityMap(int expected, int value) {
     IQuery<int, int> query = Executable
       .Create((int x) => x * 2)
-      .Map(Executable.Identity<int>(), Executable.Identity<int>())
+      .Map((int t1) => t1, t2 => t2)
       .AsQuery();
 
     Assert.Equal(expected, query.Send(value));

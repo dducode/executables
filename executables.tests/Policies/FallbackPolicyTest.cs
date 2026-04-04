@@ -20,7 +20,7 @@ public class FallbackPolicyTest {
   [Fact]
   public void ReturnFallbackOnException() {
     IQuery<int, int> query = Executable
-      .Create<int, int>(_ => throw new InvalidOperationException())
+      .Create<int, int>(int (_) => throw new InvalidOperationException())
       .WithPolicy(builder => builder.Fallback<InvalidOperationException>((input, _) => input))
       .AsQuery();
 
@@ -30,7 +30,7 @@ public class FallbackPolicyTest {
   [Fact]
   public void ThrowExceptionFromFallbackHandler() {
     IQuery<Unit, Unit> query = Executable
-      .Create<Unit, Unit>(_ => throw new InvalidOperationException())
+      .Create<Unit, Unit>(Unit (_) => throw new InvalidOperationException())
       .WithPolicy(builder => builder.Fallback<InvalidOperationException>((_, ex) => {
         ExceptionDispatchInfo.Capture(ex).Throw();
         return default;

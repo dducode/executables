@@ -83,12 +83,12 @@ public readonly struct Result<T> : IEquatable<Result<T>> {
   /// </summary>
   /// <returns>String representation of current result.</returns>
   public override string ToString() {
-    return IsSuccess ? _value?.ToString() ?? "Null" : Exception.ToString();
+    return IsSuccess ? _value?.ToString() : Exception.ToString();
   }
 
   public bool Equals(Result<T> other) {
     // Failure equality is based on the exact exception instance, not on exception type/message.
-    return EqualityComparer<T>.Default.Equals(_value, other._value) && EqualityComparer<Exception>.Default.Equals(Exception, other.Exception);
+    return EqualityComparer<Exception>.Default.Equals(Exception, other.Exception) && EqualityComparer<T>.Default.Equals(_value, other._value);
   }
 
   public override bool Equals(object obj) {

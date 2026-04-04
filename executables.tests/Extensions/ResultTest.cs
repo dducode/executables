@@ -8,6 +8,22 @@ namespace Executables.Tests.Extensions;
 public class ResultTest {
 
   [Fact]
+  public void ResultEquality() {
+    const string errorMessage = "Some error was occurred";
+
+    Assert.Equal(Result<int>.FromResult(1), Result<int>.FromResult(1));
+    Assert.NotEqual(Result<int>.FromResult(1), Result<int>.FromResult(2));
+    Assert.NotEqual(
+      Result<int>.FromException(new InvalidOperationException(errorMessage)),
+      Result<int>.FromResult(2)
+    );
+    Assert.NotEqual(
+      Result<int>.FromException(new InvalidOperationException(errorMessage)),
+      Result<int>.FromException(new InvalidOperationException(errorMessage))
+    );
+  }
+
+  [Fact]
   public void FromResult() {
     var result = Result<int>.FromResult(10);
     Assert.False(result.IsFailure);

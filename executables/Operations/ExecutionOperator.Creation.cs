@@ -37,20 +37,6 @@ public static class ExecutionOperator {
   }
 
   /// <summary>
-  /// Creates an operator that maps input before execution and output after execution.
-  /// </summary>
-  /// <param name="incoming">Executable that converts external input to the wrapped executor input type.</param>
-  /// <param name="outgoing">Executable that converts wrapped executor output to the final output type.</param>
-  /// <returns>Execution operator that applies both mappings around the wrapped executor.</returns>
-  /// <exception cref="ArgumentNullException"><paramref name="incoming"/> or <paramref name="outgoing"/> is <see langword="null"/>.</exception>
-  [Pure]
-  public static ExecutionOperator<T1, T2, T3, T4> Map<T1, T2, T3, T4>(IExecutable<T1, T2> incoming, IExecutable<T3, T4> outgoing) {
-    ExceptionsHelper.ThrowIfNull(incoming, nameof(incoming));
-    ExceptionsHelper.ThrowIfNull(outgoing, nameof(outgoing));
-    return new Map<T1, T2, T3, T4>(incoming, outgoing);
-  }
-
-  /// <summary>
   /// Creates a context operator that runs execution inside a newly initialized context.
   /// </summary>
   /// <param name="init">Context initialization logic.</param>

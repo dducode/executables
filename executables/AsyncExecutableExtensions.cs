@@ -22,126 +22,90 @@ public static class AsyncExecutableExtensions {
   }
 
   /// <summary>
-  /// Composes two asynchronous executables into a single pipeline.
+  /// Chains an asynchronous executable with another executable-producing asynchronous executable and flattens the nested result.
   /// </summary>
   /// <param name="first">Executable invoked first.</param>
-  /// <param name="second">Executable invoked with the result of <paramref name="first"/>.</param>
-  /// <returns>Composed asynchronous executable.</returns>
+  /// <param name="second">Executable that receives the result of <paramref name="first"/> and returns the next executable to run.</param>
+  /// <returns>Asynchronous executable that executes both stages as a single pipeline.</returns>
   /// <exception cref="ArgumentNullException"><paramref name="second"/> is <see langword="null"/>.</exception>
   [Pure]
-  public static IAsyncExecutable<T1, T3> Then<T1, T2, T3>(this IAsyncExecutable<T1, T2> first, IAsyncExecutable<T2, T3> second) {
-    first.ThrowIfNullReference();
+  public static IAsyncExecutable<T1, T3> FlatMap<T1, T2, T3>(this IAsyncExecutable<T1, T2> first, IAsyncExecutable<T2, IAsyncExecutable<T2, T3>> second) {
     ExceptionsHelper.ThrowIfNull(second, nameof(second));
-    return new AsyncCompositeExecutable<T1, T2, T3>(first, second);
+    return first.Then(new AsyncFlattenExecutable<T2, T3>(second));
   }
 
   /// <summary>
-  /// Appends an asynchronous delegate to an asynchronous executable pipeline.
+  /// Chains an asynchronous executable with an asynchronous delegate that selects the next executable to run and flattens the nested result.
   /// </summary>
-  /// <param name="executable">Executable invoked first.</param>
-  /// <param name="next">Asynchronous delegate invoked with the result of <paramref name="executable"/>.</param>
-  /// <returns>Composed asynchronous executable.</returns>
-  /// <exception cref="ArgumentNullException"><paramref name="next"/> is <see langword="null"/>.</exception>
-  [Pure]
-  public static IAsyncExecutable<T1, T3> Then<T1, T2, T3>(this IAsyncExecutable<T1, T2> executable, AsyncFunc<T2, T3> next) {
-    return executable.Then(AsyncExecutable.Create(next));
-  }
-
-  /// <summary>
-  /// Appends a parameterless asynchronous delegate to an asynchronous executable pipeline.
-  /// </summary>
-  /// <param name="executable">Executable invoked first.</param>
-  /// <param name="next">Parameterless asynchronous delegate invoked after <paramref name="executable"/> completes.</param>
-  /// <returns>Composed asynchronous executable.</returns>
-  /// <exception cref="ArgumentNullException"><paramref name="next"/> is <see langword="null"/>.</exception>
-  [Pure]
-  public static IAsyncExecutable<T1, T2> Then<T1, T2>(this IAsyncExecutable<T1, Unit> executable, AsyncFunc<T2> next) {
-    return executable.Then(AsyncExecutable.Create(next));
-  }
-
-  /// <summary>
-  /// Appends an asynchronous action to an asynchronous executable pipeline.
-  /// </summary>
-  /// <param name="executable">Executable invoked first.</param>
-  /// <param name="next">Asynchronous action invoked with the result of <paramref name="executable"/>.</param>
-  /// <returns>Composed asynchronous executable.</returns>
-  /// <exception cref="ArgumentNullException"><paramref name="next"/> is <see langword="null"/>.</exception>
-  [Pure]
-  public static IAsyncExecutable<T1, Unit> Then<T1, T2>(this IAsyncExecutable<T1, T2> executable, AsyncAction<T2> next) {
-    return executable.Then(AsyncExecutable.Create(next));
-  }
-
-  /// <summary>
-  /// Appends a parameterless asynchronous action to an asynchronous executable pipeline.
-  /// </summary>
-  /// <param name="executable">Executable invoked first.</param>
-  /// <param name="next">Parameterless asynchronous action invoked after <paramref name="executable"/> completes.</param>
-  /// <returns>Composed asynchronous executable.</returns>
-  /// <exception cref="ArgumentNullException"><paramref name="next"/> is <see langword="null"/>.</exception>
-  [Pure]
-  public static IAsyncExecutable<T, Unit> Then<T>(this IAsyncExecutable<T, Unit> executable, AsyncAction next) {
-    return executable.Then(AsyncExecutable.Create(next));
-  }
-
-  /// <summary>
-  /// Appends a synchronous executable to an asynchronous executable.
-  /// </summary>
-  /// <param name="first">Asynchronous executable invoked first.</param>
-  /// <param name="second">Synchronous executable invoked with the result of <paramref name="first"/>.</param>
-  /// <returns>Composed asynchronous executable.</returns>
+  /// <param name="first">Executable invoked first.</param>
+  /// <param name="second">Delegate that receives the result of <paramref name="first"/> and returns the next executable to run.</param>
+  /// <returns>Asynchronous executable that executes both stages as a single pipeline.</returns>
   /// <exception cref="ArgumentNullException"><paramref name="second"/> is <see langword="null"/>.</exception>
   [Pure]
-  public static IAsyncExecutable<T1, T3> Then<T1, T2, T3>(this IAsyncExecutable<T1, T2> first, IExecutable<T2, T3> second) {
+  public static IAsyncExecutable<T1, T3> FlatMap<T1, T2, T3>(this IAsyncExecutable<T1, T2> first, AsyncFunc<T2, IAsyncExecutable<T2, T3>> second) {
+    return first.Then(AsyncExecutable.FlatMap(second));
+  }
+
+  /// <summary>
+  /// Chains an asynchronous executable with a delegate that selects the next executable to run and flattens the nested result.
+  /// </summary>
+  /// <param name="first">Executable invoked first.</param>
+  /// <param name="second">Delegate that receives the result of <paramref name="first"/> and returns the next executable to run.</param>
+  /// <returns>Asynchronous executable that executes both stages as a single pipeline.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="second"/> is <see langword="null"/>.</exception>
+  [Pure]
+  public static IAsyncExecutable<T1, T3> FlatMap<T1, T2, T3>(this IAsyncExecutable<T1, T2> first, Func<T2, IAsyncExecutable<T2, T3>> second) {
+    return first.Then(AsyncExecutable.FlatMap(second));
+  }
+
+  /// <summary>
+  /// Appends an asynchronous projection while preserving the previous result in the returned tuple.
+  /// </summary>
+  /// <param name="first">Executable that produces the value passed to <paramref name="second"/>.</param>
+  /// <param name="second">Asynchronous delegate that computes an additional value from the result of <paramref name="first"/>.</param>
+  /// <returns>Asynchronous executable that returns both the original result and the appended value.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="second"/> is <see langword="null"/>.</exception>
+  [Pure]
+  public static IAsyncExecutable<T1, (T2, T3)> Accumulate<T1, T2, T3>(this IAsyncExecutable<T1, T2> first, AsyncFunc<T2, T3> second) {
     ExceptionsHelper.ThrowIfNull(second, nameof(second));
-    return first.Then(second.ToAsyncExecutable());
+    return first.Then(AsyncExecutable.Create(async (T2 t2, CancellationToken token) => {
+      T3 t3 = await second(t2, token);
+      return (t2, t3);
+    }));
   }
 
   /// <summary>
-  /// Appends a synchronous delegate to an asynchronous executable.
+  /// Appends an asynchronous projection while preserving the accumulated tuple produced by the previous stage.
   /// </summary>
-  /// <param name="executable">Executable invoked first.</param>
-  /// <param name="next">Delegate invoked with the result of <paramref name="executable"/>.</param>
-  /// <returns>Composed asynchronous executable.</returns>
-  /// <exception cref="ArgumentNullException"><paramref name="next"/> is <see langword="null"/>.</exception>
+  /// <param name="first">Executable that produces the tuple passed to <paramref name="second"/>.</param>
+  /// <param name="second">Asynchronous delegate that computes an additional value from the accumulated tuple items.</param>
+  /// <returns>Asynchronous executable that returns the original tuple items plus the appended value.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="second"/> is <see langword="null"/>.</exception>
   [Pure]
-  public static IAsyncExecutable<T1, T3> Then<T1, T2, T3>(this IAsyncExecutable<T1, T2> executable, Func<T2, T3> next) {
-    return executable.Then(Executable.Create(next));
+  public static IAsyncExecutable<T1, (T2, T3, T4)> Accumulate<T1, T2, T3, T4>(this IAsyncExecutable<T1, (T2, T3)> first, AsyncFunc<T2, T3, T4> second) {
+    ExceptionsHelper.ThrowIfNull(second, nameof(second));
+    return first.Then(AsyncExecutable.Create(async (T2 t2, T3 t3, CancellationToken token) => {
+      T4 t4 = await second(t2, t3, token);
+      return (t2, t3, t4);
+    }));
   }
 
   /// <summary>
-  /// Appends a parameterless synchronous delegate to an asynchronous executable.
+  /// Appends an asynchronous projection while preserving the accumulated tuple produced by the previous stage.
   /// </summary>
-  /// <param name="executable">Executable invoked first.</param>
-  /// <param name="next">Parameterless delegate invoked after <paramref name="executable"/> completes.</param>
-  /// <returns>Composed asynchronous executable.</returns>
-  /// <exception cref="ArgumentNullException"><paramref name="next"/> is <see langword="null"/>.</exception>
+  /// <param name="first">Executable that produces the tuple passed to <paramref name="second"/>.</param>
+  /// <param name="second">Asynchronous delegate that computes an additional value from the accumulated tuple items.</param>
+  /// <returns>Asynchronous executable that returns the original tuple items plus the appended value.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="second"/> is <see langword="null"/>.</exception>
   [Pure]
-  public static IAsyncExecutable<T1, T2> Then<T1, T2>(this IAsyncExecutable<T1, Unit> executable, Func<T2> next) {
-    return executable.Then(Executable.Create(next));
-  }
-
-  /// <summary>
-  /// Appends a synchronous action to an asynchronous executable.
-  /// </summary>
-  /// <param name="executable">Executable invoked first.</param>
-  /// <param name="next">Action invoked with the result of <paramref name="executable"/>.</param>
-  /// <returns>Composed asynchronous executable.</returns>
-  /// <exception cref="ArgumentNullException"><paramref name="next"/> is <see langword="null"/>.</exception>
-  [Pure]
-  public static IAsyncExecutable<T1, Unit> Then<T1, T2>(this IAsyncExecutable<T1, T2> executable, Action<T2> next) {
-    return executable.Then(Executable.Create(next));
-  }
-
-  /// <summary>
-  /// Appends a parameterless synchronous action to an asynchronous executable.
-  /// </summary>
-  /// <param name="executable">Executable invoked first.</param>
-  /// <param name="next">Parameterless action invoked after <paramref name="executable"/> completes.</param>
-  /// <returns>Composed asynchronous executable.</returns>
-  /// <exception cref="ArgumentNullException"><paramref name="next"/> is <see langword="null"/>.</exception>
-  [Pure]
-  public static IAsyncExecutable<T, Unit> Then<T>(this IAsyncExecutable<T, Unit> executable, Action next) {
-    return executable.Then(Executable.Create(next));
+  public static IAsyncExecutable<T1, (T2, T3, T4, T5)> Accumulate<T1, T2, T3, T4, T5>(
+    this IAsyncExecutable<T1, (T2, T3, T4)> first,
+    AsyncFunc<T2, T3, T4, T5> second) {
+    ExceptionsHelper.ThrowIfNull(second, nameof(second));
+    return first.Then(AsyncExecutable.Create(async (T2 t2, T3 t3, T4 t4, CancellationToken token) => {
+      T5 t5 = await second(t2, t3, t4, token);
+      return (t2, t3, t4, t5);
+    }));
   }
 
   /// <summary>
@@ -239,44 +203,42 @@ public static class AsyncExecutableExtensions {
   }
 
   /// <summary>
-  /// Merges a tuple result with an asynchronous executable.
-  /// </summary>
-  /// <param name="fork">Executable that returns a tuple.</param>
-  /// <param name="merge">Executable that combines tuple items into a single result.</param>
-  /// <returns>Executable that returns the merged result.</returns>
-  /// <exception cref="ArgumentNullException"><paramref name="merge"/> is <see langword="null"/>.</exception>
-  [Pure]
-  public static IAsyncExecutable<T1, T4> Merge<T1, T2, T3, T4>(this IAsyncExecutable<T1, (T2, T3)> fork, IAsyncExecutable<(T2, T3), T4> merge) {
-    return fork.Then(merge);
-  }
-
-  /// <summary>
-  /// Merges a tuple result with an asynchronous delegate.
+  /// Merges a tuple result with a delegate.
   /// </summary>
   /// <param name="fork">Executable that returns a tuple.</param>
   /// <param name="merge">Delegate that combines tuple items into a single result.</param>
   /// <returns>Executable that returns the merged result.</returns>
   /// <exception cref="ArgumentNullException"><paramref name="merge"/> is <see langword="null"/>.</exception>
   [Pure]
-  public static IAsyncExecutable<T1, T4> Merge<T1, T2, T3, T4>(this IAsyncExecutable<T1, (T2, T3)> fork, AsyncFunc<T2, T3, T4> merge) {
+  public static IAsyncExecutable<T1, T4> Merge<T1, T2, T3, T4>(this IAsyncExecutable<T1, (T2, T3)> fork, Func<T2, T3, T4> merge) {
     ExceptionsHelper.ThrowIfNull(merge, nameof(merge));
-    return fork.Then(async (x, t) => await merge(x.Item1, x.Item2, t));
+    return fork.Then(x => merge(x.Item1, x.Item2));
   }
 
   /// <summary>
-  /// Adapts an asynchronous executable to different external input and output types by applying mappings around it.
+  /// Merges a three-item tuple result with a delegate.
   /// </summary>
-  /// <param name="executable">Asynchronous executable being adapted.</param>
-  /// <param name="incoming">Executable that converts external input to the executable input type.</param>
-  /// <param name="outgoing">Executable that converts executable output to the external output type.</param>
-  /// <returns>Asynchronous executable with adapted input and output contracts.</returns>
-  /// <exception cref="ArgumentNullException"><paramref name="incoming"/> or <paramref name="outgoing"/> is <see langword="null"/>.</exception>
+  /// <param name="executable">Executable that returns a three-item tuple.</param>
+  /// <param name="merge">Delegate that combines tuple items into a single result.</param>
+  /// <returns>Asynchronous executable that returns the merged result.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="merge"/> is <see langword="null"/>.</exception>
   [Pure]
-  public static IAsyncExecutable<T1, T4> Map<T1, T2, T3, T4>(
-    this IAsyncExecutable<T2, T3> executable,
-    IExecutable<T1, T2> incoming,
-    IExecutable<T3, T4> outgoing) {
-    return executable.Apply(AsyncExecutionOperator.Map(incoming, outgoing));
+  public static IAsyncExecutable<T1, T5> Merge<T1, T2, T3, T4, T5>(this IAsyncExecutable<T1, (T2, T3, T4)> executable, Func<T2, T3, T4, T5> merge) {
+    ExceptionsHelper.ThrowIfNull(merge, nameof(merge));
+    return executable.Then(x => merge(x.Item1, x.Item2, x.Item3));
+  }
+
+  /// <summary>
+  /// Merges a four-item tuple result with a delegate.
+  /// </summary>
+  /// <param name="executable">Executable that returns a four-item tuple.</param>
+  /// <param name="merge">Delegate that combines tuple items into a single result.</param>
+  /// <returns>Asynchronous executable that returns the merged result.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="merge"/> is <see langword="null"/>.</exception>
+  [Pure]
+  public static IAsyncExecutable<T1, T6> Merge<T1, T2, T3, T4, T5, T6>(this IAsyncExecutable<T1, (T2, T3, T4, T5)> executable, Func<T2, T3, T4, T5, T6> merge) {
+    ExceptionsHelper.ThrowIfNull(merge, nameof(merge));
+    return executable.Then(x => merge(x.Item1, x.Item2, x.Item3, x.Item4));
   }
 
   /// <summary>
@@ -289,55 +251,7 @@ public static class AsyncExecutableExtensions {
   /// <exception cref="ArgumentNullException"><paramref name="incoming"/> or <paramref name="outgoing"/> is <see langword="null"/>.</exception>
   [Pure]
   public static IAsyncExecutable<T1, T4> Map<T1, T2, T3, T4>(this IAsyncExecutable<T2, T3> executable, Func<T1, T2> incoming, Func<T3, T4> outgoing) {
-    return executable.Map(Executable.Create(incoming), Executable.Create(outgoing));
-  }
-
-  /// <summary>
-  /// Adapts only the input type of asynchronous executable.
-  /// </summary>
-  /// <param name="executable">Asynchronous executable being adapted.</param>
-  /// <param name="incoming">Executable that converts external input to the executable input type.</param>
-  /// <returns>Executable with adapted input type.</returns>
-  /// <exception cref="ArgumentNullException"><paramref name="incoming"/> is <see langword="null"/>.</exception>
-  [Pure]
-  public static IAsyncExecutable<T1, T3> InMap<T1, T2, T3>(this IAsyncExecutable<T2, T3> executable, IExecutable<T1, T2> incoming) {
-    return executable.Map(incoming, Executable.Identity<T3>());
-  }
-
-  /// <summary>
-  /// Adapts only the output type of asynchronous executable.
-  /// </summary>
-  /// <param name="executable">Asynchronous executable being adapted.</param>
-  /// <param name="outgoing">Executable that converts executable output to the external output type.</param>
-  /// <returns>Executable with adapted output type.</returns>
-  /// <exception cref="ArgumentNullException"><paramref name="outgoing"/> is <see langword="null"/>.</exception>
-  [Pure]
-  public static IAsyncExecutable<T1, T3> OutMap<T1, T2, T3>(this IAsyncExecutable<T1, T2> executable, IExecutable<T2, T3> outgoing) {
-    return executable.Map(Executable.Identity<T1>(), outgoing);
-  }
-
-  /// <summary>
-  /// Adapts only the input type of asynchronous executable with a delegate.
-  /// </summary>
-  /// <param name="executable">Asynchronous executable being adapted.</param>
-  /// <param name="incoming">Delegate that converts external input to the executable input type.</param>
-  /// <returns>Executable with adapted input type.</returns>
-  /// <exception cref="ArgumentNullException"><paramref name="incoming"/> is <see langword="null"/>.</exception>
-  [Pure]
-  public static IAsyncExecutable<T1, T3> InMap<T1, T2, T3>(this IAsyncExecutable<T2, T3> executable, Func<T1, T2> incoming) {
-    return executable.InMap(Executable.Create(incoming));
-  }
-
-  /// <summary>
-  /// Adapts only the output type of asynchronous executable with a delegate.
-  /// </summary>
-  /// <param name="executable">Asynchronous executable being adapted.</param>
-  /// <param name="outgoing">Delegate that converts executable output to the external output type.</param>
-  /// <returns>Executable with adapted output type.</returns>
-  /// <exception cref="ArgumentNullException"><paramref name="outgoing"/> is <see langword="null"/>.</exception>
-  [Pure]
-  public static IAsyncExecutable<T1, T3> OutMap<T1, T2, T3>(this IAsyncExecutable<T1, T2> executable, Func<T2, T3> outgoing) {
-    return executable.OutMap(Executable.Create(outgoing));
+    return executable.Compose(incoming).Then(outgoing);
   }
 
   /// <summary>

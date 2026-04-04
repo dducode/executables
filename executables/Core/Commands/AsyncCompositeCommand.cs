@@ -9,15 +9,15 @@ internal sealed class AsyncCompositeCommand<T>(IAsyncCommand<T> first, IAsyncCom
     ValueTask<bool> firstTask;
 
     try {
-      firstTask = first.Execute(input, token);
+      firstTask = second.Execute(input, token);
       if (firstTask.IsCompleted)
-        return firstTask.Result ? second.Execute(input, token) : new ValueTask<bool>(false);
+        return firstTask.Result ? first.Execute(input, token) : new ValueTask<bool>(false);
     }
     catch (OperationCanceledException) {
       return new ValueTask<bool>(false);
     }
 
-    return Await(input, firstTask, second, token);
+    return Await(input, firstTask, first, token);
   }
 
   IAsyncExecutor<T, bool> IAsyncExecutable<T, bool>.GetExecutor() {

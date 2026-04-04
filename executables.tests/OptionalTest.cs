@@ -6,6 +6,17 @@ namespace Executables.Tests;
 public class OptionalTest {
 
   [Fact]
+  public void OptionalEquality() {
+    Assert.Equal(new Optional<int>(2), new Optional<int>(2));
+    Assert.Equal(Optional<int>.None, Optional<int>.None);
+    Assert.True(Optional<string>.None == Optional<int>.None);
+
+    Assert.NotEqual(new Optional<int>(2), new Optional<int>(3));
+    Assert.NotEqual(new Optional<string>(null), Optional<string>.None);
+    Assert.True(new Optional<int>(1) != Optional<string>.None);
+  }
+
+  [Fact]
   public async Task SuppressCancellationException() {
     var cts = new CancellationTokenSource();
     IAsyncQuery<int, Optional<int>> query = AsyncExecutable

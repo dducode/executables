@@ -17,10 +17,74 @@ public static partial class Executable {
     return IdentityExecutable<T>.Instance;
   }
 
-  /// <inheritdoc cref="Identity{T}" />
+  /// <summary>
+  /// Returns a parameterless executable that returns <see cref="Unit"/> unchanged.
+  /// </summary>
+  /// <returns>Identity executable for <see cref="Unit"/>.</returns>
   [Pure]
   public static IExecutable<Unit, Unit> Identity() {
     return IdentityExecutable<Unit>.Instance;
+  }
+
+  /// <summary>
+  /// Flattens an executable that returns another executable into a single executable.
+  /// </summary>
+  /// <param name="executable">Executable that returns the next executable to run for the same input.</param>
+  /// <returns>Executable that executes the returned executable and exposes its result directly.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="executable"/> is <see langword="null"/>.</exception>
+  [Pure]
+  public static IExecutable<T1, T2> FlatMap<T1, T2>(IExecutable<T1, IExecutable<T1, T2>> executable) {
+    ExceptionsHelper.ThrowIfNull(executable, nameof(executable));
+    return new FlattenExecutable<T1, T2>(executable);
+  }
+
+  /// <summary>
+  /// Creates a flattened executable from a delegate that selects the next executable to run.
+  /// </summary>
+  /// <param name="func">Delegate that returns the next executable for the provided input.</param>
+  /// <returns>Executable that executes the returned executable and exposes its result directly.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="func"/> is <see langword="null"/>.</exception>
+  [Pure]
+  public static IExecutable<T1, T2> FlatMap<T1, T2>(Func<T1, IExecutable<T1, T2>> func) {
+    return FlatMap(Create(func));
+  }
+
+  /// <summary>
+  /// Creates an executable that preserves its input and appends a computed value.
+  /// </summary>
+  /// <param name="func">Delegate that computes an additional value from the input.</param>
+  /// <returns>Executable that returns both the original input and the computed value.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="func"/> is <see langword="null"/>.</exception>
+  [Pure]
+  public static IExecutable<T1, (T1, T2)> Accumulate<T1, T2>(Func<T1, T2> func) {
+    ExceptionsHelper.ThrowIfNull(func, nameof(func));
+    return Create((T1 x) => (x, func(x)));
+  }
+
+  /// <summary>
+  /// Creates an executable that runs two executables for the same input and returns both results.
+  /// </summary>
+  /// <param name="first">First executable branch.</param>
+  /// <param name="second">Second executable branch.</param>
+  /// <returns>Executable that returns the results of both branches as a tuple.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="first"/> or <paramref name="second"/> is <see langword="null"/>.</exception>
+  [Pure]
+  public static IExecutable<T1, (T2, T3)> Fork<T1, T2, T3>(IExecutable<T1, T2> first, IExecutable<T1, T3> second) {
+    ExceptionsHelper.ThrowIfNull(first, nameof(first));
+    ExceptionsHelper.ThrowIfNull(second, nameof(second));
+    return new ForkExecutable<T1, T2, T3>(first, second);
+  }
+
+  /// <summary>
+  /// Creates an executable that runs two delegates for the same input and returns both results.
+  /// </summary>
+  /// <param name="first">First delegate branch.</param>
+  /// <param name="second">Second delegate branch.</param>
+  /// <returns>Executable that returns the results of both branches as a tuple.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="first"/> or <paramref name="second"/> is <see langword="null"/>.</exception>
+  [Pure]
+  public static IExecutable<T1, (T2, T3)> Fork<T1, T2, T3>(Func<T1, T2> first, Func<T1, T3> second) {
+    return Fork(Create(first), Create(second));
   }
 
   /// <summary>
