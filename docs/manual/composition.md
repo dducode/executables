@@ -95,6 +95,52 @@ IExecutable<string, string> squareTextExplicit =
     .Then(value => $"Result: {value}");
 ```
 
+## LINQ Integration
+
+The library supports LINQ-style composition for executable pipelines and collection-style execution through executor
+enumeration helpers.
+
+### Query Syntax for Executables
+
+```csharp
+IExecutable<int, Optional<TimeSpan>> executable =
+  from time in Executable.Create((int seconds) => TimeSpan.FromSeconds(seconds))
+  where time >= TimeSpan.Zero
+  where time < TimeSpan.FromSeconds(60)
+  select time;
+```
+
+### Enumerable Execution via Executors
+
+```csharp
+IExecutor<int, TimeSpan> toTime =
+  Executable.Create((int seconds) => TimeSpan.FromSeconds(seconds))
+    .GetExecutor();
+
+foreach (TimeSpan value in toTime.ForEach(new[] { 1, 2, 3, 4, 5 }))
+  Console.WriteLine(value);
+```
+
+For optimization, `ForEach(...)` uses struct-based enumerable/enumerator implementations for common collection types
+such as arrays, lists, queues, stacks, hash sets, and spans.
+
+### Flattened Execution via `ForEachMany(...)`
+
+```csharp
+IExecutor<int, int[]> expand =
+  Executable.Create((int value) => new[] { value, value * 10 })
+    .GetExecutor();
+
+foreach (int item in expand.ForEachMany(new[] { 1, 2, 3 }))
+  Console.WriteLine(item);
+```
+
+`ForEachMany(...)` provides optimized struct wrappers for common *result* collection shapes returned by the executor
+(`T[]`, `List<T>`, `HashSet<T>`, `Queue<T>`, `Stack<T>`).
+
+Its input is accepted as `IEnumerable<T>`, so source enumeration goes through the interface and can cause a small
+allocation per `ForEachMany(...)` usage (for example, when a value-type source enumerator is boxed).
+
 ## Reusable Transformations
 
 `Pipe(...)` applies a reusable composition function at executable-composition time.
