@@ -308,26 +308,21 @@ public static class PipelineBuilderExtensions {
     }));
   }
 
+  /// <summary>
+  /// Finalizes pipeline composition with a terminal executable.
+  /// </summary>
+  /// <typeparam name="T1">Input type of the final composed executor.</typeparam>
+  /// <typeparam name="T2">Input type expected by current downstream segment.</typeparam>
+  /// <typeparam name="T3">Output type produced by current downstream segment.</typeparam>
+  /// <typeparam name="T4">Output type of the final composed executor.</typeparam>
+  /// <param name="builder">Builder being finalized.</param>
+  /// <param name="executable">Terminal executable invoked when pipeline reaches the end.</param>
+  /// <returns>Composed executor that represents the entire pipeline chain.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="executable"/> is <see langword="null"/>.</exception>
   [Pure]
-  public static IExecutable<T1, T4> End<T1, T2, T3, T4>(this PipelineBuilder<T1, T2, T3, T4> builder, Func<T2, T3> func) {
-    return builder.End(Executable.Create(func));
-  }
-
-  [Pure]
-  public static IExecutable<T1, T3> End<T1, T2, T3>(this PipelineBuilder<T1, Unit, T2, T3> builder, Func<T2> func) {
-    return builder.End(Executable.Create(func));
-  }
-
-  [Pure]
-  public static IExecutable<T1, T3> End<T1, T2, T3>(this PipelineBuilder<T1, T2, Unit, T3> builder, Action<T2> action) {
-    ExceptionsHelper.ThrowIfNull(action, nameof(action));
-    return builder.End(Executable.Create(action));
-  }
-
-  [Pure]
-  public static IExecutable<T1, T2> End<T1, T2>(this PipelineBuilder<T1, Unit, Unit, T2> builder, Action action) {
-    ExceptionsHelper.ThrowIfNull(action, nameof(action));
-    return builder.End(Executable.Create(action));
+  public static IExecutor<T1, T4> End<T1, T2, T3, T4>(this PipelineBuilder<T1, T2, T3, T4> builder, IExecutable<T2, T3> executable) {
+    ExceptionsHelper.ThrowIfNull(executable, nameof(executable));
+    return builder.End(executable.GetExecutor());
   }
 
 }

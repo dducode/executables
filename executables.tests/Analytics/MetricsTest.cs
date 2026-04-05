@@ -14,32 +14,34 @@ public class MetricsTest(ITestOutputHelper outputHelper) {
   public void RegularCall() {
     var fixture = new Fixture();
 
-    IQuery<int, TimeSpan> query = Executable
+    IExecutor<int, TimeSpan> query = Executable
       .Create((int seconds) => TimeSpan.FromSeconds(seconds))
+      .GetExecutor()
       .Metrics(Metrics.Create(
         (int input) => outputHelper.WriteLine($"{nameof(input)}: {input}"),
         (TimeSpan output) => outputHelper.WriteLine($"{nameof(output)}: {output}"),
         latency: latency => outputHelper.WriteLine($"{nameof(latency)}: {latency.Ticks}\n"))
-      ).AsQuery();
+      );
 
     for (var i = 0; i < 5; i++)
-      query.Send(fixture.Create<int>());
+      query.Execute(fixture.Create<int>());
   }
 
   [Fact]
   public void CallWithException() {
-    IQuery<int, TimeSpan> query = Executable
+    IExecutor<int, TimeSpan> executor = Executable
       .Create((int seconds) => TimeSpan.FromSeconds(seconds))
+      .GetExecutor()
       .WithPolicy(builder => builder.ValidateInput(Validator.MoreThanZero))
       .Metrics(Metrics.Create(
         (int input) => outputHelper.WriteLine($"{nameof(input)}: {input}"),
         (TimeSpan output) => outputHelper.WriteLine($"{nameof(output)}: {output}"),
         error => outputHelper.WriteLine($"{nameof(error)}: {error}"),
         latency => outputHelper.WriteLine($"{nameof(latency)}: {latency.Ticks}\n"))
-      ).AsQuery();
+      );
 
-    query.Send(10);
-    Assert.Throws<InvalidInputException>(() => query.Send(-10));
+    executor.Execute(10);
+    Assert.Throws<InvalidInputException>(() => executor.Execute(-10));
   }
 
 }

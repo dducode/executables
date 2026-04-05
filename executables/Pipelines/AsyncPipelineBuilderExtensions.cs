@@ -314,24 +314,21 @@ public static class AsyncPipelineBuilderExtensions {
     }));
   }
 
+  /// <summary>
+  /// Finalizes async pipeline composition with a terminal async executable.
+  /// </summary>
+  /// <typeparam name="T1">Input type of the final composed async executor.</typeparam>
+  /// <typeparam name="T2">Input type expected by current downstream async segment.</typeparam>
+  /// <typeparam name="T3">Output type produced by current downstream async segment.</typeparam>
+  /// <typeparam name="T4">Output type of the final composed async executor.</typeparam>
+  /// <param name="builder">Builder being finalized.</param>
+  /// <param name="executable">Terminal async executable invoked when pipeline reaches the end.</param>
+  /// <returns>Composed async executor that represents the entire pipeline chain.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="executable"/> is <see langword="null"/>.</exception>
   [Pure]
-  public static IAsyncExecutable<T1, T4> End<T1, T2, T3, T4>(this AsyncPipelineBuilder<T1, T2, T3, T4> builder, AsyncFunc<T2, T3> func) {
-    return builder.End(AsyncExecutable.Create(func));
-  }
-
-  [Pure]
-  public static IAsyncExecutable<T1, T3> End<T1, T2, T3>(this AsyncPipelineBuilder<T1, Unit, T2, T3> builder, AsyncFunc<T2> func) {
-    return builder.End(AsyncExecutable.Create(func));
-  }
-
-  [Pure]
-  public static IAsyncExecutable<T1, T3> End<T1, T2, T3>(this AsyncPipelineBuilder<T1, T2, Unit, T3> builder, AsyncAction<T2> action) {
-    return builder.End(AsyncExecutable.Create(action));
-  }
-
-  [Pure]
-  public static IAsyncExecutable<T1, T2> End<T1, T2>(this AsyncPipelineBuilder<T1, Unit, Unit, T2> builder, AsyncAction action) {
-    return builder.End(AsyncExecutable.Create(action));
+  public static IAsyncExecutor<T1, T4> End<T1, T2, T3, T4>(this AsyncPipelineBuilder<T1, T2, T3, T4> builder, IAsyncExecutable<T2, T3> executable) {
+    ExceptionsHelper.ThrowIfNull(executable, nameof(executable));
+    return builder.End(executable.GetExecutor());
   }
 
 }

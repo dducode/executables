@@ -1,5 +1,4 @@
 using Executables.Context;
-using Executables.Queries;
 using JetBrains.Annotations;
 using Xunit.Abstractions;
 
@@ -10,51 +9,51 @@ public class ExecutableContextTest(ITestOutputHelper output) {
 
   [Fact]
   public void SimpleCall() {
-    IQuery<Unit, Unit> query = Executable
+    IExecutor<Unit, Unit> executor = Executable
       .Create(() => Assert.True(ExecutableContext.Current.ContainsKey<string>()))
-      .WithContext(context => context.Set("test"))
-      .AsQuery();
+      .GetExecutor()
+      .WithContext(context => context.Set("test"));
 
     Assert.Null(ExecutableContext.Current);
-    query.Send();
+    executor.Execute();
     Assert.Null(ExecutableContext.Current);
   }
 
   [Fact]
   public void ThrowFromInitCallback() {
-    IQuery<Unit, Unit> query = Executable
+    var executor = Executable
       .Create(() => Assert.Fail())
-      .WithContext(_ => throw new InvalidOperationException())
-      .AsQuery();
+      .GetExecutor()
+      .WithContext(_ => throw new InvalidOperationException());
 
     Assert.Null(ExecutableContext.Current);
-    Assert.Throws<InvalidOperationException>(() => query.Send());
+    Assert.Throws<InvalidOperationException>(() => executor.Execute());
     Assert.Null(ExecutableContext.Current);
   }
 
   [Fact]
   public void ThrowFromQuery() {
-    IQuery<Unit, Unit> query = Executable
+    IExecutor<Unit, Unit> executor = Executable
       .Create(() => throw new InvalidOperationException())
-      .WithContext(context => context.Set(string.Empty))
-      .AsQuery();
+      .GetExecutor()
+      .WithContext(context => context.Set(string.Empty));
 
     Assert.Null(ExecutableContext.Current);
-    Assert.Throws<InvalidOperationException>(() => query.Send());
+    Assert.Throws<InvalidOperationException>(() => executor.Execute());
     Assert.Null(ExecutableContext.Current);
   }
 
   [Fact]
   public async Task AsyncCall() {
-    IAsyncQuery<Unit, Unit> query = AsyncExecutable
+    IAsyncExecutor<Unit, Unit> executor = AsyncExecutable
       .Create(async _ => {
         await Task.Yield();
         Assert.True(ExecutableContext.Current.ContainsKey<string>());
       })
-      .WithContext(context => context.Set("test"))
-      .AsQuery();
+      .GetExecutor()
+      .WithContext(context => context.Set("test"));
 
-    ValueTask task = query.Send();
+    ValueTask task = executor.Execute();
     Assert.Null(ExecutableContext.Current);
     await task;
     Assert.Null(ExecutableContext.Current);
@@ -62,45 +61,45 @@ public class ExecutableContextTest(ITestOutputHelper output) {
 
   [Fact]
   public void NestedCall() {
-    IQuery<Unit, Unit> inner = Executable
+    IExecutor<Unit, Unit> inner = Executable
       .Create(() => Assert.True(ExecutableContext.Current.ContainsKey("nested")))
-      .WithContext(context => context.Set("nested", string.Empty))
-      .AsQuery();
+      .GetExecutor()
+      .WithContext(context => context.Set("nested", string.Empty));
 
-    IQuery<Unit, Unit> query = Executable
+    IExecutor<Unit, Unit> executor = Executable
       .Create(() => {
         Assert.True(ExecutableContext.Current.ContainsKey("test"));
-        inner.Send();
+        inner.Execute();
         Assert.False(ExecutableContext.Current.ContainsKey("nested"));
       })
-      .WithContext(context => context.Set("test", string.Empty))
-      .AsQuery();
+      .GetExecutor()
+      .WithContext(context => context.Set("test", string.Empty));
 
     Assert.Null(ExecutableContext.Current);
-    query.Send();
+    executor.Execute();
     Assert.Null(ExecutableContext.Current);
   }
 
   [Fact]
   public async Task NestedAsyncCall() {
-    IAsyncQuery<Unit, Unit> inner = AsyncExecutable
+    IAsyncExecutor<Unit, Unit> inner = AsyncExecutable
       .Create(async _ => {
         await Task.Yield();
         Assert.True(ExecutableContext.Current.ContainsKey("nested"));
       })
-      .WithContext(context => context.Set("nested", string.Empty))
-      .AsQuery();
+      .GetExecutor()
+      .WithContext(context => context.Set("nested", string.Empty));
 
-    IAsyncQuery<Unit, Unit> query = AsyncExecutable
+    IAsyncExecutor<Unit, Unit> executor = AsyncExecutable
       .Create(async token => {
         Assert.True(ExecutableContext.Current.ContainsKey("test"));
-        await inner.Send(token);
+        await inner.Execute(token);
         Assert.False(ExecutableContext.Current.ContainsKey("nested"));
       })
-      .WithContext(context => context.Set("test", string.Empty))
-      .AsQuery();
+      .GetExecutor()
+      .WithContext(context => context.Set("test", string.Empty));
 
-    ValueTask task = query.Send();
+    ValueTask task = executor.Execute();
     Assert.Null(ExecutableContext.Current);
     await task;
     Assert.Null(ExecutableContext.Current);
@@ -108,37 +107,37 @@ public class ExecutableContextTest(ITestOutputHelper output) {
 
   [Fact]
   public async Task NestedAsyncParallelCalls() {
-    IAsyncQuery<Unit, Unit> firstInner = AsyncExecutable
+    IAsyncExecutor<Unit, Unit> firstInner = AsyncExecutable
       .Create(async _ => {
         await Task.Yield();
         Assert.True(ExecutableContext.Current.ContainsKey("firstNested"));
         Assert.False(ExecutableContext.Current.ContainsKey("secondNested"));
       })
-      .WithContext(context => context.Set("firstNested", string.Empty))
-      .AsQuery();
+      .GetExecutor()
+      .WithContext(context => context.Set("firstNested", string.Empty));
 
-    IAsyncQuery<Unit, Unit> secondInner = AsyncExecutable
+    IAsyncExecutor<Unit, Unit> secondInner = AsyncExecutable
       .Create(async _ => {
         await Task.Yield();
         Assert.True(ExecutableContext.Current.ContainsKey("secondNested"));
         Assert.False(ExecutableContext.Current.ContainsKey("firstNested"));
       })
-      .WithContext(context => context.Set("secondNested", string.Empty))
-      .AsQuery();
+      .GetExecutor()
+      .WithContext(context => context.Set("secondNested", string.Empty));
 
-    IAsyncQuery<Unit, Unit> query = AsyncExecutable
+    IAsyncExecutor<Unit, Unit> executor = AsyncExecutable
       .Create(async token => {
         Assert.True(ExecutableContext.Current.ContainsKey("test"));
-        ValueTask t1 = firstInner.Send(token);
-        ValueTask t2 = secondInner.Send(token);
+        ValueTask t1 = firstInner.Execute(token);
+        ValueTask t2 = secondInner.Execute(token);
         await Task.WhenAll(t1.AsTask(), t2.AsTask());
         Assert.False(ExecutableContext.Current.ContainsKey("firstNested"));
         Assert.False(ExecutableContext.Current.ContainsKey("secondNested"));
       })
-      .WithContext(context => context.Set("test", string.Empty))
-      .AsQuery();
+      .GetExecutor()
+      .WithContext(context => context.Set("test", string.Empty));
 
-    ValueTask task = query.Send();
+    ValueTask task = executor.Execute();
     Assert.Null(ExecutableContext.Current);
     await task;
     Assert.Null(ExecutableContext.Current);
@@ -146,24 +145,24 @@ public class ExecutableContextTest(ITestOutputHelper output) {
 
   [Fact]
   public void PrintHierarchy() {
-    IQuery<Unit, Unit> deepInner = Executable
+    IExecutor<Unit, Unit> deepInner = Executable
       .Create(() => output.WriteLine($"{ExecutableContext.Current:v}"))
-      .WithContext(context => context.Name = nameof(deepInner))
-      .AsQuery();
+      .GetExecutor()
+      .WithContext(context => context.Name = nameof(deepInner));
 
-    IQuery<Unit, Unit> inner = Executable
-      .Create(() => deepInner.Send())
-      .WithContext(context => context.Name = nameof(inner))
-      .AsQuery();
+    IExecutor<Unit, Unit> inner = Executable
+      .Create(() => deepInner.Execute())
+      .GetExecutor()
+      .WithContext(context => context.Name = nameof(inner));
 
-    IQuery<Unit, Unit> query = Executable
-      .Create(() => inner.Send())
-      .WithContext(context => context.Name = nameof(query))
-      .AsQuery();
+    IExecutor<Unit, Unit> query = Executable
+      .Create(() => inner.Execute())
+      .GetExecutor()
+      .WithContext(context => context.Name = nameof(query));
 
-    query.Send();
+    query.Execute();
     output.WriteLine(string.Empty);
-    query.Send();
+    query.Execute();
   }
 
 }

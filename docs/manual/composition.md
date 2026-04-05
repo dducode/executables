@@ -97,13 +97,19 @@ IExecutable<string, string> squareTextExplicit =
 
 ## Reusable Transformations
 
-`Tap(...)` observes results while preserving them, and `Pipe(...)` applies a reusable composition function.
+`Pipe(...)` applies a reusable composition function at executable-composition time.
+
+`Tap(...)` observes runtime results while preserving them and is applied at executor level.
 
 ```csharp
 IExecutable<int, string> pipeline =
   Executable.Create((int x) => x + 1)
-    .Tap(value => Console.WriteLine(value))
     .Pipe(executable => executable.Then(value => $"Value: {value}"));
+
+IExecutor<int, string> observed =
+  pipeline
+    .GetExecutor()
+    .Tap(value => Console.WriteLine(value));
 ```
 
 ## Query and Command Composition
@@ -200,7 +206,7 @@ If you want the losing executions to be canceled after the first completion, com
 ```csharp
 bool canceled = false;
 
-IAsyncExecutable<string, string> fastestWithCancellation =
+IAsyncExecutor<string, string> fastestWithCancellation =
   AsyncExecutable.Create(async (string text, CancellationToken token) =>
   {
     await Task.Delay(10, token);
@@ -225,9 +231,10 @@ IAsyncExecutable<string, string> fastestWithCancellation =
       await Task.Delay(5, token);
       return $"Fast: {value}";
     })
+  .GetExecutor()
   .WithPolicy(policy => policy.CancelAfterCompletion());
 
-string result = await fastestWithCancellation.GetExecutor().Execute("42");
+string result = await fastestWithCancellation.Execute("42");
 // Returns "Fast: 42", and `canceled` becomes true for the losing execution.
 ```
 

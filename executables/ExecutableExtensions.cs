@@ -1,12 +1,7 @@
 using System.Diagnostics.Contracts;
-using Executables.Analytics;
-using Executables.Context;
 using Executables.Core.Executables;
-using Executables.Core.Operators;
 using Executables.Handling;
 using Executables.Internal;
-using Executables.Operations;
-using Executables.Policies;
 using Executables.Subscribers;
 
 namespace Executables;
@@ -249,102 +244,6 @@ public static class ExecutableExtensions {
   }
 
   /// <summary>
-  /// Runs a side effect on each result while returning the original result unchanged.
-  /// </summary>
-  /// <param name="executable">Executable producing the observed result.</param>
-  /// <param name="action">Side-effect action invoked with the produced result.</param>
-  /// <returns>Executable that preserves the original result.</returns>
-  /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null"/>.</exception>
-  [Pure]
-  public static IExecutable<T1, T2> Tap<T1, T2>(this IExecutable<T1, T2> executable, Action<T2> action) {
-    ExceptionsHelper.ThrowIfNull(action, nameof(action));
-    return executable.Then(new TransitiveExecutable<T2>(action));
-  }
-
-  /// <summary>
-  /// Runs an asynchronous side effect on each result while returning the original result unchanged.
-  /// </summary>
-  /// <param name="executable">Executable producing the observed result.</param>
-  /// <param name="action">Asynchronous side-effect action invoked with the produced result.</param>
-  /// <returns>Asynchronous executable that preserves the original result.</returns>
-  /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null"/>.</exception>
-  [Pure]
-  public static IAsyncExecutable<T1, T2> Tap<T1, T2>(this IExecutable<T1, T2> executable, AsyncAction<T2> action) {
-    ExceptionsHelper.ThrowIfNull(action, nameof(action));
-    return executable.Then(new AsyncTransitiveExecutable<T2>(action));
-  }
-
-  /// <summary>
-  /// Executes an executable within a newly initialized interaction context.
-  /// </summary>
-  /// <param name="executable">Executable to run inside the context.</param>
-  /// <param name="init">Context initialization logic.</param>
-  /// <returns>Executable wrapped with contextual execution.</returns>
-  /// <exception cref="ArgumentNullException"><paramref name="init"/> is <see langword="null"/>.</exception>
-  [Pure]
-  public static IExecutable<T1, T2> WithContext<T1, T2>(this IExecutable<T1, T2> executable, ContextInit init) {
-    return executable.Apply(ExecutionOperator.Context<T1, T2>(init));
-  }
-
-  /// <summary>
-  /// Builds and applies a policy pipeline to an executable.
-  /// </summary>
-  /// <param name="executable">Executable to wrap with policies.</param>
-  /// <param name="building">Builder action that configures policies.</param>
-  /// <returns>Executable wrapped with configured policies.</returns>
-  /// <exception cref="ArgumentNullException"><paramref name="building"/> is <see langword="null"/>.</exception>
-  [Pure]
-  public static IExecutable<T1, T2> WithPolicy<T1, T2>(this IExecutable<T1, T2> executable, Action<PolicyBuilder<T1, T2>> building) {
-    executable.ThrowIfNullReference();
-    ExceptionsHelper.ThrowIfNull(building, nameof(building));
-    var builder = new PolicyBuilder<T1, T2>();
-    building(builder);
-    return builder.Apply(executable);
-  }
-
-  /// <summary>
-  /// Wraps executable result into <see cref="Result{T}" /> capturing thrown exceptions.
-  /// </summary>
-  /// <param name="executable">Executable to wrap.</param>
-  /// <returns>Executable returning success or failure result.</returns>
-  [Pure]
-  public static IExecutable<T1, Result<T2>> WithResult<T1, T2>(this IExecutable<T1, T2> executable) {
-    return executable.Apply(ResultOperator<T1, T2>.Instance);
-  }
-
-  /// <summary>
-  /// Wraps an executable already returning <see cref="Result{T}"/> so that thrown exceptions are also converted to <see cref="Result{T}"/>.
-  /// </summary>
-  /// <param name="executable">Executable returning <see cref="Result{T}"/>.</param>
-  /// <returns>Executable that preserves returned results and converts thrown exceptions to failure results.</returns>
-  [Pure]
-  public static IExecutable<T1, Result<T2>> WithResult<T1, T2>(this IExecutable<T1, Result<T2>> executable) {
-    return executable.Apply(ResultFlattenOperator<T1, T2>.Instance);
-  }
-
-  /// <summary>
-  /// Starts configuration of exception suppression for executable results.
-  /// </summary>
-  /// <param name="executable">Executable to configure.</param>
-  /// <returns>Provider for selecting exception types to suppress.</returns>
-  [Pure]
-  public static SuppressExceptionOperatorProvider<T1, T2> SuppressException<T1, T2>(this IExecutable<T1, T2> executable) {
-    executable.ThrowIfNullReference();
-    return new SuppressExceptionOperatorProvider<T1, T2>(executable);
-  }
-
-  /// <summary>
-  /// Starts configuration of exception suppression for executables returning <see cref="Optional{T}"/>.
-  /// </summary>
-  /// <param name="executable">Executable to configure.</param>
-  /// <returns>Provider for selecting exception types to suppress.</returns>
-  [Pure]
-  public static SuppressExceptionFlattenOperatorProvider<T1, T2> SuppressException<T1, T2>(this IExecutable<T1, Optional<T2>> executable) {
-    executable.ThrowIfNullReference();
-    return new SuppressExceptionFlattenOperatorProvider<T1, T2>(executable);
-  }
-
-  /// <summary>
   /// Pipes an executable through a transformation function.
   /// </summary>
   /// <param name="executable">Source executable.</param>
@@ -352,6 +251,7 @@ public static class ExecutableExtensions {
   /// <returns>Transformed executable.</returns>
   /// <exception cref="ArgumentNullException"><paramref name="pipe"/> is <see langword="null"/>.</exception>
   [Pure]
+  [Obsolete]
   public static IExecutable<T1, T3> Pipe<T1, T2, T3>(this IExecutable<T1, T2> executable, Func<IExecutable<T1, T2>, IExecutable<T1, T3>> pipe) {
     executable.ThrowIfNullReference();
     ExceptionsHelper.ThrowIfNull(pipe, nameof(pipe));
@@ -366,47 +266,11 @@ public static class ExecutableExtensions {
   /// <returns>Transformed asynchronous executable.</returns>
   /// <exception cref="ArgumentNullException"><paramref name="pipe"/> is <see langword="null"/>.</exception>
   [Pure]
+  [Obsolete]
   public static IAsyncExecutable<T1, T3> Pipe<T1, T2, T3>(this IExecutable<T1, T2> executable, Func<IExecutable<T1, T2>, IAsyncExecutable<T1, T3>> pipe) {
     executable.ThrowIfNullReference();
     ExceptionsHelper.ThrowIfNull(pipe, nameof(pipe));
     return pipe(executable);
-  }
-
-  /// <summary>
-  /// Adds cache behavior to an executable.
-  /// </summary>
-  /// <param name="executable">Source executable.</param>
-  /// <param name="storage">Cache storage used to resolve and persist values.</param>
-  /// <returns>Executable with caching behavior.</returns>
-  /// <exception cref="ArgumentNullException"><paramref name="storage"/> is <see langword="null"/>.</exception>
-  [Pure]
-  public static IExecutable<T1, T2> Cache<T1, T2>(this IExecutable<T1, T2> executable, ICacheStorage<T1, T2> storage) {
-    return executable.Apply(ExecutionOperator.Cache(storage));
-  }
-
-  /// <summary>
-  /// Adds metrics behavior to an executable.
-  /// </summary>
-  /// <param name="executable">Source executable.</param>
-  /// <param name="metrics">Metrics sink used to record execution information.</param>
-  /// <param name="tag">Optional tag passed to all metrics callbacks.</param>
-  /// <returns>Executable with metrics behavior.</returns>
-  /// <exception cref="ArgumentNullException"><paramref name="metrics"/> is <see langword="null"/>.</exception>
-  [Pure]
-  public static IExecutable<T1, T2> Metrics<T1, T2>(this IExecutable<T1, T2> executable, IMetrics<T1, T2> metrics, string tag = null) {
-    return executable.Apply(ExecutionOperator.Metrics(metrics, tag));
-  }
-
-  /// <summary>
-  /// Maps exceptions of a specific type thrown by an executable.
-  /// </summary>
-  /// <param name="executable">Source executable.</param>
-  /// <param name="map">Function that maps the caught exception to a new exception.</param>
-  /// <returns>Executable with exception mapping behavior.</returns>
-  /// <exception cref="ArgumentNullException"><paramref name="map"/> is <see langword="null"/>.</exception>
-  [Pure]
-  public static IExecutable<T1, T2> MapException<T1, T2, TFrom>(this IExecutable<T1, T2> executable, Func<TFrom, Exception> map) where TFrom : Exception {
-    return executable.Apply(ExecutionOperator.MapException<T1, T2, TFrom>(map));
   }
 
   /// <summary>
@@ -487,27 +351,6 @@ public static class ExecutableExtensions {
   public static ISubscriber<T> AsSubscriber<T>(this ISubscriber<T> subscriber) {
     subscriber.ThrowIfNullReference();
     return subscriber;
-  }
-
-  /// <summary>
-  /// Schedules executable calls on the thread pool.
-  /// </summary>
-  /// <returns>Thread-pool scheduled executable.</returns>
-  [Pure]
-  public static IExecutable<T, Unit> OnThreadPool<T>(this IExecutable<T, Unit> executable) {
-    return executable.Apply(ThreadPoolOperator<T>.Instance);
-  }
-
-  /// <summary>
-  /// Throttles repeated executions within the specified interval.
-  /// </summary>
-  /// <param name="executable">Source executable.</param>
-  /// <param name="interval">Minimum interval between forwarded executions.</param>
-  /// <returns>Executable with throttling behavior.</returns>
-  /// <exception cref="ArgumentException"><paramref name="interval"/> is less than or equal to zero.</exception>
-  [Pure]
-  public static IExecutable<T, Unit> Throttle<T>(this IExecutable<T, Unit> executable, TimeSpan interval) {
-    return executable.Apply(ExecutionOperator.Throttle<T>(interval));
   }
 
 }

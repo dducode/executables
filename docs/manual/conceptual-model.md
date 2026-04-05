@@ -15,8 +15,8 @@ An `IExecutable<TIn, TOut>` describes an operation. An `IExecutor<TIn, TOut>` is
 
 This split keeps the model flexible:
 
-- executables are reusable building blocks,
-- executors are the actual invocation boundary.
+- executables are reusable, pure composition building blocks,
+- executors are the runtime invocation boundary where policies and execution control are applied.
 
 ## Commands, Queries, and Events
 
@@ -38,7 +38,7 @@ Typical flow:
 1. create a small executable,
 2. compose it with other steps,
 3. adapt contracts where necessary,
-4. decorate it with operators or policies,
+4. get an executor and decorate runtime behavior,
 5. expose it as a query, command, or event-facing API.
 
 ## Sync and Async as Parallel APIs

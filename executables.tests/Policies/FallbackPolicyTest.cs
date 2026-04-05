@@ -9,35 +9,35 @@ public class FallbackPolicyTest {
 
   [Fact]
   public void RegularExecution() {
-    IQuery<Unit, Unit> query = Executable
+    IExecutor<Unit, Unit> executor = Executable
       .Identity()
-      .WithPolicy(builder => builder.Fallback<InvalidOperationException>((_, _) => default))
-      .AsQuery();
+      .GetExecutor()
+      .WithPolicy(builder => builder.Fallback<InvalidOperationException>((_, _) => default));
 
-    query.Send(default);
+    executor.Execute(default);
   }
 
   [Fact]
   public void ReturnFallbackOnException() {
-    IQuery<int, int> query = Executable
+    IExecutor<int, int> executor = Executable
       .Create<int, int>(int (_) => throw new InvalidOperationException())
-      .WithPolicy(builder => builder.Fallback<InvalidOperationException>((input, _) => input))
-      .AsQuery();
+      .GetExecutor()
+      .WithPolicy(builder => builder.Fallback<InvalidOperationException>((input, _) => input));
 
-    Assert.Equal(10, query.Send(10));
+    Assert.Equal(10, executor.Execute(10));
   }
 
   [Fact]
   public void ThrowExceptionFromFallbackHandler() {
-    IQuery<Unit, Unit> query = Executable
+    IExecutor<Unit, Unit> executor = Executable
       .Create<Unit, Unit>(Unit (_) => throw new InvalidOperationException())
+      .GetExecutor()
       .WithPolicy(builder => builder.Fallback<InvalidOperationException>((_, ex) => {
         ExceptionDispatchInfo.Capture(ex).Throw();
         return default;
-      }))
-      .AsQuery();
+      }));
 
-    Assert.Throws<InvalidOperationException>(() => query.Send(default));
+    Assert.Throws<InvalidOperationException>(() => executor.Execute(default));
   }
 
 }

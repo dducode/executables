@@ -23,8 +23,9 @@ Handler<int, bool> handler = executable.AsHandler();
 ## Adding Cross-Cutting Rules
 
 ```csharp
-IExecutable<string, Result<int>> parse =
+IExecutor<string, Result<int>> parse =
   Executable.Create((string text) => int.Parse(text))
+    .GetExecutor()
     .WithPolicy(policy => policy
       .ValidateInput(text => !string.IsNullOrWhiteSpace(text), "Value is required")
       .Fallback<FormatException>((text, ex) => 0))

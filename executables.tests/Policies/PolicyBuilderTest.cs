@@ -9,28 +9,29 @@ public class PolicyBuilderTest {
 
   [Fact]
   public void ApplyValidationPolicyToQuery() {
-    IQuery<int, int> query = Executable
+    IExecutor<int, int> executor = Executable
       .Create((int x) => x * 2)
-      .WithPolicy(builder => builder.ValidateInput(Validator.MoreThan(0)))
-      .AsQuery();
+      .GetExecutor()
+      .WithPolicy(builder => builder.ValidateInput(Validator.MoreThan(0)));
 
-    Assert.Equal(10, query.Send(5));
-    Assert.Throws<InvalidInputException>(() => query.Send(-1));
+    Assert.Equal(10, executor.Execute(5));
+    Assert.Throws<InvalidInputException>(() => executor.Execute(-1));
   }
 
   [Fact]
   public void AppendPoliciesToQuery() {
-    IQuery<int, int> query = Executable
+    IExecutor<int, int> executor = Executable
       .Create((int x) => x * 2)
+      .GetExecutor()
       .WithPolicy(builder => builder
         .ValidateInput(Validator.MoreThan(0))
         .ValidateOutput(Validator.LessThan(1000))
         .Fallback<InvalidOutputException>((x, _) => x)
-      ).AsQuery();
+      );
 
-    Assert.Equal(10, query.Send(5));
-    Assert.Throws<InvalidInputException>(() => query.Send(-1));
-    Assert.Equal(1000, query.Send(1000));
+    Assert.Equal(10, executor.Execute(5));
+    Assert.Throws<InvalidInputException>(() => executor.Execute(-1));
+    Assert.Equal(1000, executor.Execute(1000));
   }
 
 }

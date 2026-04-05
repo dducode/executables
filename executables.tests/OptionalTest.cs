@@ -19,22 +19,22 @@ public class OptionalTest {
   [Fact]
   public async Task SuppressCancellationException() {
     var cts = new CancellationTokenSource();
-    IAsyncQuery<int, Optional<int>> query = AsyncExecutable
+    IAsyncExecutor<int, Optional<int>> executor = AsyncExecutable
       .Create(async (int x, CancellationToken token) => {
         await Task.Delay(10, token);
         return x * 2;
       })
-      .SuppressException().OfType<OperationCanceledException>()
-      .AsQuery();
+      .GetExecutor()
+      .SuppressException().OfType<OperationCanceledException>();
 
-    Optional<int> optional = await query.Send(5, token: cts.Token);
+    Optional<int> optional = await executor.Execute(5, token: cts.Token);
 
     Assert.True(optional.HasValue);
     Assert.Equal(10, optional.Value);
     Assert.Equal(10, optional.ValueOrDefault);
 
     await cts.CancelAsync();
-    optional = await query.Send(2, token: cts.Token);
+    optional = await executor.Execute(2, token: cts.Token);
 
     Assert.False(optional.HasValue);
     Assert.Throws<InvalidOperationException>(() => optional.Value);
@@ -45,22 +45,22 @@ public class OptionalTest {
   public async Task SuppressManyExceptions() {
     var cts = new CancellationTokenSource();
 
-    IAsyncQuery<int, Optional<int>> query = AsyncExecutable
+    IAsyncExecutor<int, Optional<int>> executor = AsyncExecutable
       .Create(async ValueTask<int> (int _, CancellationToken token) => {
         await Task.Delay(10, token);
         throw new InvalidOperationException();
       })
+      .GetExecutor()
       .SuppressException().OfType<OperationCanceledException>()
-      .SuppressException().OfType<InvalidOperationException>()
-      .AsQuery();
+      .SuppressException().OfType<InvalidOperationException>();
 
-    Optional<int> optional = await query.Send(10, cts.Token);
+    Optional<int> optional = await executor.Execute(10, cts.Token);
     Assert.False(optional.HasValue);
     Assert.Equal(0, optional.ValueOrDefault);
 
     await cts.CancelAsync();
 
-    optional = await query.Send(10, cts.Token);
+    optional = await executor.Execute(10, cts.Token);
     Assert.False(optional.HasValue);
     Assert.Equal(0, optional.ValueOrDefault);
   }

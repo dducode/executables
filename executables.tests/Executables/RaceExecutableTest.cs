@@ -58,7 +58,7 @@ public class RaceExecutableTest {
   public async Task RaceWithLoserCancellation() {
     var canceled = false;
 
-    IAsyncQuery<int, int> query = AsyncExecutable
+    IAsyncExecutor<int, int> executor = AsyncExecutable
       .Race<int, int>(
         async (x, token) => {
           try {
@@ -74,10 +74,10 @@ public class RaceExecutableTest {
           await Task.Delay(10, token);
           return x * 2;
         })
-      .WithPolicy(builder => builder.CancelAfterCompletion())
-      .AsQuery();
+      .GetExecutor()
+      .WithPolicy(builder => builder.CancelAfterCompletion());
 
-    Assert.Equal(2, await query.Send(1));
+    Assert.Equal(2, await executor.Execute(1));
     Assert.True(canceled);
   }
 

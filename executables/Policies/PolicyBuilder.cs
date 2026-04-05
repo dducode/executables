@@ -1,9 +1,9 @@
 using System.Diagnostics.Contracts;
-using Executables.Core.Operators;
 using Executables.Core.Policies;
 using Executables.Fallbacks;
 using Executables.Guards;
 using Executables.Internal;
+using Executables.Operations;
 using Executables.Validation;
 
 namespace Executables.Policies;
@@ -92,10 +92,10 @@ public readonly struct PolicyBuilder<T1, T2>() {
   }
 
   [Pure]
-  internal IExecutable<T1, T2> Apply(IExecutable<T1, T2> executable) {
+  internal IExecutor<T1, T2> Apply(IExecutor<T1, T2> executor) {
     return _policies.Count == 0
-      ? executable
-      : _policies.Aggregate(executable, (current, policy) => new ExecutableOperator<T1, T1, T2, T2>(policy, current));
+      ? executor
+      : _policies.Aggregate(executor, (current, policy) => current.Apply(policy));
   }
 
 }

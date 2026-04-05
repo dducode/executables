@@ -9,29 +9,29 @@ public class TimeoutPolicyTest {
 
   [Fact]
   public async Task CallWithTimeout() {
-    IAsyncQuery<int, int> fastQuery = AsyncExecutable
+    IAsyncExecutor<int, int> fastQuery = AsyncExecutable
       .Create(async (int num, CancellationToken token) => {
         await Task.Delay(10, token);
         return num * 2;
       })
-      .WithPolicy(TimeoutPolicy)
-      .AsQuery();
+      .GetExecutor()
+      .WithPolicy(TimeoutPolicy);
 
-    Assert.Equal(20, await fastQuery.Send(10));
+    Assert.Equal(20, await fastQuery.Execute(10));
 
-    IAsyncQuery<int, int> slowQuery = AsyncExecutable
+    IAsyncExecutor<int, int> slowQuery = AsyncExecutable
       .Create(async (int num, CancellationToken token) => {
         await Task.Delay(1000, token);
         return num + 10;
       })
-      .WithPolicy(TimeoutPolicy)
-      .AsQuery();
+      .GetExecutor()
+      .WithPolicy(TimeoutPolicy);
 
-    await Assert.ThrowsAsync<TimeoutException>(async () => await slowQuery.Send(10));
+    await Assert.ThrowsAsync<TimeoutException>(async () => await slowQuery.Execute(10));
     return;
 
     void TimeoutPolicy(AsyncPolicyBuilder<int, int> builder) {
-      builder.Timeout(TimeSpan.FromMilliseconds(500));
+      builder.Timeout(TimeSpan.FromMilliseconds(100));
     }
   }
 

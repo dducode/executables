@@ -1,7 +1,7 @@
 using System.Diagnostics.Contracts;
-using Executables.Core.Operators;
 using Executables.Core.Pipelines;
 using Executables.Internal;
+using Executables.Operations;
 
 namespace Executables.Pipelines;
 
@@ -33,14 +33,15 @@ public class AsyncPipelineBuilder<T1, T2, T3, T4> {
   }
 
   /// <summary>
-  /// Finalizes async composition by binding terminal async executable
+  /// Finalizes async composition by binding a terminal executor to the pipeline.
   /// </summary>
-  /// <param name="executable">Terminal async executable invoked when chain reaches the end.</param>
-  /// <returns>Composed async executable that represents the entire pipeline chain.</returns>
+  /// <param name="executor">Terminal executor invoked when the pipeline reaches the end.</param>
+  /// <returns>Composed async executor that represents the entire pipeline chain.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="executor"/> is <see langword="null"/>.</exception>
   [Pure]
-  public virtual IAsyncExecutable<T1, T4> End(IAsyncExecutable<T2, T3> executable) {
-    ExceptionsHelper.ThrowIfNull(executable, nameof(executable));
-    return new AsyncExecutableOperator<T1, T2, T3, T4>(_middleware, executable);
+  public virtual IAsyncExecutor<T1, T4> End(IAsyncExecutor<T2, T3> executor) {
+    ExceptionsHelper.ThrowIfNull(executor, nameof(executor));
+    return executor.Apply(_middleware);
   }
 
 }

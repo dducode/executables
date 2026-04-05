@@ -1,54 +1,50 @@
 using Executables.Context;
 using Executables.Pipelines;
-using Executables.Queries;
 using JetBrains.Annotations;
-using Xunit.Abstractions;
 
 namespace Executables.Tests.Pipelines;
 
 [TestSubject(typeof(Middleware<,,,>))]
 [TestSubject(typeof(AsyncMiddleware<,,,>))]
-public class MiddlewareTest(ITestOutputHelper output) {
+public class MiddlewareTest {
 
   [Fact]
   public void NestedMiddlewareInvocationTest() {
     var firstStarted = false;
     var secondStarted = false;
 
+    var firstEnd = false;
     var secondEnd = false;
     var thirdEnd = false;
 
-    IQuery<Unit, Unit> query = Executable
+    IExecutor<Unit, Unit> executor = Pipeline
       .Use(next => {
-        output.WriteLine("Start first");
         firstStarted = true;
         next.Invoke();
         Assert.True(secondEnd);
-        output.WriteLine("End first");
+        firstEnd = true;
       })
       .Use(next => {
         Assert.True(firstStarted);
-        output.WriteLine("Start second");
         secondStarted = true;
         next.Invoke();
         Assert.True(thirdEnd);
-        output.WriteLine("End second");
         secondEnd = true;
       })
-      .End(() => {
+      .End(Executable.Create(() => {
         Assert.True(secondStarted);
-        output.WriteLine("Finish");
         thirdEnd = true;
-      }).AsQuery();
+      }));
 
-    query.Send();
+    executor.Execute();
+    Assert.True(firstEnd);
   }
 
   [Theory]
   [InlineData("00:05:00", "00:05:05", 5)]
   [InlineData("00:00:10", "00:00:00", -10)]
   public void PipelineWithDifferentTypesTest(string input, string expected, int addedSeconds) {
-    IQuery<string, string> query = Executable
+    IExecutor<string, string> executor = Pipeline
       .Use((string time, Func<TimeSpan, TimeSpan> next) => {
         TimeSpan timeSpan = TimeSpan.Parse(time);
         TimeSpan result = next.Invoke(timeSpan);
@@ -59,44 +55,41 @@ public class MiddlewareTest(ITestOutputHelper output) {
         long result = next.Invoke(seconds);
         return TimeSpan.FromSeconds(result);
       })
-      .End(seconds => (long)(seconds + addedSeconds))
-      .AsQuery();
+      .End(Executable.Create((double seconds) => (long)(seconds + addedSeconds)));
 
-    Assert.Equal(expected, query.Send(input));
+    Assert.Equal(expected, executor.Execute(input));
   }
 
   [Fact]
   public void NeverInvokeNextMiddleware() {
-    IQuery<int, int> query = Executable
+    IExecutor<int, int> executor = Pipeline
       .Use((int x, Action _) => x * 2)
-      .End(() => Assert.Fail())
-      .AsQuery();
+      .End(Executable.Create(() => Assert.Fail()));
 
-    Assert.Equal(20, query.Send(10));
+    Assert.Equal(20, executor.Execute(10));
   }
 
   [Theory]
   [InlineData("00:05:00", "00:05:05", 5)]
   [InlineData("00:00:10", "00:00:00", -10)]
   public void InvokePipelineWithContext(string input, string expected, int addedSeconds) {
-    IQuery<string, string> query = Executable
+    IExecutor<string, string> executor = Pipeline
       .Use((string time, Func<TimeSpan, TimeSpan> next) => {
         TimeSpan timeSpan = TimeSpan.Parse(time);
         TimeSpan result = next.Invoke(timeSpan);
         return result.ToString();
       })
-      .End(timeSpan => timeSpan + TimeSpan.FromSeconds(ExecutableContext.Current.Get<int>(nameof(addedSeconds))))
-      .WithContext(context => context.Set(nameof(addedSeconds), addedSeconds))
-      .AsQuery();
+      .End(Executable.Create((TimeSpan timeSpan) => timeSpan + TimeSpan.FromSeconds(ExecutableContext.Current.Get<int>(nameof(addedSeconds)))))
+      .WithContext(context => context.Set(nameof(addedSeconds), addedSeconds));
 
-    Assert.Equal(expected, query.Send(input));
+    Assert.Equal(expected, executor.Execute(input));
   }
 
   [Theory]
   [InlineData("00:05:00", "00:05:05", 5)]
   [InlineData("00:00:10", "00:00:00", -10)]
   public async Task AsyncPipelineTest(string input, string expected, int addedSeconds) {
-    IAsyncQuery<string, string> query = AsyncExecutable
+    IAsyncExecutor<string, string> executor = AsyncPipeline
       .Use(async (string time, AsyncFunc<TimeSpan, TimeSpan> next, CancellationToken token) => {
         TimeSpan timeSpan = TimeSpan.Parse(time);
         await Task.Delay(50, token);
@@ -109,17 +102,16 @@ public class MiddlewareTest(ITestOutputHelper output) {
         long result = await next.Invoke(seconds, token);
         return TimeSpan.FromSeconds(result);
       })
-      .End((seconds, _) => ValueTask.FromResult((long)(seconds + addedSeconds)))
-      .AsQuery();
+      .End(AsyncExecutable.Create((double seconds, CancellationToken _) => ValueTask.FromResult((long)(seconds + addedSeconds))));
 
-    Assert.Equal(expected, await query.Send(input));
+    Assert.Equal(expected, await executor.Execute(input));
   }
 
   [Fact]
   public async Task AsyncPipelineCancel() {
     var cts = new CancellationTokenSource();
 
-    IAsyncQuery<int, int> query = AsyncExecutable
+    IAsyncExecutor<int, int> executor = AsyncPipeline
       .Use(async (int num, AsyncAction next, CancellationToken token) => {
         await Task.Delay(50, token);
         await cts.CancelAsync();
@@ -127,13 +119,12 @@ public class MiddlewareTest(ITestOutputHelper output) {
         Assert.Equal(cts.Token, ex.CancellationToken);
         return num;
       })
-      .End(async token => {
+      .End(AsyncExecutable.Create(async token => {
         await Task.Delay(10, token);
         Assert.Fail();
-      })
-      .AsQuery();
+      }));
 
-    Assert.Equal(10, await query.Send(10, cts.Token));
+    Assert.Equal(10, await executor.Execute(10, cts.Token));
   }
 
 }

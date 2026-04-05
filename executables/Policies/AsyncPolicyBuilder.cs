@@ -1,9 +1,9 @@
 using System.Diagnostics.Contracts;
-using Executables.Core.Operators;
 using Executables.Core.Policies;
 using Executables.Fallbacks;
 using Executables.Guards;
 using Executables.Internal;
+using Executables.Operations;
 using Executables.RetryRules;
 using Executables.Validation;
 
@@ -133,10 +133,10 @@ public readonly struct AsyncPolicyBuilder<T1, T2>() {
   }
 
   [Pure]
-  internal IAsyncExecutable<T1, T2> Apply(IAsyncExecutable<T1, T2> executable) {
+  internal IAsyncExecutor<T1, T2> Apply(IAsyncExecutor<T1, T2> executor) {
     return _policies.Count == 0
-      ? executable
-      : _policies.Aggregate(executable, (current, policy) => new AsyncExecutableOperator<T1, T1, T2, T2>(policy, current));
+      ? executor
+      : _policies.Aggregate(executor, (current, policy) => current.Apply(policy));
   }
 
 }

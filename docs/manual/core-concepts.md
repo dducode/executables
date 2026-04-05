@@ -14,8 +14,13 @@ The asynchronous counterparts follow the same idea:
 - `IAsyncExecutable<TIn, TOut>`
 - `IAsyncExecutor<TIn, TOut>`
 
-This is the foundation for reusable, strongly typed application behavior. Most composition starts here through
-operators such as `Then(...)`, `Compose(...)`, `Fork(...)`, and related decorators.
+This is the foundation for reusable, strongly typed application behavior:
+
+- executable objects define composition and contract shape,
+- executor objects define runtime execution and runtime decoration.
+
+Most composition starts on `IExecutable` through operators such as `Then(...)`, `Compose(...)`, `Fork(...)`, and
+`Map(...)`.
 
 ## Executable Contracts
 
@@ -56,15 +61,15 @@ needs to be attached, shared, replaced, or merged explicitly.
 
 ## Operators and Policies
 
-Operators wrap execution around an executor.
+Operators and policies wrap execution around an executor.
 
 They can either:
 
 - preserve the contract, via `BehaviorOperator` / `AsyncBehaviorOperator`,
 - adapt the contract, via `ExecutionOperator` / `AsyncExecutionOperator`.
 
-Policies are a specialized operator family focused on execution rules such as validation, guards, retry, fallback,
-timeout, and reentrancy control.
+Policies are a specialized runtime family focused on validation, guards, retry, fallback, timeout, and reentrancy
+control.
 
 ## Result Shapes
 

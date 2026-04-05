@@ -3,7 +3,7 @@
 ## Operator Model
 
 Operators are wrappers around executors. They define how execution is transformed before and after the wrapped
-executable runs.
+executor runs.
 
 The core abstractions are:
 
@@ -19,11 +19,12 @@ The core abstractions are:
 Operators are attached with `Apply(...)`.
 
 ```csharp
-IExecutable<string, string> pipeline =
+IExecutor<string, string> pipeline =
   Executable.Create((string text) => int.Parse(text))
-    .Apply(ExecutionOperator.MapException<int, int, FormatException>(
-      ex => new InvalidOperationException("Invalid number", ex)))
-    .Then(value => $"Value: {value}");
+    .GetExecutor()
+    .MapException((FormatException ex) => new InvalidOperationException("Invalid number", ex))
+    .Tap(value => Console.WriteLine($"Parsed: {value}"))
+    .Apply(ExecutionOperator.Create((string text, IExecutor<string, int> next) => $"Value: {next.Execute(text)}"));
 ```
 
 ## Built-in High-Level Operators
@@ -38,8 +39,9 @@ Common operator-based helpers include:
 - `Metrics(...)`
 
 ```csharp
-IExecutable<string, Optional<int>> parse =
+IExecutor<string, Optional<int>> parse =
   Executable.Create((string text) => int.Parse(text))
+    .GetExecutor()
     .SuppressException()
     .OfType<FormatException>();
 ```
@@ -93,8 +95,9 @@ IQuery<string, string> query = Pipeline<string, string>
 When built-in operators are not enough, create a custom operator type or build one from a delegate.
 
 ```csharp
-IExecutable<string, string> trimmed =
+IExecutor<string, string> trimmed =
   Executable.Create((string value) => value)
+    .GetExecutor()
     .Apply(ExecutionOperator.Create((string input, IExecutor<string, string> next) =>
       next.Execute(input.Trim())));
 ```

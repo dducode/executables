@@ -1,5 +1,4 @@
 using Executables.Handling;
-using Executables.Queries;
 using JetBrains.Annotations;
 
 namespace Executables.Tests.Extensions;
@@ -64,17 +63,17 @@ public class ResultTest {
   [InlineData("20", 20)]
   [InlineData("30", 30)]
   public void TryExecuteQuery(string expected, int value) {
-    var baseQuery = new Query<int, string>();
-    IDisposable handle = baseQuery.Handle(Executable.Create((int x) => x.ToString()).AsHandler());
-    IQuery<int, Result<string>> query = baseQuery.WithResult().AsQuery();
+    var query = new Query<int, string>();
+    IDisposable handle = query.Handle(Executable.Create((int x) => x.ToString()).AsHandler());
+    IExecutor<int, Result<string>> executor = query.GetExecutor().WithResult();
 
-    Result<string> result = query.Send(value);
+    Result<string> result = executor.Execute(value);
     Assert.True(result.IsSuccess);
     Assert.Equal(expected, result.Value);
 
     handle.Dispose();
 
-    result = query.Send(value);
+    result = executor.Execute(value);
     Assert.True(result.IsFailure);
     Assert.True(result.Exception is MissingHandlerException);
     Assert.Throws<MissingHandlerException>(() => result.ThrowIfFailure());
@@ -87,15 +86,15 @@ public class ResultTest {
   public async Task TryExecuteAsyncQuery(string expected, int value) {
     var baseQuery = new AsyncQuery<int, string>();
     IDisposable handle = baseQuery.Handle(AsyncExecutable.Create((int x, CancellationToken _) => ValueTask.FromResult(x.ToString())).AsHandler());
-    IAsyncQuery<int, Result<string>> query = baseQuery.WithResult().AsQuery();
+    IAsyncExecutor<int, Result<string>> executor = baseQuery.GetExecutor().WithResult();
 
-    Result<string> result = await query.Send(value);
+    Result<string> result = await executor.Execute(value);
     Assert.True(result.IsSuccess);
     Assert.Equal(expected, result.Value);
 
     handle.Dispose();
 
-    result = await query.Send(value);
+    result = await executor.Execute(value);
     Assert.True(result.IsFailure);
     Assert.True(result.Exception is MissingHandlerException);
     Assert.Throws<MissingHandlerException>(() => result.ThrowIfFailure());
@@ -103,18 +102,18 @@ public class ResultTest {
 
   [Fact]
   public async Task TryExecuteAsyncQueryWithCanceledToken() {
-    IAsyncQuery<Unit, Result<Unit>> query = AsyncExecutable
+    IAsyncExecutor<Unit, Result<Unit>> executor = AsyncExecutable
       .Create((Unit _, CancellationToken token) => {
         token.ThrowIfCancellationRequested();
         return default;
       })
-      .WithResult()
-      .AsQuery();
+      .GetExecutor()
+      .WithResult();
 
     var cts = new CancellationTokenSource();
 
     await cts.CancelAsync();
-    Result<Unit> result = await query.Send(cts.Token);
+    Result<Unit> result = await executor.Execute(cts.Token);
     Assert.True(result.IsFailure);
     Assert.True(result.Exception is OperationCanceledException);
     Assert.Throws<OperationCanceledException>(() => result.ThrowIfFailure());

@@ -10,8 +10,9 @@ library gives a small set of abstractions for:
 - executing work,
 - decorating work with cross-cutting behavior.
 
-At the center of the model is the idea that commands, queries, event publishing, mapping, validation, branching, and
-policy-based execution can all be represented as executable pipelines with explicit input and output contracts.
+At the center of the model is the idea that commands, queries, event publishing, mapping, and branching can all be
+represented as executable pipelines with explicit input and output contracts, while validation and policy-based
+execution are applied on executors at runtime.
 
 ## What Problems It Solves
 

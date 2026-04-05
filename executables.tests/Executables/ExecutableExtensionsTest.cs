@@ -27,9 +27,6 @@ public class ExecutableExtensionsTest {
     Assert.Throws<ArgumentNullException>(() => fork.Merge((Func<Unit, Unit, Unit>)null));
 
     Assert.Throws<ArgumentNullException>(() => identity.Map((Func<Unit, Unit>)null, (Func<Unit, Unit>)null));
-
-    Assert.Throws<ArgumentNullException>(() => identity.Tap((Action<Unit>)null));
-    Assert.Throws<ArgumentNullException>(() => identity.Tap(null));
   }
 
   [Fact]
@@ -53,9 +50,6 @@ public class ExecutableExtensionsTest {
     Assert.Throws<ArgumentNullException>(() => fork.Merge((Func<Unit, Unit, Unit>)null));
 
     Assert.Throws<ArgumentNullException>(() => identity.Map((Func<Unit, Unit>)null, (Func<Unit, Unit>)null));
-
-    Assert.Throws<ArgumentNullException>(() => identity.Tap((Action<Unit>)null));
-    Assert.Throws<ArgumentNullException>(() => identity.Tap(null));
   }
 
 }

@@ -1,17 +1,19 @@
 # Policies
 
-Policies are a specialized operator family focused on execution rules rather than on business logic.
+Policies are a specialized runtime family focused on execution rules rather than on business logic.
+They are applied to executors, not to executable composition objects.
 
 ## Applying Policies
 
-`WithPolicy(...)` is the main entry point for policy composition.
+`WithPolicy(...)` is the main entry point for policy composition on `IExecutor` / `IAsyncExecutor`.
 
 The builder supports both block-style configuration and fluent chaining. Fluent style is usually more compact for
 straight-line policy pipelines.
 
 ```csharp
-IExecutable<string, int> parse =
+IExecutor<string, int> parse =
   Executable.Create((string text) => int.Parse(text))
+    .GetExecutor()
     .WithPolicy(policy => policy
       .ValidateInput(text => !string.IsNullOrWhiteSpace(text), "Value is required")
       .Fallback<FormatException>((text, ex) => 0));
@@ -19,11 +21,12 @@ IExecutable<string, int> parse =
 
 ## Validation
 
-Validation policies belong around executable boundaries, not inside handlers.
+Validation policies belong around execution boundaries, not inside handlers.
 
 ```csharp
-IExecutable<string, int> parseLength =
+IExecutor<string, int> parseLength =
   Executable.Create((string text) => text.Trim().Length)
+    .GetExecutor()
     .WithPolicy(policy => policy
       .ValidateInput(text => text.Length <= 100, "Input is too long")
       .ValidateOutput(length => length >= 0, "Length must be non-negative"));
@@ -36,8 +39,9 @@ Guards express external state or access rules. When a guard denies execution, it
 ```csharp
 bool isEnabled = true;
 
-IExecutable<Unit, string> run =
+IExecutor<Unit, string> run =
   Executable.Create(() => "Started")
+    .GetExecutor()
     .WithPolicy(policy => policy.Guard(() => isEnabled, "Operation is disabled"));
 ```
 
@@ -46,12 +50,13 @@ IExecutable<Unit, string> run =
 Async policies support timeout and retry; both sync and async policies support fallback.
 
 ```csharp
-IAsyncExecutable<int, string> load =
+IAsyncExecutor<int, string> load =
   AsyncExecutable.Create(async (int id, CancellationToken token) =>
   {
     await Task.Delay(50, token);
     return $"User-{id}";
   })
+  .GetExecutor()
   .WithPolicy(policy => policy
     .Timeout(TimeSpan.FromSeconds(2))
     .Retry<TimeoutException>(

@@ -23,4 +23,12 @@ IQuery<string, string> query = pipeline.AsQuery();
 string result = query.Send("  demo  ");
 ```
 
-Add cross-cutting behavior with operators or policies when needed.
+Add cross-cutting runtime behavior on the executor when needed:
+
+```csharp
+IExecutor<string, Result<string>> runtime =
+  pipeline
+    .GetExecutor()
+    .WithPolicy(policy => policy.ValidateInput(text => text.Length <= 100, "Input is too long"))
+    .WithResult();
+```

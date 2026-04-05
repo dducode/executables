@@ -1,6 +1,5 @@
 using Executables.Core.Policies;
 using Executables.Policies;
-using Executables.Queries;
 using JetBrains.Annotations;
 
 namespace Executables.Tests.Policies;
@@ -10,37 +9,37 @@ public class PreventReentrancePolicyTest {
 
   [Fact]
   public void SequentialExecute() {
-    IQuery<Unit, Unit> query = Executable.Identity().WithPolicy(builder => builder.PreventReentrance()).AsQuery();
+    IExecutor<Unit, Unit> executor = Executable.Identity().GetExecutor().WithPolicy(builder => builder.PreventReentrance());
 
-    query.Send();
-    query.Send();
+    executor.Execute();
+    executor.Execute();
   }
 
   [Fact]
   public void NestedExecution() {
     var query = new Query<Unit, Unit>();
-    IQuery<Unit, Unit> inner = query.WithPolicy(builder => builder.PreventReentrance()).AsQuery();
-    query.Handle(Executable.Create(void () => inner.Send()).AsHandler());
-    Assert.Throws<ReentranceException>(() => inner.Send());
+    IExecutor<Unit, Unit> executor = query.GetExecutor().WithPolicy(builder => builder.PreventReentrance());
+    query.Handle(Executable.Create(void () => executor.Execute()).AsHandler());
+    Assert.Throws<ReentranceException>(() => executor.Execute());
   }
 
   [Fact]
   public void ParallelSequentialExecute() {
-    IQuery<Unit, Unit> query = Executable.Identity().WithPolicy(builder => builder.PreventReentrance()).AsQuery();
+    IExecutor<Unit, Unit> executor = Executable.Identity().GetExecutor().WithPolicy(builder => builder.PreventReentrance());
 
     Parallel.For(0, 10, _ => {
-      query.Send();
-      query.Send();
+      executor.Execute();
+      executor.Execute();
     });
   }
 
   [Fact]
   public void ParallelNestedExecution() {
     var query = new Query<Unit, Unit>();
-    IQuery<Unit, Unit> inner = query.WithPolicy(builder => builder.PreventReentrance()).AsQuery();
-    query.Handle(Executable.Create(void () => inner.Send()).AsHandler());
+    IExecutor<Unit, Unit> executor = query.GetExecutor().WithPolicy(builder => builder.PreventReentrance());
+    query.Handle(Executable.Create(void () => executor.Execute()).AsHandler());
 
-    Parallel.For(0, 10, _ => Assert.Throws<ReentranceException>(() => inner.Send()));
+    Parallel.For(0, 10, _ => Assert.Throws<ReentranceException>(() => executor.Execute()));
   }
 
 }

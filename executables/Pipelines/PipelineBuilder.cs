@@ -1,7 +1,7 @@
 using System.Diagnostics.Contracts;
-using Executables.Core.Operators;
 using Executables.Core.Pipelines;
 using Executables.Internal;
+using Executables.Operations;
 
 namespace Executables.Pipelines;
 
@@ -33,14 +33,15 @@ public class PipelineBuilder<T1, T2, T3, T4> {
   }
 
   /// <summary>
-  /// Finalizes composition by binding terminal executable to pipeline.
+  /// Finalizes composition by binding a terminal executor to the pipeline.
   /// </summary>
-  /// <param name="executable">Terminal executable invoked when pipeline reaches the end.</param>
-  /// <returns>Composed executable that represents the entire pipeline chain.</returns>
+  /// <param name="executor">Terminal executor invoked when the pipeline reaches the end.</param>
+  /// <returns>Composed executor that represents the entire pipeline chain.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="executor"/> is <see langword="null"/>.</exception>
   [Pure]
-  public virtual IExecutable<T1, T4> End(IExecutable<T2, T3> executable) {
-    ExceptionsHelper.ThrowIfNull(executable, nameof(executable));
-    return new ExecutableOperator<T1, T2, T3, T4>(_middleware, executable);
+  public virtual IExecutor<T1, T4> End(IExecutor<T2, T3> executor) {
+    ExceptionsHelper.ThrowIfNull(executor, nameof(executor));
+    return executor.Apply(_middleware);
   }
 
 }

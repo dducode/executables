@@ -1,5 +1,5 @@
 using System.Diagnostics.Contracts;
-using Executables.Core.Operators;
+using Executables.Core.Executors;
 using Executables.Internal;
 
 namespace Executables.Operations;
@@ -7,31 +7,31 @@ namespace Executables.Operations;
 public static class OperationsExtensions {
 
   /// <summary>
-  /// Applies an execution operator to an executable.
+  /// Applies an execution operator to an executor.
   /// </summary>
-  /// <param name="executable">Source executable.</param>
+  /// <param name="executor">Source executor.</param>
   /// <param name="executionOperator">Operator to apply.</param>
-  /// <returns>Wrapped executable.</returns>
+  /// <returns>Wrapped executor.</returns>
   /// <exception cref="ArgumentNullException"><paramref name="executionOperator"/> is <see langword="null"/>.</exception>
   [Pure]
-  public static IExecutable<T1, T4> Apply<T1, T2, T3, T4>(this IExecutable<T2, T3> executable, ExecutionOperator<T1, T2, T3, T4> executionOperator) {
-    executable.ThrowIfNullReference();
+  public static IExecutor<T1, T4> Apply<T1, T2, T3, T4>(this IExecutor<T2, T3> executor, ExecutionOperator<T1, T2, T3, T4> executionOperator) {
+    executor.ThrowIfNullReference();
     ExceptionsHelper.ThrowIfNull(executionOperator, nameof(executionOperator));
-    return new ExecutableOperator<T1, T2, T3, T4>(executionOperator, executable);
+    return new OperatedExecutor<T1, T2, T3, T4>(executor, executionOperator);
   }
 
   /// <summary>
-  /// Applies an execution operator to an executable.
+  /// Applies an execution operator to an executor.
   /// </summary>
   /// <param name="executionOperator">Operator to apply.</param>
-  /// <param name="executable">Source executable.</param>
-  /// <returns>Wrapped executable.</returns>
-  /// <exception cref="ArgumentNullException"><paramref name="executable"/> is <see langword="null"/>.</exception>
+  /// <param name="executor">Source executor.</param>
+  /// <returns>Wrapped executor.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="executor"/> is <see langword="null"/>.</exception>
   [Pure]
-  public static IExecutable<T1, T4> Apply<T1, T2, T3, T4>(this ExecutionOperator<T1, T2, T3, T4> executionOperator, IExecutable<T2, T3> executable) {
+  public static IExecutor<T1, T4> Apply<T1, T2, T3, T4>(this ExecutionOperator<T1, T2, T3, T4> executionOperator, IExecutor<T2, T3> executor) {
     executionOperator.ThrowIfNullReference();
-    ExceptionsHelper.ThrowIfNull(executable, nameof(executable));
-    return new ExecutableOperator<T1, T2, T3, T4>(executionOperator, executable);
+    ExceptionsHelper.ThrowIfNull(executor, nameof(executor));
+    return new OperatedExecutor<T1, T2, T3, T4>(executor, executionOperator);
   }
 
 }
