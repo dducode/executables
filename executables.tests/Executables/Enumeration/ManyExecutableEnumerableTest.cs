@@ -10,7 +10,9 @@ public class ManyExecutableEnumerableTest(ITestOutputHelper output) {
   [Fact]
   public void EnumeratePlayersItems() {
     List<Player> players = GetPlayers();
-    IQuery<Player, List<Item>> query = Executable.Create((Player player) => player.items).AsQuery();
+    IExecutor<Player, List<Item>> query = Executable
+      .Create((Player player) => player.items)
+      .GetExecutor();
 
     foreach (Item item in query.ForEachMany(players))
       output.WriteLine($"Item id: {item.id}");

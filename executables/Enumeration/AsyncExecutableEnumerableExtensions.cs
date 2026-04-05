@@ -8,17 +8,20 @@ namespace Executables.Enumeration;
 public static class AsyncExecutableEnumerableExtensions {
 
   /// <summary>
-  /// Lazily applies an asynchronous query to each element of an asynchronous sequence.
+  /// Creates a lazy async projection that executes an async executor for each source element.
   /// </summary>
-  /// <param name="query">Query applied to each source item.</param>
+  /// <typeparam name="T1">Type of source sequence elements.</typeparam>
+  /// <typeparam name="T2">Type of produced result elements.</typeparam>
+  /// <param name="executor">Executor applied to each source element during enumeration.</param>
   /// <param name="enumerable">Source asynchronous sequence.</param>
-  /// <returns>Lazy asynchronous enumerable that executes <paramref name="query"/> during iteration.</returns>
+  /// <returns>Lazy asynchronous enumerable that executes <paramref name="executor"/> while iterating.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="enumerable"/> is <see langword="null"/>.</exception>
   [Pure]
   [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
-  public static AsyncExecutableEnumerable<T1, T2> ForEach<T1, T2>(this IAsyncQuery<T1, T2> query, IAsyncEnumerable<T1> enumerable) {
-    query.ThrowIfNullReference();
+  public static AsyncExecutableEnumerable<T1, T2> ForEach<T1, T2>(this IAsyncExecutor<T1, T2> executor, IAsyncEnumerable<T1> enumerable) {
+    executor.ThrowIfNullReference();
     ExceptionsHelper.ThrowIfNull(enumerable, nameof(enumerable));
-    return new AsyncExecutableEnumerable<T1, T2>(query, enumerable);
+    return new AsyncExecutableEnumerable<T1, T2>(executor, enumerable);
   }
 
 }

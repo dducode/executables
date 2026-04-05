@@ -16,7 +16,10 @@ public class ExecutableEnumerableTest(ITestOutputHelper output) {
     for (var i = 0; i < list.Capacity; i++)
       list.Add(fixture.Create<int>());
 
-    IQuery<int, TimeSpan> query = Executable.Create((int seconds) => TimeSpan.FromSeconds(seconds)).AsQuery();
+    IExecutor<int, TimeSpan> query = Executable
+      .Create((int seconds) => TimeSpan.FromSeconds(seconds))
+      .GetExecutor();
+
     foreach (TimeSpan time in query.ForEach(list))
       output.WriteLine($"Time: {time}");
   }
@@ -29,7 +32,10 @@ public class ExecutableEnumerableTest(ITestOutputHelper output) {
     for (var i = 0; i < list.Capacity; i++)
       list.Add(fixture.Create<int>());
 
-    IQuery<int, TimeSpan> query = Executable.Create((int seconds) => TimeSpan.FromSeconds(seconds)).AsQuery();
+    IExecutor<int, TimeSpan> query = Executable
+      .Create((int seconds) => TimeSpan.FromSeconds(seconds))
+      .GetExecutor();
+
     Parallel.ForEach(query.ForEach(list), time => output.WriteLine($"Time: {time}"));
   }
 
@@ -41,7 +47,10 @@ public class ExecutableEnumerableTest(ITestOutputHelper output) {
     for (var i = 0; i < array.Length; i++)
       array[i] = fixture.Create<int>();
 
-    IQuery<int, TimeSpan> query = Executable.Create((int seconds) => TimeSpan.FromSeconds(seconds)).AsQuery();
+    IExecutor<int, TimeSpan> query = Executable
+      .Create((int seconds) => TimeSpan.FromSeconds(seconds))
+      .GetExecutor();
+
     foreach (TimeSpan time in query.ForEach(array))
       output.WriteLine($"Time: {time}");
   }
@@ -54,7 +63,10 @@ public class ExecutableEnumerableTest(ITestOutputHelper output) {
     for (var i = 0; i < array.Length; i++)
       array[i] = fixture.Create<int>();
 
-    IQuery<int, TimeSpan> query = Executable.Create((int seconds) => TimeSpan.FromSeconds(seconds)).AsQuery();
+    IExecutor<int, TimeSpan> query = Executable
+      .Create((int seconds) => TimeSpan.FromSeconds(seconds))
+      .GetExecutor();
+
     Parallel.ForEach(query.ForEach(array), time => output.WriteLine($"Time: {time}"));
   }
 

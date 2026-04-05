@@ -16,9 +16,9 @@ public class AsyncExecutableEnumerableTest(ITestOutputHelper output) {
     for (var i = 0; i < 5; i++)
       list.Add(fixture.Create<int>());
 
-    IAsyncQuery<int, TimeSpan> query = AsyncExecutable
+    IAsyncExecutor<int, TimeSpan> query = AsyncExecutable
       .Create((int num, CancellationToken _) => ValueTask.FromResult(TimeSpan.FromSeconds(num)))
-      .AsQuery();
+      .GetExecutor();
 
     await foreach (TimeSpan time in query.ForEach(GetItems()))
       output.WriteLine($"Time: {time}");

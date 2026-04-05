@@ -7,107 +7,129 @@ namespace Executables.Enumeration;
 public static class ExecutableEnumerableExtensions {
 
   /// <summary>
-  /// Lazily applies a query to each element of an enumerable sequence.
+  /// Creates a lazy projection that executes an executor for each source element.
   /// </summary>
-  /// <param name="query">Query applied to each source item.</param>
+  /// <typeparam name="T1">Type of source sequence elements.</typeparam>
+  /// <typeparam name="T2">Type of produced result elements.</typeparam>
+  /// <param name="executor">Executor applied to each source element during enumeration.</param>
   /// <param name="enumerable">Source sequence.</param>
-  /// <returns>Lazy enumerable that executes <paramref name="query"/> during iteration.</returns>
+  /// <returns>Lazy enumerable that executes <paramref name="executor"/> while iterating.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="enumerable"/> is <see langword="null"/>.</exception>
   [Pure]
   [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
-  public static ExecutableEnumerable<T1, T2> ForEach<T1, T2>(this IQuery<T1, T2> query, IEnumerable<T1> enumerable) {
-    query.ThrowIfNullReference();
+  public static ExecutableEnumerable<T1, T2> ForEach<T1, T2>(this IExecutor<T1, T2> executor, IEnumerable<T1> enumerable) {
+    executor.ThrowIfNullReference();
     ExceptionsHelper.ThrowIfNull(enumerable, nameof(enumerable));
-    return new ExecutableEnumerable<T1, T2>(query, enumerable);
+    return new ExecutableEnumerable<T1, T2>(executor, enumerable);
   }
 
   /// <summary>
-  /// Lazily applies a query to each element of a list.
+  /// Creates a lazy projection that executes an executor for each list element.
   /// </summary>
-  /// <param name="query">Query applied to each source item.</param>
+  /// <typeparam name="T1">Type of source list elements.</typeparam>
+  /// <typeparam name="T2">Type of produced result elements.</typeparam>
+  /// <param name="executor">Executor applied to each source element during enumeration.</param>
   /// <param name="list">Source list.</param>
-  /// <returns>Lazy enumerable that executes <paramref name="query"/> during iteration.</returns>
+  /// <returns>Lazy list-backed enumerable that executes <paramref name="executor"/> while iterating.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="list"/> is <see langword="null"/>.</exception>
   [Pure]
-  public static ExecutableList<T1, T2> ForEach<T1, T2>(this IQuery<T1, T2> query, List<T1> list) {
-    query.ThrowIfNullReference();
+  public static ExecutableList<T1, T2> ForEach<T1, T2>(this IExecutor<T1, T2> executor, List<T1> list) {
+    executor.ThrowIfNullReference();
     ExceptionsHelper.ThrowIfNull(list, nameof(list));
-    return new ExecutableList<T1, T2>(query, list);
+    return new ExecutableList<T1, T2>(executor, list);
   }
 
   /// <summary>
-  /// Lazily applies a query to each element of an array.
+  /// Creates a lazy projection that executes an executor for each array element.
   /// </summary>
-  /// <param name="query">Query applied to each source item.</param>
+  /// <typeparam name="T1">Type of source array elements.</typeparam>
+  /// <typeparam name="T2">Type of produced result elements.</typeparam>
+  /// <param name="executor">Executor applied to each source element during enumeration.</param>
   /// <param name="array">Source array.</param>
-  /// <returns>Lazy enumerable that executes <paramref name="query"/> during iteration.</returns>
+  /// <returns>Lazy array-backed enumerable that executes <paramref name="executor"/> while iterating.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="array"/> is <see langword="null"/>.</exception>
   [Pure]
-  public static ExecutableArray<T1, T2> ForEach<T1, T2>(this IQuery<T1, T2> query, T1[] array) {
-    query.ThrowIfNullReference();
+  public static ExecutableArray<T1, T2> ForEach<T1, T2>(this IExecutor<T1, T2> executor, T1[] array) {
+    executor.ThrowIfNullReference();
     ExceptionsHelper.ThrowIfNull(array, nameof(array));
-    return new ExecutableArray<T1, T2>(query, array);
+    return new ExecutableArray<T1, T2>(executor, array);
   }
 
   /// <summary>
-  /// Lazily applies a query to each element of a hash set.
+  /// Creates a lazy projection that executes an executor for each hash-set element.
   /// </summary>
-  /// <param name="query">Query applied to each source item.</param>
+  /// <typeparam name="T1">Type of source hash-set elements.</typeparam>
+  /// <typeparam name="T2">Type of produced result elements.</typeparam>
+  /// <param name="executor">Executor applied to each source element during enumeration.</param>
   /// <param name="hashSet">Source hash set.</param>
-  /// <returns>Lazy enumerable that executes <paramref name="query"/> during iteration.</returns>
+  /// <returns>Lazy hash-set-backed enumerable that executes <paramref name="executor"/> while iterating.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="hashSet"/> is <see langword="null"/>.</exception>
   [Pure]
-  public static ExecutableHashSet<T1, T2> ForEach<T1, T2>(this IQuery<T1, T2> query, HashSet<T1> hashSet) {
-    query.ThrowIfNullReference();
+  public static ExecutableHashSet<T1, T2> ForEach<T1, T2>(this IExecutor<T1, T2> executor, HashSet<T1> hashSet) {
+    executor.ThrowIfNullReference();
     ExceptionsHelper.ThrowIfNull(hashSet, nameof(hashSet));
-    return new ExecutableHashSet<T1, T2>(query, hashSet);
+    return new ExecutableHashSet<T1, T2>(executor, hashSet);
   }
 
   /// <summary>
-  /// Lazily applies a query to each element of a queue.
+  /// Creates a lazy projection that executes an executor for each queue element.
   /// </summary>
-  /// <param name="query">Query applied to each source item.</param>
+  /// <typeparam name="T1">Type of source queue elements.</typeparam>
+  /// <typeparam name="T2">Type of produced result elements.</typeparam>
+  /// <param name="executor">Executor applied to each source element during enumeration.</param>
   /// <param name="queue">Source queue.</param>
-  /// <returns>Lazy enumerable that executes <paramref name="query"/> during iteration.</returns>
+  /// <returns>Lazy queue-backed enumerable that executes <paramref name="executor"/> while iterating.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="queue"/> is <see langword="null"/>.</exception>
   [Pure]
-  public static ExecutableQueue<T1, T2> ForEach<T1, T2>(this IQuery<T1, T2> query, Queue<T1> queue) {
-    query.ThrowIfNullReference();
+  public static ExecutableQueue<T1, T2> ForEach<T1, T2>(this IExecutor<T1, T2> executor, Queue<T1> queue) {
+    executor.ThrowIfNullReference();
     ExceptionsHelper.ThrowIfNull(queue, nameof(queue));
-    return new ExecutableQueue<T1, T2>(query, queue);
+    return new ExecutableQueue<T1, T2>(executor, queue);
   }
 
   /// <summary>
-  /// Lazily applies a query to each element of a stack.
+  /// Creates a lazy projection that executes an executor for each stack element.
   /// </summary>
-  /// <param name="query">Query applied to each source item.</param>
+  /// <typeparam name="T1">Type of source stack elements.</typeparam>
+  /// <typeparam name="T2">Type of produced result elements.</typeparam>
+  /// <param name="executor">Executor applied to each source element during enumeration.</param>
   /// <param name="stack">Source stack.</param>
-  /// <returns>Lazy enumerable that executes <paramref name="query"/> during iteration.</returns>
+  /// <returns>Lazy stack-backed enumerable that executes <paramref name="executor"/> while iterating.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="stack"/> is <see langword="null"/>.</exception>
   [Pure]
-  public static ExecutableStack<T1, T2> ForEach<T1, T2>(this IQuery<T1, T2> query, Stack<T1> stack) {
-    query.ThrowIfNullReference();
+  public static ExecutableStack<T1, T2> ForEach<T1, T2>(this IExecutor<T1, T2> executor, Stack<T1> stack) {
+    executor.ThrowIfNullReference();
     ExceptionsHelper.ThrowIfNull(stack, nameof(stack));
-    return new ExecutableStack<T1, T2>(query, stack);
+    return new ExecutableStack<T1, T2>(executor, stack);
   }
 
 #if !NETFRAMEWORK
   /// <summary>
-  /// Lazily applies a query to each element of a mutable span.
+  /// Creates a lazy projection that executes an executor for each mutable span element.
   /// </summary>
-  /// <param name="query">Query applied to each source item.</param>
+  /// <typeparam name="T1">Type of source span elements.</typeparam>
+  /// <typeparam name="T2">Type of produced result elements.</typeparam>
+  /// <param name="executor">Executor applied to each source element during enumeration.</param>
   /// <param name="span">Source span.</param>
-  /// <returns>Lazy span-based enumerable that executes <paramref name="query"/> during iteration.</returns>
+  /// <returns>Lazy span-backed enumerable that executes <paramref name="executor"/> while iterating.</returns>
   [Pure]
-  public static ExecutableSpan<T1, T2> ForEach<T1, T2>(this IQuery<T1, T2> query, Span<T1> span) {
-    query.ThrowIfNullReference();
-    return new ExecutableSpan<T1, T2>(query, span);
+  public static ExecutableSpan<T1, T2> ForEach<T1, T2>(this IExecutor<T1, T2> executor, Span<T1> span) {
+    executor.ThrowIfNullReference();
+    return new ExecutableSpan<T1, T2>(executor, span);
   }
 
   /// <summary>
-  /// Lazily applies a query to each element of a read-only span.
+  /// Creates a lazy projection that executes an executor for each read-only span element.
   /// </summary>
-  /// <param name="query">Query applied to each source item.</param>
+  /// <typeparam name="T1">Type of source span elements.</typeparam>
+  /// <typeparam name="T2">Type of produced result elements.</typeparam>
+  /// <param name="executor">Executor applied to each source element during enumeration.</param>
   /// <param name="span">Source span.</param>
-  /// <returns>Lazy span-based enumerable that executes <paramref name="query"/> during iteration.</returns>
+  /// <returns>Lazy read-only-span-backed enumerable that executes <paramref name="executor"/> while iterating.</returns>
   [Pure]
-  public static ExecutableReadOnlySpan<T1, T2> ForEach<T1, T2>(this IQuery<T1, T2> query, ReadOnlySpan<T1> span) {
-    query.ThrowIfNullReference();
-    return new ExecutableReadOnlySpan<T1, T2>(query, span);
+  public static ExecutableReadOnlySpan<T1, T2> ForEach<T1, T2>(this IExecutor<T1, T2> executor, ReadOnlySpan<T1> span) {
+    executor.ThrowIfNullReference();
+    return new ExecutableReadOnlySpan<T1, T2>(executor, span);
   }
 #endif
 

@@ -2,7 +2,7 @@ using System.Collections;
 
 namespace Executables.Enumeration;
 
-public struct ManyEnumerableExecutor<T1, T2>(IQuery<T1, IEnumerable<T2>> query, IEnumerator<T1> source) : IEnumerator<T2> {
+public struct ManyEnumerableExecutor<T1, T2>(IExecutor<T1, IEnumerable<T2>> executor, IEnumerator<T1> source) : IEnumerator<T2> {
 
   public T2 Current { get; private set; }
   object IEnumerator.Current => Current;
@@ -19,7 +19,7 @@ public struct ManyEnumerableExecutor<T1, T2>(IQuery<T1, IEnumerable<T2>> query, 
     state0:
     if (!source.MoveNext())
       return false;
-    _innerSource = query.Send(source.Current).GetEnumerator();
+    _innerSource = executor.Execute(source.Current).GetEnumerator();
     _state = 1;
     state1:
     if (!_innerSource.MoveNext()) {
