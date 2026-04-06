@@ -250,22 +250,6 @@ public static class AsyncExecutableExtensions {
   }
 
   /// <summary>
-  /// Pipes an asynchronous executable through a transformation function.
-  /// </summary>
-  /// <param name="executable">Source executable.</param>
-  /// <param name="pipe">Transformation function.</param>
-  /// <returns>Transformed asynchronous executable.</returns>
-  /// <exception cref="ArgumentNullException"><paramref name="pipe"/> is <see langword="null"/>.</exception>
-  [Pure]
-  public static IAsyncExecutable<T1, T3> Pipe<T1, T2, T3>(
-    this IAsyncExecutable<T1, T2> executable,
-    Func<IAsyncExecutable<T1, T2>, IAsyncExecutable<T1, T3>> pipe) {
-    executable.ThrowIfNullReference();
-    ExceptionsHelper.ThrowIfNull(pipe, nameof(pipe));
-    return pipe(executable);
-  }
-
-  /// <summary>
   /// Converts an asynchronous executable to an asynchronous handler.
   /// </summary>
   /// <returns>Async handler wrapping the executable.</returns>

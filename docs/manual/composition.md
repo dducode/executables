@@ -143,17 +143,40 @@ allocation per `ForEachMany(...)` usage (for example, when a value-type source e
 
 ## Reusable Transformations
 
-`Pipe(...)` applies a reusable composition function at executable-composition time.
+`IPipe<TIn, TOut>` lets you capture reusable transformations as first-class values.
 
-`Tap(...)` observes runtime results while preserving them and is applied at executor level.
+The minimal API is delegate-based:
+
+- `Pipe.Create(...)` creates a pipe from a function,
+- `Pipe.Identity<T>()` creates an identity pipe,
+- `Compose(...)` and `Then(...)` combine pipes.
 
 ```csharp
-IExecutable<int, string> pipeline =
-  Executable.Create((int x) => x + 1)
-    .Pipe(executable => executable.Then(value => $"Value: {value}"));
+IPipe<IExecutable<string, int>, IExecutable<string, string>> formatPipe =
+  Pipe.Create((IExecutable<string, int> executable) =>
+    executable.Then(value => $"Value: {value}"));
 
+IExecutable<string, string> pipeline =
+  formatPipe.Apply(Executable.Create((string text) => int.Parse(text)));
+```
+
+Pipes can also encode runtime transitions when needed:
+
+```csharp
+IPipe<IExecutable<string, int>, IExecutor<string, Result<int>>> runtimePipe =
+  Pipe.Create((IExecutable<string, int> executable) =>
+    executable
+      .GetExecutor()
+      .WithPolicy(policy => policy.ValidateInput(x => x >= 0, "Input must be non-negative"))
+      .WithResult());
+```
+
+`Tap(...)` remains an executor-level runtime decorator:
+
+```csharp
 IExecutor<int, string> observed =
-  pipeline
+  Executable.Create((int x) => x + 1)
+    .Then(value => $"Value: {value}")
     .GetExecutor()
     .Tap(value => Console.WriteLine(value));
 ```

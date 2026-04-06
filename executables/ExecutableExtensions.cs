@@ -244,36 +244,6 @@ public static class ExecutableExtensions {
   }
 
   /// <summary>
-  /// Pipes an executable through a transformation function.
-  /// </summary>
-  /// <param name="executable">Source executable.</param>
-  /// <param name="pipe">Transformation function.</param>
-  /// <returns>Transformed executable.</returns>
-  /// <exception cref="ArgumentNullException"><paramref name="pipe"/> is <see langword="null"/>.</exception>
-  [Pure]
-  [Obsolete]
-  public static IExecutable<T1, T3> Pipe<T1, T2, T3>(this IExecutable<T1, T2> executable, Func<IExecutable<T1, T2>, IExecutable<T1, T3>> pipe) {
-    executable.ThrowIfNullReference();
-    ExceptionsHelper.ThrowIfNull(pipe, nameof(pipe));
-    return pipe(executable);
-  }
-
-  /// <summary>
-  /// Pipes an executable through a transformation function producing an asynchronous executable.
-  /// </summary>
-  /// <param name="executable">Source executable.</param>
-  /// <param name="pipe">Transformation function.</param>
-  /// <returns>Transformed asynchronous executable.</returns>
-  /// <exception cref="ArgumentNullException"><paramref name="pipe"/> is <see langword="null"/>.</exception>
-  [Pure]
-  [Obsolete]
-  public static IAsyncExecutable<T1, T3> Pipe<T1, T2, T3>(this IExecutable<T1, T2> executable, Func<IExecutable<T1, T2>, IAsyncExecutable<T1, T3>> pipe) {
-    executable.ThrowIfNullReference();
-    ExceptionsHelper.ThrowIfNull(pipe, nameof(pipe));
-    return pipe(executable);
-  }
-
-  /// <summary>
   /// Converts an executable to a handler.
   /// </summary>
   /// <returns>Handler wrapping the executable.</returns>

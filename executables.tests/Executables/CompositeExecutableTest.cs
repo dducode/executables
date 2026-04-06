@@ -63,8 +63,8 @@ public class CompositeExecutableTest {
   [Fact]
   public void IdentityLaw() {
     IExecutable<int, int> id = Executable.Identity<int>();
-
     IExecutable<int, int> f = Executable.Create((int x) => x * x);
+
     IExecutor<int, int> first = f.Then(id).GetExecutor();
     IExecutor<int, int> second = id.Then(f).GetExecutor();
     IExecutor<int, int> executor = f.GetExecutor();

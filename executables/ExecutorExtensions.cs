@@ -115,21 +115,6 @@ public static class ExecutorExtensions {
   }
 
   /// <summary>
-  /// Pipes an executor through a transformation function.
-  /// </summary>
-  /// <param name="executor">Source executor.</param>
-  /// <param name="pipe">Transformation function.</param>
-  /// <returns>Transformed executor.</returns>
-  /// <exception cref="ArgumentNullException"><paramref name="pipe"/> is <see langword="null"/>.</exception>
-  [Pure]
-  [Obsolete]
-  public static IExecutor<T1, T3> Pipe<T1, T2, T3>(this IExecutor<T1, T2> executor, Func<IExecutor<T1, T2>, IExecutor<T1, T3>> pipe) {
-    executor.ThrowIfNullReference();
-    ExceptionsHelper.ThrowIfNull(pipe, nameof(pipe));
-    return pipe(executor);
-  }
-
-  /// <summary>
   /// Adds cache behavior to an executor.
   /// </summary>
   /// <param name="executor">Source executor.</param>
