@@ -51,6 +51,43 @@ IAsyncExecutable<string, string> mixedReverse =
   formatAsync.Compose((string text) => int.Parse(text));
 ```
 
+## Partial Execution (Currying)
+
+For tuple-input executors, `Execute(...)` supports partial application.
+
+```csharp
+IExecutor<(int, int), int> sum =
+  Executable.Create((int x, int y) => x + y)
+    .GetExecutor();
+
+IExecutor<int, int> addFive = sum.Execute(5);
+int result = addFive.Execute(3); // 8
+```
+
+The same pattern works for larger arities:
+
+```csharp
+IExecutor<(int, int, int, int), string> format =
+  Executable.Create((int x, int y, int z, int w) => $"x: {x}, y: {y}, z: {z}, w: {w}")
+    .GetExecutor();
+
+string value = format.Execute(1).Execute(10).Execute(50).Execute(100);
+```
+
+Async executors provide the same partial-execution shape:
+
+```csharp
+IAsyncExecutor<(int, int, int, int), string> formatAsyncExecutor =
+  AsyncExecutable.Create(async (int x, int y, int z, int w, CancellationToken token) =>
+  {
+    await Task.Delay(10, token);
+    return $"x: {x}, y: {y}, z: {z}, w: {w}";
+  })
+  .GetExecutor();
+
+string asyncValue = await formatAsyncExecutor.Execute(1).Execute(10).Execute(50).Execute(100);
+```
+
 ## Choosing the Right Style
 
 Use sync by default for fast local work. Use async when the operation can block on external resources or needs

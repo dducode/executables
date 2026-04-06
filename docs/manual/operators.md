@@ -2,8 +2,18 @@
 
 ## Operator Model
 
-Operators are wrappers around executors. They define how execution is transformed before and after the wrapped
-executor runs.
+Operators wrap executors and define runtime behavior around `Execute(...)`.
+
+Use operators when you need runtime concerns:
+
+- error mapping and suppression,
+- context initialization,
+- metrics and caching,
+- threading/scheduling,
+- cross-cutting logging/tracing.
+
+Keep business flow composition in `IExecutable` (`Then`, `Compose`, `When/OrWhen/OrElse`), and move runtime behavior to
+`IExecutor`.
 
 The core abstractions are:
 
@@ -16,7 +26,20 @@ The core abstractions are:
 
 ## Applying Operators
 
-Operators are attached with `Apply(...)`.
+Attach operators with `Apply(...)`.
+
+```csharp
+IExecutor<string, string> executor =
+  Executable.Create((string text) => int.Parse(text))
+    .GetExecutor()
+    .Apply(ExecutionOperator.Create((string text, IExecutor<string, int> next) =>
+    {
+      int value = next.Execute(text);
+      return $"Parsed: {value}";
+    }));
+```
+
+Order matters: each `Apply(...)` wraps the previous executor.
 
 ```csharp
 IExecutor<string, string> pipeline =
@@ -29,7 +52,7 @@ IExecutor<string, string> pipeline =
 
 ## Built-in High-Level Operators
 
-Common operator-based helpers include:
+Common executor-level runtime helpers include:
 
 - `WithContext(...)`
 - `WithResult()`
@@ -46,16 +69,25 @@ IExecutor<string, Optional<int>> parse =
     .OfType<FormatException>();
 ```
 
+Another common chain is result-based error capture:
+
+```csharp
+IExecutor<string, Result<int>> safeParse =
+  Executable.Create((string text) => int.Parse(text))
+    .GetExecutor()
+    .MapException((FormatException ex) => new InvalidOperationException("Invalid number format", ex))
+    .WithResult();
+```
+
 ## Operator Factories
 
 For lower-level control, use:
 
 - `ExecutionOperator.Create(...)`
-- `ExecutionOperator.Cache(...)`
-- `ExecutionOperator.Metrics(...)`
-- `ExecutionOperator.Context(...)`
-- `ExecutionOperator.MapException(...)`
-- async counterparts from `AsyncExecutionOperator`
+- `AsyncExecutionOperator.Create(...)`
+
+Helpers such as `WithContext(...)`, `WithResult()`, `SuppressException(...)`, `Cache(...)`, `Metrics(...)`,
+`MapException(...)`, and `OnThreadPool()` are exposed as executor extensions.
 
 ```csharp
 ExecutionOperator<string, int, int, string> formatSquared =
@@ -67,6 +99,19 @@ ExecutionOperator<string, int, int, string> formatSquared =
   });
 ```
 
+Async operator factory example:
+
+```csharp
+IAsyncExecutor<string, string> asyncExecutor =
+  AsyncExecutable.Create((string input, CancellationToken _) => ValueTask.FromResult(input.Trim()))
+    .GetExecutor()
+    .Apply(AsyncExecutionOperator.Create(async (string input, IAsyncExecutor<string, string> next, CancellationToken token) =>
+    {
+      string result = await next.Execute(input, token);
+      return result.ToUpperInvariant();
+    }));
+```
+
 ## Pipelines and Middlewares
 
 `Pipeline` and `AsyncPipeline` are middleware builders built on the operator layer.
@@ -74,30 +119,47 @@ ExecutionOperator<string, int, int, string> formatSquared =
 Each middleware receives:
 
 - the current input,
-- a `next` delegate,
+- a typed `next` delegate,
 - and, for async chains, a cancellation token.
 
 The main limitation is that a single chain cannot mix sync and async middleware.
 
 ```csharp
-IQuery<string, string> query = Pipeline<string, string>
+IExecutor<string, string> executor = Pipeline
   .Use((string text, Func<int, int> next) =>
   {
     int length = next(text.Trim().Length);
     return $"Length: {length}";
   })
-  .End(length => length * 2)
-  .AsQuery();
+  .End(Executable.Create((int length) => length * 2));
+```
+
+Async pipeline example:
+
+```csharp
+IAsyncExecutor<string, string> executor = AsyncPipeline
+  .Use(async (string text, AsyncFunc<int, int> next, CancellationToken token) =>
+  {
+    int length = text.Trim().Length;
+    int doubled = await next.Invoke(length, token);
+    return $"Length: {doubled}";
+  })
+  .End(AsyncExecutable.Create((int length, CancellationToken _) => ValueTask.FromResult(length * 2)));
 ```
 
 ## Writing Custom Operators
 
-When built-in operators are not enough, create a custom operator type or build one from a delegate.
+When built-in operators are not enough, create an operator type directly.
 
 ```csharp
+public sealed class TrimBehaviorOperator : BehaviorOperator<string, string> {
+  public override string Invoke(string input, IExecutor<string, string> executor) {
+    return executor.Execute(input.Trim());
+  }
+}
+
 IExecutor<string, string> trimmed =
   Executable.Create((string value) => value)
     .GetExecutor()
-    .Apply(ExecutionOperator.Create((string input, IExecutor<string, string> next) =>
-      next.Execute(input.Trim())));
+    .Apply(new TrimBehaviorOperator());
 ```
