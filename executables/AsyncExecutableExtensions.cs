@@ -5,6 +5,9 @@ using Executables.Internal;
 
 namespace Executables;
 
+/// <summary>
+/// Extension methods for composing and adapting asynchronous executables.
+/// </summary>
 public static class AsyncExecutableExtensions {
 
   /// <summary>

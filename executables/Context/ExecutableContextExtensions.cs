@@ -2,6 +2,9 @@ using System.Diagnostics.Contracts;
 
 namespace Executables.Context;
 
+/// <summary>
+/// Extension methods for working with executable contexts.
+/// </summary>
 public static class ExecutableContextExtensions {
 
   /// <summary>

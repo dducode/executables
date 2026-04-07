@@ -6,6 +6,9 @@ using Executables.Subscribers;
 
 namespace Executables;
 
+/// <summary>
+/// Extension methods for composing and adapting executables.
+/// </summary>
 public static class ExecutableExtensions {
 
   /// <summary>

@@ -4,6 +4,9 @@ using Executables.Internal;
 
 namespace Executables.Commands;
 
+/// <summary>
+/// Extension methods for asynchronous commands.
+/// </summary>
 public static class AsyncCommandsExtensions {
 
   /// <summary>

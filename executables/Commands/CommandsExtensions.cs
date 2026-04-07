@@ -4,6 +4,9 @@ using Executables.Internal;
 
 namespace Executables.Commands;
 
+/// <summary>
+/// Extension methods for commands.
+/// </summary>
 public static class CommandsExtensions {
 
   /// <summary>

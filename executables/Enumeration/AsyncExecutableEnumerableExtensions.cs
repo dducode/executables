@@ -5,6 +5,9 @@ using Executables.Internal;
 
 namespace Executables.Enumeration;
 
+/// <summary>
+/// Extension methods for creating asynchronous executable enumerables.
+/// </summary>
 public static class AsyncExecutableEnumerableExtensions {
 
   /// <summary>

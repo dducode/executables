@@ -4,6 +4,9 @@ using Executables.Internal;
 
 namespace Executables;
 
+/// <summary>
+/// Extension methods for building conditional executors.
+/// </summary>
 public static class ConditionalExecutorExtensions {
 
   /// <summary>

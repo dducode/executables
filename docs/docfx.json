@@ -34,7 +34,8 @@
     "output": "_site",
     "template": [
       "default",
-      "modern"
+      "modern",
+      "templates/hide-extension-methods"
     ],
     "globalMetadata": {
       "_appName": "Executables",

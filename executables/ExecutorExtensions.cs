@@ -9,6 +9,9 @@ using Executables.Policies;
 
 namespace Executables;
 
+/// <summary>
+/// Extension methods for composing and adapting executors.
+/// </summary>
 public static class ExecutorExtensions {
 
   /// <summary>

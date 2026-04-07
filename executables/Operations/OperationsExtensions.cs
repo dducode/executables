@@ -4,6 +4,9 @@ using Executables.Internal;
 
 namespace Executables.Operations;
 
+/// <summary>
+/// Extension methods for applying execution operators.
+/// </summary>
 public static class OperationsExtensions {
 
   /// <summary>

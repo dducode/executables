@@ -1,5 +1,8 @@
 namespace Executables.Queries;
 
+/// <summary>
+/// Extension methods for asynchronous queries.
+/// </summary>
 public static class AsyncQueriesExtensions {
 
   /// <summary>

@@ -2,6 +2,9 @@ using Executables.Validation;
 
 namespace Executables.Policies;
 
+/// <summary>
+/// Extension methods for configuring policy builders.
+/// </summary>
 public static class PolicyBuilderExtensions {
 
   /// <summary>

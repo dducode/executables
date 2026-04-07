@@ -4,6 +4,9 @@ using Executables.Internal;
 
 namespace Executables.Pipelines;
 
+/// <summary>
+/// Extension methods for building pipelines.
+/// </summary>
 public static class PipelineBuilderExtensions {
 
   /// <summary>

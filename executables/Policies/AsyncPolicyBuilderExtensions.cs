@@ -2,6 +2,9 @@ using Executables.Validation;
 
 namespace Executables.Policies;
 
+/// <summary>
+/// Extension methods for configuring asynchronous policy builders.
+/// </summary>
 public static class AsyncPolicyBuilderExtensions {
 
   /// <summary>

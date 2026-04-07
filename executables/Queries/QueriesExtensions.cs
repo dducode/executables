@@ -4,6 +4,9 @@ using Executables.Internal;
 
 namespace Executables.Queries;
 
+/// <summary>
+/// Extension methods for queries.
+/// </summary>
 public static class QueriesExtensions {
 
   /// <summary>

@@ -4,6 +4,9 @@ using Executables.Internal;
 
 namespace Executables.Handling;
 
+/// <summary>
+/// Extension methods for asynchronous handleable objects.
+/// </summary>
 public static class AsyncHandleableExtensions {
 
   /// <summary>

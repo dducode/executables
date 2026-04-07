@@ -1,6 +1,5 @@
 using System.Diagnostics.Contracts;
 using Executables.Core.Policies;
-using Executables.Fallbacks;
 using Executables.Guards;
 using Executables.Internal;
 using Executables.Operations;
@@ -51,24 +50,14 @@ public readonly struct PolicyBuilder<T1, T2>() {
   }
 
   /// <summary>
-  /// Adds a fallback policy that handles exceptions of type <typeparamref name="TEx"/>.
-  /// </summary>
-  /// <typeparam name="TEx">Handled exception type.</typeparam>
-  /// <param name="fallback">Fallback handler invoked after a handled exception.</param>
-  /// <returns>Current builder instance.</returns>
-  public PolicyBuilder<T1, T2> Fallback<TEx>(IFallbackHandler<T1, TEx, T2> fallback) where TEx : Exception {
-    ExceptionsHelper.ThrowIfNull(fallback, nameof(fallback));
-    return Add(new FallbackPolicy<T1, T2, TEx>(fallback));
-  }
-
-  /// <summary>
   /// Creates a fallback policy from a delegate.
   /// </summary>
   /// <typeparam name="TEx">Handled exception type.</typeparam>
   /// <param name="fallback">Delegate that converts input and exception into a fallback result.</param>
   /// <returns>Current builder instance.</returns>
   public PolicyBuilder<T1, T2> Fallback<TEx>(Func<T1, TEx, T2> fallback) where TEx : Exception {
-    return Fallback(FallbackHandler.Create(fallback));
+    ExceptionsHelper.ThrowIfNull(fallback, nameof(fallback));
+    return Add(new FallbackPolicy<T1, T2, TEx>(fallback));
   }
 
   /// <summary>

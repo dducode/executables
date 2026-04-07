@@ -9,6 +9,8 @@
         <PackageTags>executions;executables;handlers;pipeline;middleware;policies;validation</PackageTags>
         <RepositoryUrl>https://github.com/dducode/com.dducode.executables.git</RepositoryUrl>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NoWarn>$(NoWarn);CS1591</NoWarn>
 
         <RootNamespace>Executables</RootNamespace>
         <ImplicitUsings>enable</ImplicitUsings>

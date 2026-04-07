@@ -4,16 +4,10 @@ using Executables.Internal;
 
 namespace Executables.Guards;
 
+/// <summary>
+/// Factory methods for creating guards.
+/// </summary>
 public abstract partial class Guard {
-
-  /// <summary>
-  /// Creates a no-op guard that always grants access.
-  /// </summary>
-  /// <returns>Guard instance that never blocks invocation.</returns>
-  [Pure]
-  public static Guard Identity() {
-    return IdentityGuard.Instance;
-  }
 
   /// <summary>
   /// Creates a manually controlled guard.
@@ -31,6 +25,9 @@ public abstract partial class Guard {
   /// </summary>
   /// <param name="condition">Predicate that returns true to allow access.</param>
   /// <param name="message">Error message used when access is denied.</param>
+  /// <returns>Guard that evaluates <paramref name="condition"/> to decide whether access is allowed.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="condition"/> is <see langword="null"/>.</exception>
+  /// <exception cref="ArgumentException"><paramref name="message"/> is empty.</exception>
   [Pure]
   public static Guard Create(Func<bool> condition, string message) {
     ExceptionsHelper.ThrowIfNull(condition, nameof(condition));

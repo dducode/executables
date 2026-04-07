@@ -4,6 +4,9 @@ using Executables.Internal;
 
 namespace Executables;
 
+/// <summary>
+/// Extension methods for building race-style executable compositions.
+/// </summary>
 public static class RaceExecutableExtensions {
 
   /// <summary>

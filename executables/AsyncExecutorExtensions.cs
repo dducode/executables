@@ -9,6 +9,9 @@ using Executables.Policies;
 
 namespace Executables;
 
+/// <summary>
+/// Extension methods for composing and adapting asynchronous executors.
+/// </summary>
 public static class AsyncExecutorExtensions {
 
   /// <summary>

@@ -4,6 +4,9 @@ using Executables.Internal;
 
 namespace Executables.Handling;
 
+/// <summary>
+/// Extension methods for handlers.
+/// </summary>
 public static class HandlersExtensions {
 
   /// <summary>

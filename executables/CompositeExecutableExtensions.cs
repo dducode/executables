@@ -4,6 +4,9 @@ using Executables.Internal;
 
 namespace Executables;
 
+/// <summary>
+/// Extension methods for composing executables.
+/// </summary>
 public static class CompositeExecutableExtensions {
 
   /// <summary>
@@ -12,6 +15,24 @@ public static class CompositeExecutableExtensions {
   /// <param name="first">Executable invoked after <paramref name="second"/>.</param>
   /// <param name="second">Executable invoked first.</param>
   /// <returns>Executable that runs <paramref name="second"/> and then <paramref name="first"/>.</returns>
+  /// <remarks>
+  /// <para>
+  /// <c>Compose</c> is the reverse form of <see cref="Then{T1, T2, T3}(IExecutable{T1, T2}, IExecutable{T2, T3})">Then</see>. It is useful when you already have the later stage and want
+  /// to prepend an earlier stage in front of it.
+  /// </para>
+  /// <para>
+  /// Conceptually, <c>first.Compose(second)</c> is equivalent to <c>second.Then(first)</c>.
+  /// </para>
+  /// </remarks>
+  /// <example>
+  /// <code language="csharp">
+  /// IExecutable&lt;int, string&gt; stringify =
+  ///   Executable.Create((int value) => value.ToString());
+  ///
+  /// IExecutable&lt;string, string&gt; pipeline =
+  ///   stringify.Compose(Executable.Create((string text) => int.Parse(text)));
+  /// </code>
+  /// </example>
   /// <exception cref="ArgumentNullException"><paramref name="second"/> is <see langword="null"/>.</exception>
   [Pure]
   public static IExecutable<T1, T3> Compose<T1, T2, T3>(this IExecutable<T2, T3> first, IExecutable<T1, T2> second) {
@@ -134,6 +155,21 @@ public static class CompositeExecutableExtensions {
   /// <param name="first">Executable invoked first.</param>
   /// <param name="second">Executable invoked with the result of <paramref name="first"/>.</param>
   /// <returns>Executable that runs <paramref name="first"/> and then <paramref name="second"/>.</returns>
+  /// <remarks>
+  /// <para>
+  /// <c>Then</c> is the primary left-to-right composition operator for synchronous executables.
+  /// </para>
+  /// <para>
+  /// Use it when the output contract of the first executable matches the input contract of the second executable.
+  /// </para>
+  /// </remarks>
+  /// <example>
+  /// <code language="csharp">
+  /// IExecutable&lt;string, string&gt; pipeline =
+  ///   Executable.Create((string text) => int.Parse(text))
+  ///     .Then(Executable.Create((int value) => (value * 2).ToString()));
+  /// </code>
+  /// </example>
   /// <exception cref="ArgumentNullException"><paramref name="second"/> is <see langword="null"/>.</exception>
   [Pure]
   public static IExecutable<T1, T3> Then<T1, T2, T3>(this IExecutable<T1, T2> first, IExecutable<T2, T3> second) {
