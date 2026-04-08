@@ -15,6 +15,9 @@ Composable .NET primitives for building executable application logic from reusab
 It is useful when business logic starts spreading across services, UI callbacks, middleware, validators, handlers, and
 retry wrappers, and you want one explicit composition model instead of many ad hoc ones.
 
+One practical consequence of separating composition from runtime is that the same executable chain can be executed
+through different runtimes with different policies, context setup, error handling, caching, metrics, or branching.
+
 ## Quick Example
 
 ```csharp
@@ -67,6 +70,8 @@ composition or reusable execution rules.
 
 - [Manual](docs/manual/introduction.md)
 - [Getting Started](docs/manual/getting-started.md)
+- [Composition](docs/manual/composition.md)
+- [Execution Runtime](docs/manual/execution-runtime.md)
 
 ## Installation
 

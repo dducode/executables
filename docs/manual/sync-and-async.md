@@ -1,43 +1,69 @@
 # Sync and Async
 
-## Parallel APIs
+The library keeps sync and async APIs structurally aligned.
 
-`IExecutable<TIn, TOut>` and `IAsyncExecutable<TIn, TOut>` are parallel contracts with matching mental models.
+`IExecutable<TIn, TOut>` and `IAsyncExecutable<TIn, TOut>` describe the same kind of composable contract. The main
+difference is only the execution model:
 
-- sync path returns `TOut`
-- async path returns `ValueTask<TOut>`
+- sync execution returns `TOut`,
+- async execution returns `ValueTask<TOut>`.
 
-## Converting Sync to Async
+The same parallel shape exists for:
 
-`ToAsyncExecutable()` adapts a sync executable to an async one.
+- executors,
+- queries,
+- commands,
+- handlers,
+- branching,
+- tuple-based composition helpers.
+
+## Sync First, Async When Needed
+
+A sync executable can always be promoted to an async one through `ToAsyncExecutable()`.
 
 ```csharp
 IExecutable<int, int> square = Executable.Create((int x) => x * x);
 IAsyncExecutable<int, int> squareAsync = square.ToAsyncExecutable();
 ```
 
-The same idea applies to queries and commands through `ToAsyncQuery()` and `ToAsyncCommand()`.
+The same idea applies to higher-level API objects:
+
+```csharp
+IQuery<string, int> query =
+  Executable.Create((string text) => int.Parse(text))
+    .AsQuery();
+
+IAsyncQuery<string, int> queryAsync = query.ToAsyncQuery();
+```
+
+```csharp
+ICommand<string> command =
+  Executable.Create((string value) => value.Length > 0)
+    .AsCommand();
+
+IAsyncCommand<string> commandAsync = command.ToAsyncCommand();
+```
+
+This makes it practical to start with sync composition and move to async only when execution actually needs it.
 
 ## Mixed Composition
 
-Mixed sync/async chains are supported directly:
+Sync and async steps can be composed directly. Once an async step appears, the resulting chain becomes async.
 
-- sync executable followed by async executable,
-- async executable followed by sync executable,
-- `Then(...)` and `Compose(...)` across sync/async boundaries,
-- query composition through the same executable operators,
-- mixed command composition with `Append(...)` and `Prepend(...)`.
+Sync followed by async:
 
 ```csharp
 IExecutable<string, int> parse = Executable.Create((string text) => int.Parse(text));
 
 IAsyncExecutable<string, string> mixed =
-  parse.Then(async (int x, CancellationToken token) =>
+  parse.Then(async (int value, CancellationToken token) =>
   {
     await Task.Delay(1, token);
-    return $"Value: {x}";
+    return $"Value: {value}";
   });
 ```
+
+Async followed by sync:
 
 ```csharp
 IAsyncExecutable<int, string> formatAsync =
@@ -51,33 +77,51 @@ IAsyncExecutable<string, string> mixedReverse =
   formatAsync.Compose((string text) => int.Parse(text));
 ```
 
-## Partial Execution (Currying)
+The same interop applies to the surrounding API:
 
-For tuple-input executors, `Execute(...)` supports partial application.
+- queries can be promoted to async queries,
+- commands can be combined across sync/async boundaries through `Append(...)` and `Prepend(...)`,
+- runtime execution can continue on `IAsyncExecutor<TIn, TOut>` with async policies and async middleware.
+
+## Async Runtime
+
+Async executors keep the same runtime model as sync executors:
+
+- `WithPolicy(...)`
+- `WithContext(...)`
+- `WithResult()`
+- `SuppressException().OfType<TEx>()`
+- `MapException(...)`
+- `Tap(...)`
+- partial execution through `Execute(...)`
+
+The main async-specific additions are:
+
+- cancellation tokens,
+- timeout and retry policies,
+- race-based execution,
+- `CancelAfterCompletion()` for linked async work.
 
 ```csharp
-IExecutor<(int, int), int> sum =
-  Executable.Create((int x, int y) => x + y)
-    .GetExecutor();
-
-IExecutor<int, int> addFive = sum.Execute(5);
-int result = addFive.Execute(3); // 8
+IAsyncExecutor<string, Result<int>> runtime =
+  AsyncExecutable.Create(async (string text, CancellationToken token) =>
+  {
+    await Task.Delay(10, token);
+    return int.Parse(text);
+  })
+  .GetExecutor()
+  .WithPolicy(builder => builder
+    .ValidateInput(text => !string.IsNullOrWhiteSpace(text), "Value is required")
+    .Timeout(TimeSpan.FromSeconds(1)))
+  .WithResult();
 ```
 
-The same pattern works for larger arities:
+## Partial Execution
+
+Tuple-shaped async executors support the same partial execution model as sync executors.
 
 ```csharp
-IExecutor<(int, int, int, int), string> format =
-  Executable.Create((int x, int y, int z, int w) => $"x: {x}, y: {y}, z: {z}, w: {w}")
-    .GetExecutor();
-
-string value = format.Execute(1).Execute(10).Execute(50).Execute(100);
-```
-
-Async executors provide the same partial-execution shape:
-
-```csharp
-IAsyncExecutor<(int, int, int, int), string> formatAsyncExecutor =
+IAsyncExecutor<(int, int, int, int), string> format =
   AsyncExecutable.Create(async (int x, int y, int z, int w, CancellationToken token) =>
   {
     await Task.Delay(10, token);
@@ -85,10 +129,14 @@ IAsyncExecutor<(int, int, int, int), string> formatAsyncExecutor =
   })
   .GetExecutor();
 
-string asyncValue = await formatAsyncExecutor.Execute(1).Execute(10).Execute(50).Execute(100);
+string value = await format.Execute(1).Execute(10).Execute(50).Execute(100);
 ```
+
+This is the same currying model as sync executors, just with `ValueTask<T>` at the final execution point.
 
 ## Choosing the Right Style
 
-Use sync by default for fast local work. Use async when the operation can block on external resources or needs
-cancellation support.
+Use sync when the work is immediate and local. Use async when execution may wait on I/O, timers, external resources, or
+when cancellation needs to flow through the pipeline.
+
+Because the models stay aligned, switching to async does not require learning a different composition style.

@@ -128,12 +128,13 @@ The same pattern is available for asynchronous execution through `AsyncBranch.Wh
 `WithContext(...)` runs an executor inside a new `ExecutableContext`.
 
 Inside execution, the ambient context is available through `ExecutableContext.Current`.
+That availability is a runtime concern, not a property of executable composition by itself.
 
 ```csharp
 IExecutor<int, string> query =
   Executable.Create((int id) =>
   {
-    string tenant = ExecutableContext.Current.Get<string>("tenant");
+    string tenant = ExecutableContext.Current?.GetOrDefault("tenant", "default") ?? "default";
     return $"{tenant}:{id}";
   })
   .GetExecutor()
