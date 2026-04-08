@@ -26,6 +26,29 @@ IExecutable<string, int> rightToLeft = square.Compose(parse);
 This is useful when a chain is easier to express from the final executable backward, or when you want to insert a new
 step before an existing pipeline without rewriting the whole expression.
 
+## Dynamic Chaining with `FlatMap(...)`
+
+`FlatMap(...)` is useful when the next executable depends on the value produced by the previous step.
+
+Instead of always continuing with the same executable, it selects the next executable dynamically and then flattens the
+result back into one executable pipeline.
+
+```csharp
+IExecutable<int, int> sum = Executable.Create((int x) => x + x);
+IExecutable<int, int> fallback = Executable.Create((int _) => 0);
+
+IExecutable<int, int> choose =
+  Executable.Create((int x) => x)
+    .FlatMap(x => x > 0 ? sum : fallback);
+```
+
+This is different from `Then(...)` in one important way:
+
+- `Then(...)` always continues with the same next step,
+- `FlatMap(...)` chooses the next step from the current value.
+
+The same pattern is also available for asynchronous pipelines through `IAsyncExecutable<TIn, TOut>.FlatMap(...)`.
+
 ## Parallel Branching with `Fork(...)`
 
 `Fork(...)` sends one result into two branches and returns a tuple. In many cases the tuple is only an intermediate
@@ -52,13 +75,13 @@ IExecutable<string, string> summary =
     .Merge((length, upper) => $"{upper} ({length})");
 ```
 
-## Tuple Helpers
+### Tuple Helpers
 
 After a fork, tuple-oriented operators can also transform the tuple before a final merge:
 
-- `First(...)`
-- `Second(...)`
-- `Swap()`
+- `First(...)` transforms the first tuple item,
+- `Second(...)` transforms the second tuple item,
+- `Swap()` reverses the tuple item order.
 
 ```csharp
 IExecutable<string, string> reordered =
@@ -69,6 +92,30 @@ IExecutable<string, string> reordered =
     .Second(length => length * 2)
     .Merge((text, length) => $"{text} ({length})");
 ```
+
+## Accumulating Intermediate Values with `Accumulate(...)`
+
+`Accumulate(...)` appends a new value while keeping the values that were already computed.
+
+This is useful when later steps need access not only to the latest result, but also to earlier intermediate values.
+
+```csharp
+IExecutable<int, string> summary =
+  Executable
+    .Accumulate((int x) => x + x)
+    .Accumulate((x, y) => x + y)
+    .Accumulate((x, y, z) => x + y + z)
+    .Merge((x, y, z, total) => $"{x}, {y}, {z}, {total}");
+```
+
+For input `1`, this chain produces:
+
+- `x = 1`
+- `y = 2`
+- `z = 3`
+- `total = 6`
+
+So the final result is `"1, 2, 3, 6"`.
 
 ## Contract Adaptation
 
@@ -94,6 +141,63 @@ IExecutable<string, string> squareTextExplicit =
     .Compose((string text) => int.Parse(text))
     .Then(value => $"Result: {value}");
 ```
+
+## Reversible Adaptation with `IIso<T1, T2>`
+
+`Map(...)` adapts one executable contract around one executable.
+
+`IIso<T1, T2>` models something different: a reusable reversible transformation between two types. It has two
+directions:
+
+- `Forward(...)` converts `T1` to `T2`,
+- `Backward(...)` converts `T2` back to `T1`.
+
+Create an isomorphism with `Iso.Create(...)`:
+
+```csharp
+IIso<Guid, string> guidText = Iso.Create(
+  guid => guid.ToString("N"),
+  text => Guid.ParseExact(text, "N"));
+```
+
+You can compose isomorphisms with the same left-to-right / right-to-left symmetry as executables:
+
+```csharp
+IIso<string, char[]> chars = Iso.Create(
+  text => text.ToCharArray(),
+  chars => new string(chars));
+
+IIso<Guid, char[]> guidChars = guidText.Then(chars);
+IIso<char[], Guid> parseGuidChars = guidChars.Inverse();
+```
+
+When you need only the forward direction inside executable composition, expose it as an executable:
+
+```csharp
+IExecutable<string, string> normalizeGuid =
+  guidText
+    .Inverse()
+    .AsExecutable()
+    .Then(guidText.AsExecutable());
+```
+
+For endomorphisms, `MapIso(...)` is the direct bridge between executable composition and reversible adaptation. It maps
+an executable of shape `IExecutable<T2, T2>` through an `IIso<T1, T2>` and gives back `IExecutable<T1, T1>`.
+
+```csharp
+IIso<string, Guid> guidText = Iso.Create(
+  text => Guid.Parse(text),
+  guid => guid.ToString("D"));
+
+IExecutable<string, string> normalizeGuid =
+  Executable.Create((Guid guid) => guid)
+    .MapIso(guidText);
+```
+
+The same idea also exists for asynchronous endomorphisms through `IAsyncExecutable<T2, T2>.MapIso(...)`.
+
+Use `IIso<T1, T2>` when the transformation itself is a reusable concept and both directions matter. Use `Map(...)`
+when you only need to adapt one executable contract around a specific executable chain.
 
 ## LINQ Integration
 
@@ -141,31 +245,20 @@ foreach (int item in expand.ForEachMany(new[] { 1, 2, 3 }))
 Its input is accepted as `IEnumerable<T>`, so source enumeration goes through the interface and can cause a small
 allocation per `ForEachMany(...)` usage (for example, when a value-type source enumerator is boxed).
 
-`Tap(...)` remains an executor-level runtime decorator:
-
-```csharp
-IExecutor<int, string> observed =
-  Executable.Create((int x) => x + 1)
-    .Then(value => $"Value: {value}")
-    .GetExecutor()
-    .Tap(value => Console.WriteLine(value));
-```
-
 ## Query and Command Composition
 
-Queries compose with `Connect(...)`, commands compose with `Compose(...)`.
+Queries do not need a separate composition API. Because `IQuery<TIn, TOut>` is also an `IExecutable<TIn, TOut>`, query
+logic composes through the usual executable operators such as `Then(...)` and `Compose(...)`.
 
 ```csharp
-IQuery<string, int> parse =
+IExecutable<string, string> pipeline =
   Executable.Create((string text) => int.Parse(text))
-    .AsQuery();
+    .Then(value => $"Value: {value}");
 
-IQuery<int, string> format =
-  Executable.Create((int value) => $"Value: {value}")
-    .AsQuery();
-
-IQuery<string, string> chained = parse.Connect(format);
+IQuery<string, string> query = pipeline.AsQuery();
 ```
+
+Commands have command-specific composition operators: `Append(...)` and `Prepend(...)`.
 
 ```csharp
 ICommand<string> first =
@@ -174,10 +267,12 @@ ICommand<string> first =
 ICommand<string> second =
   Executable.Create((string value) => true).AsCommand();
 
-ICommand<string> combined = first.Compose(second);
+ICommand<string> combined = first.Append(second);
+ICommand<string> sameCombined = second.Prepend(first);
 ```
 
-`Compose(...)` uses short-circuit semantics: if the first command returns `false`, the second command is not executed.
+`Append(...)` uses left-to-right short-circuit semantics: if the first command returns `false`, the second command is
+not executed. `Prepend(...)` expresses the same idea from the other side.
 
 ## Racing Async Executables
 
@@ -197,43 +292,34 @@ These operators are useful when several asynchronous providers can handle the sa
 - the fastest successful answer.
 
 ```csharp
-IAsyncExecutable<string, int> parse =
-  AsyncExecutable.Create(async (string text, CancellationToken token) =>
+IAsyncExecutable<string, string> fastest = AsyncExecutable.Race(
+  async (string text, CancellationToken token) =>
   {
     await Task.Delay(10, token);
-    return int.Parse(text);
+    return $"Slow: {int.Parse(text)}";
+  },
+  async (string text, CancellationToken token) =>
+  {
+    await Task.Delay(5, token);
+    return $"Fast: {int.Parse(text)}";
   });
-
-IAsyncExecutable<string, string> fastest =
-  parse.Race(
-    async (int value, CancellationToken token) =>
-    {
-      await Task.Delay(50, token);
-      return $"Slow: {value}";
-    },
-    async (int value, CancellationToken token) =>
-    {
-      await Task.Delay(5, token);
-      return $"Fast: {value}";
-    });
 
 string fastestResult = await fastest.GetExecutor().Execute("42");
 // Returns "Fast: 42".
 ```
 
 ```csharp
-IAsyncExecutable<string, string> firstSuccessful =
-  parse.RaceSuccess(
-    async (int value, CancellationToken token) =>
-    {
-      await Task.Delay(5, token);
-      throw new InvalidOperationException("Provider failed");
-    },
-    async (int value, CancellationToken token) =>
-    {
-      await Task.Delay(20, token);
-      return $"Recovered: {value}";
-    });
+IAsyncExecutable<string, string> firstSuccessful = AsyncExecutable.RaceSuccess(
+  async (string text, CancellationToken token) =>
+  {
+    await Task.Delay(5, token);
+    throw new InvalidOperationException("Provider failed");
+  },
+  async (string text, CancellationToken token) =>
+  {
+    await Task.Delay(20, token);
+    return $"Recovered: {int.Parse(text)}";
+  });
 
 string recoveredResult = await firstSuccessful.GetExecutor().Execute("42");
 // Returns "Recovered: 42".
@@ -249,10 +335,10 @@ IAsyncExecutor<string, string> fastestWithCancellation =
   AsyncExecutable.Create(async (string text, CancellationToken token) =>
   {
     await Task.Delay(10, token);
-    return text;
+    return int.Parse(text);
   })
   .Race(
-    async (string value, CancellationToken token) =>
+    async (int value, CancellationToken token) =>
     {
       try
       {
@@ -265,7 +351,7 @@ IAsyncExecutor<string, string> fastestWithCancellation =
 
       return $"Slow: {value}";
     },
-    async (string value, CancellationToken token) =>
+    async (int value, CancellationToken token) =>
     {
       await Task.Delay(5, token);
       return $"Fast: {value}";
@@ -277,53 +363,6 @@ string result = await fastestWithCancellation.Execute("42");
 // Returns "Fast: 42", and `canceled` becomes true for the losing execution.
 ```
 
-## Explicit Branching
-
-For condition-based routing, start with `When(...)`, continue with `OrWhen(...)`, and finish with `OrElse(...)`.
-
-`When(...)` and `OrWhen(...)` return `Optional<T>` because each branch may decide not to handle the input.
-`OrElse(...)` closes the chain with the final fallback and returns a regular non-optional result.
-
-```mermaid
-flowchart TD
-    A[Input] --> B{When condition}
-    B -->|matched| C[Run first executable]
-    B -->|not matched| D[Optional.None]
-    C --> E[Optional value]
-    D --> F{OrWhen condition}
-    E --> G[Return current optional value]
-    F -->|matched| H[Run next executable]
-    F -->|not matched| I[Optional.None]
-    H --> J[Optional value]
-    I --> K[OrElse fallback]
-    J --> G
-    K --> L[Final non-optional result]
-```
-
-```csharp
-int state = 1;
-
-IQuery<Unit, string> stateText =
-  Executable.When(() => state == 0, () => "Init")
-    .OrWhen(() => state == 1, () => "Running")
-    .OrElse(() => "Unknown")
-  .AsQuery();
-```
-
-You can also keep the chain in its optional form when no final fallback is needed.
-
-```csharp
-IExecutable<int, Optional<string>> classify =
-  Executable.When((int value) => value < 0, value => "negative")
-    .OrWhen(value => value > 0, value => "positive");
-```
-
-This model makes the branching contract explicit:
-
-- each conditional branch may either produce a value or skip handling,
-- later branches run only when earlier ones produce `Optional.None`,
-- the final `OrElse(...)` turns the chain back into a required result.
-
 ## Composition Laws
 
 The executable API is designed so that composition stays predictable as pipelines grow.
@@ -333,12 +372,46 @@ The executable API is designed so that composition stays predictable as pipeline
 - identity: `Executable.Identity<T>()` composes without changing behavior,
 - fork distributivity: composing before a `Fork(...)` is equivalent to composing into each branch.
 
-```csharp
-IExecutable<int, int> square = Executable.Create((int x) => x * x);
-IExecutable<string, int> parse = Executable.Create((string text) => int.Parse(text));
+Composition symmetry:
 
-IExecutable<string, int> a = parse.Then(square);
-IExecutable<string, int> b = square.Compose(parse);
+```csharp
+IExecutable<int, int> f = Executable.Create((int x) => x * x);
+IExecutable<string, int> g = Executable.Create((string text) => int.Parse(text));
+
+IExecutable<string, int> left = f.Compose(g);
+IExecutable<string, int> right = g.Then(f);
+```
+
+Associativity:
+
+```csharp
+IExecutable<string, int> f = Executable.Create((string text) => int.Parse(text));
+IExecutable<int, int> g = Executable.Create((int x) => x * x);
+IExecutable<int, string> h = Executable.Create((int x) => x.ToString());
+
+IExecutable<string, string> left = f.Then(g).Then(h);
+IExecutable<string, string> right = f.Then(g.Then(h));
+```
+
+Identity:
+
+```csharp
+IExecutable<int, int> f = Executable.Create((int x) => x * x);
+IExecutable<int, int> id = Executable.Identity<int>();
+
+IExecutable<int, int> left = f.Then(id);
+IExecutable<int, int> right = id.Then(f);
+```
+
+Fork distributivity:
+
+```csharp
+IExecutable<int, int> f = Executable.Create((int x) => x + x);
+IExecutable<int, int> g = Executable.Create((int x) => x * x);
+IExecutable<string, int> h = Executable.Create((string text) => int.Parse(text));
+
+IExecutable<string, (int, int)> left = Executable.Fork(f, g).Compose(h);
+IExecutable<string, (int, int)> right = Executable.Fork(f.Compose(h), g.Compose(h));
 ```
 
 These properties are useful in practice because they let you reorder, regroup, and extract pipeline parts without

@@ -247,6 +247,19 @@ public static class ExecutableExtensions {
   }
 
   /// <summary>
+  /// Adapts an endomorphism through an isomorphism.
+  /// </summary>
+  /// <typeparam name="T1">External input and output type.</typeparam>
+  /// <typeparam name="T2">Internal input and output type of the executable.</typeparam>
+  /// <param name="executable">Executable that transforms values of type <typeparamref name="T2"/>.</param>
+  /// <param name="iso">Isomorphism used to convert values into and out of <typeparamref name="T2"/>.</param>
+  /// <returns>Executable that transforms values of type <typeparamref name="T1"/> by mapping through <paramref name="iso"/>.</returns>
+  [Pure]
+  public static IExecutable<T1, T1> MapIso<T1, T2>(this IExecutable<T2, T2> executable, IIso<T1, T2> iso) {
+    return executable.Compose((T1 t1) => iso.Forward(t1)).Then(iso.Backward);
+  }
+
+  /// <summary>
   /// Converts an executable to a handler.
   /// </summary>
   /// <returns>Handler wrapping the executable.</returns>

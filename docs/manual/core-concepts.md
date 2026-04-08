@@ -22,6 +22,8 @@ This is the foundation for reusable, strongly typed application behavior:
 Most composition starts on `IExecutable` through operators such as `Then(...)`, `Compose(...)`, `Fork(...)`, and
 `Map(...)`.
 
+For reversible transformations between two contracts, the library also provides `IIso<T1, T2>`.
+
 ## Executable Contracts
 
 On top of the executable core, the library provides specialized execution contracts for request/response and

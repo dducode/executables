@@ -253,6 +253,19 @@ public static class AsyncExecutableExtensions {
   }
 
   /// <summary>
+  /// Adapts an asynchronous endomorphism through an isomorphism.
+  /// </summary>
+  /// <typeparam name="T1">External input and output type.</typeparam>
+  /// <typeparam name="T2">Internal input and output type of the executable.</typeparam>
+  /// <param name="executable">Asynchronous executable that transforms values of type <typeparamref name="T2"/>.</param>
+  /// <param name="iso">Isomorphism used to convert values into and out of <typeparamref name="T2"/>.</param>
+  /// <returns>Asynchronous executable that transforms values of type <typeparamref name="T1"/> by mapping through <paramref name="iso"/>.</returns>
+  [Pure]
+  public static IAsyncExecutable<T1, T1> MapIso<T1, T2>(this IAsyncExecutable<T2, T2> executable, IIso<T1, T2> iso) {
+    return executable.Compose((T1 t1) => iso.Forward(t1)).Then(iso.Backward);
+  }
+
+  /// <summary>
   /// Converts an asynchronous executable to an asynchronous handler.
   /// </summary>
   /// <returns>Async handler wrapping the executable.</returns>

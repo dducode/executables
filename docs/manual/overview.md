@@ -1,22 +1,21 @@
 # Overview
 
-`Executables` is a composable .NET library for modeling application behavior as reusable executable units.
+`Executables` provides a small set of abstractions for making application behavior explicit.
 
-Instead of centering application logic around framework-specific services, handlers, or ad hoc delegate chains, the
-library gives a small set of abstractions for:
+The library is built around a few simple capabilities:
 
 - describing work,
 - composing work,
 - executing work,
 - decorating work with cross-cutting behavior.
 
-At the center of the model is the idea that commands, queries, event publishing, mapping, and branching can all be
-represented as executable pipelines with explicit input and output contracts, while validation and policy-based
-execution are applied on executors at runtime.
+Commands, queries, event publication, mapping, and branching all fit into that broader model, while validation and
+policy-based execution stay at the runtime boundary. Reversible contract adaptation can also be modeled explicitly
+through `IIso<T1, T2>`.
 
 ## What Problems It Solves
 
-The library is most useful when business logic starts spreading across UI callbacks, service methods, middleware,
+The library is most useful when application behavior starts spreading across UI callbacks, service methods, middleware,
 validators, retry wrappers, and event handlers, making execution flow harder to reuse and reason about.
 
 It is especially useful when you need to:
@@ -29,7 +28,7 @@ It is especially useful when you need to:
 
 ## Design Goals
 
-The API is built around a few core principles:
+The API is built around a few practical principles:
 
 - explicit execution instead of implicit call chains,
 - composition over inheritance,
@@ -49,12 +48,13 @@ The API is built around a few core principles:
 
 ## When Not to Use It
 
-The library is probably unnecessary when the application only needs straightforward direct method calls and does not
-benefit from composition, reuse, or cross-cutting execution rules.
+The library is a better fit for systems that benefit from explicit composition and reusable execution rules. If the
+application is small and straightforward direct method calls already express the behavior clearly, the extra abstraction
+may not add much value.
 
-It is also not intended to be:
+It is also useful to be clear about what this library is not:
 
 - a DI container,
 - a distributed messaging system,
 - a reactive stream library,
-- a full opinionated application architecture.
+- a framework that dictates the full application architecture.

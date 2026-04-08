@@ -25,8 +25,8 @@ Mixed sync/async chains are supported directly:
 - sync executable followed by async executable,
 - async executable followed by sync executable,
 - `Then(...)` and `Compose(...)` across sync/async boundaries,
-- mixed query composition with `Connect(...)`,
-- mixed command composition with `Compose(...)`.
+- query composition through the same executable operators,
+- mixed command composition with `Append(...)` and `Prepend(...)`.
 
 ```csharp
 IExecutable<string, int> parse = Executable.Create((string text) => int.Parse(text));

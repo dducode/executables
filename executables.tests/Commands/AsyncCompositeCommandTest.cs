@@ -26,7 +26,7 @@ public class AsyncCompositeCommandTest {
       })
       .AsCommand();
 
-    IAsyncCommand<Unit> composed = first.Prepend(second);
+    IAsyncCommand<Unit> composed = first.Append(second);
     Assert.True(await composed.Execute());
     Assert.True(firstExecuted);
     Assert.True(secondExecuted);
@@ -47,7 +47,7 @@ public class AsyncCompositeCommandTest {
       .Create(_ => ValueTask.FromResult(secondExecuted = true))
       .AsCommand();
 
-    IAsyncCommand<Unit> composed = first.Prepend(second);
+    IAsyncCommand<Unit> composed = first.Append(second);
     Assert.False(await composed.Execute());
     Assert.False(secondExecuted);
   }
@@ -74,7 +74,7 @@ public class AsyncCompositeCommandTest {
       })
       .AsCommand();
 
-    IAsyncCommand<Unit> composed = first.Prepend(second);
+    IAsyncCommand<Unit> composed = first.Append(second);
     Assert.False(await composed.Execute(cts.Token));
     Assert.True(firstExecuted);
     Assert.False(secondExecuted);

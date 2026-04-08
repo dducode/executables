@@ -12,14 +12,12 @@
   href: creating-api-objects.md
 - name: Composition
   href: composition.md
-- name: Handleables and Handlers
-  href: handleables-and-handlers.md
-- name: Operators
-  href: operators.md
+- name: Execution Runtime
+  href: execution-runtime.md
 - name: Policies
   href: policies.md
-- name: Context and Errors
-  href: context-and-errors.md
+- name: Handleables and Handlers
+  href: handleables-and-handlers.md
 - name: Sync and Async
   href: sync-and-async.md
 - name: Common Patterns
