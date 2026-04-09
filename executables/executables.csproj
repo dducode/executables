@@ -6,7 +6,8 @@
         <Authors>dducode</Authors>
         <Company>dducode</Company>
         <Product>executables-package</Product>
-        <PackageTags>executions;executables;handlers;pipeline;middleware;policies;validation</PackageTags>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageTags>executables;executor;composition;runtime;policies;validation;query;command;event</PackageTags>
         <RepositoryUrl>https://github.com/dducode/com.dducode.executables.git</RepositoryUrl>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -17,15 +18,7 @@
         <Nullable>disable</Nullable>
         <TargetFrameworks>net9.0;netstandard2.1;net48</TargetFrameworks>
         <LangVersion>13.0</LangVersion>
-        <PackageReleaseNotes>
-            interaction context added;
-            execution operator added;
-            policies, maps added, policy handlers deprecated;
-            handlers data transformation deprecated, executable maps used instead;
-            bugs fixed
-            executable and handleable interfaces extracted;
-            event handling changed;
-        </PackageReleaseNotes>
+        <PackageReleaseNotes>Initial release.</PackageReleaseNotes>
     </PropertyGroup>
 
     <ItemGroup>
