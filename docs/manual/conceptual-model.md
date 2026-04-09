@@ -21,6 +21,20 @@ Because of that split, one executable composition can be reused with multiple ru
 `IExecutable<TIn, TOut>` can be turned into different executors with different policies, operators, context handling,
 or result behavior, without changing the composition itself.
 
+```mermaid
+flowchart LR
+    A[IExecutable] --> B[GetExecutor]
+    B --> C[IExecutor]
+    C --> D[Policies]
+    C --> E[Context]
+    C --> F[Result]
+    C --> G[Operators]
+    D --> H[Execute]
+    E --> H
+    F --> H
+    G --> H
+```
+
 ## Commands, Queries, and Events
 
 Commands, queries, and events are treated as related interaction contracts, not as isolated patterns:
@@ -31,6 +45,17 @@ Commands, queries, and events are treated as related interaction contracts, not 
 
 Because they sit close to the same abstraction family, the same underlying logic can often be exposed through more than
 one shape.
+
+```mermaid
+flowchart TD
+    A[Executable core] --> B[Queries]
+    A --> C[Commands]
+    A --> D[Subscribers and handlers]
+    B --> E[Request/response API]
+    C --> F[Action-oriented API]
+    D --> G[Event-driven flows]
+    A --> H[Executor runtime]
+```
 
 ## Composition Over Inheritance
 
