@@ -46,6 +46,16 @@ IAsyncCommand<string> commandAsync = command.ToAsyncCommand();
 
 This makes it practical to start with sync composition and move to async only when execution actually needs it.
 
+```mermaid
+flowchart LR
+    A[IExecutable] --> B[ToAsyncExecutable]
+    B --> C[IAsyncExecutable]
+    D[IQuery] --> E[ToAsyncQuery]
+    E --> F[IAsyncQuery]
+    G[ICommand] --> H[ToAsyncCommand]
+    H --> I[IAsyncCommand]
+```
+
 ## Mixed Composition
 
 Sync and async steps can be composed directly. Once an async step appears, the resulting chain becomes async.
@@ -82,6 +92,14 @@ The same interop applies to the surrounding API:
 - queries can be promoted to async queries,
 - commands can be combined across sync/async boundaries through `Append(...)` and `Prepend(...)`,
 - runtime execution can continue on `IAsyncExecutor<TIn, TOut>` with async policies and async middleware.
+
+```mermaid
+flowchart LR
+    A[Sync executable step] --> B[Then async step]
+    B --> C[IAsyncExecutable]
+    D[Async executable step] --> E[Compose sync step]
+    E --> F[IAsyncExecutable]
+```
 
 ## Async Runtime
 

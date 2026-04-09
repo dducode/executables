@@ -241,6 +241,18 @@ IExecutor<int, int> executor = Executable
     .Fallback<InvalidOutputException>((value, _) => value));
 ```
 
+Runtime flow for that example:
+
+```mermaid
+flowchart TB
+    A[Fallback wrapper]
+    B[ValidateInput]
+    C[Executable body]
+    D[ValidateOutput]
+    A --> B --> C --> D
+    D -. InvalidOutputException .-> A
+```
+
 In this example:
 
 - input validation runs before the executable,

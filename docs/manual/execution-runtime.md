@@ -30,6 +30,20 @@ That includes:
 
 The important point is that the executable composition stays unchanged. Only the runtime wrapper changes.
 
+```mermaid
+flowchart LR
+    A[IExecutable same composition] --> B[GetExecutor]
+    B --> C[IExecutor]
+    C --> D[WithPolicy]
+    C --> E[WithContext]
+    C --> F[WithResult]
+    C --> G[SuppressException.OfType ]
+    D --> H[Validated runtime]
+    E --> I[Context-aware runtime]
+    F --> J[Result runtime]
+    G --> K[Optional runtime]
+```
+
 ## Result and Optional Wrappers
 
 `Optional<T>` and `Result<T>` represent two different runtime result shapes.
@@ -193,6 +207,16 @@ Each middleware receives:
 
 That `next` delegate is the next `Use(...)` in the chain, or the final `End(...)` executable when the chain reaches its
 end.
+
+```mermaid
+flowchart LR
+    A[Input] --> B[Use middleware 1]
+    B --> C[Use middleware 2]
+    C --> D[End executable]
+    D --> E[Result to middleware 2]
+    E --> F[Result to middleware 1]
+    F --> G[Final result]
+```
 
 ```csharp
 IExecutor<string, string> executor = Pipeline
