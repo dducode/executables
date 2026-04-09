@@ -12,8 +12,6 @@ It separates:
 That means the same logic can be reused across different application boundaries and executed with different runtime
 rules, without rewriting the core flow.
 
----
-
 ## Why Executables
 
 In real applications, behavior often gets scattered across many places:
@@ -41,8 +39,6 @@ With it, you can:
 - expose it as a query, command, event subscriber, or handler,
 - decide later how it should execute at runtime.
 
----
-
 ## What Problem It Solves
 
 `Executables` is useful when direct method calls are no longer enough because behavior needs to be:
@@ -60,8 +56,6 @@ Typical examples:
 - query and command pipelines,
 - explicit branching and fallback flows,
 - policy-based execution with retry, timeout, guards, and context propagation.
-
----
 
 ## The Core Idea
 
@@ -91,8 +85,6 @@ without changing the original composition.
 
 > Define behavior once. Run it many ways.
 
----
-
 ## Quick Example
 
 ```csharp
@@ -117,8 +109,6 @@ What happens here:
 * `WithResult()` turns success/failure into an explicit return contract.
 
 The important part is that the executable composition itself stays reusable.
-
----
 
 ## A More Realistic Example
 
@@ -148,8 +138,6 @@ This is the same composition executed through two different runtime contracts:
 `forgiving` returns `Optional<int>`.
 
 The logic is the same. Only the runtime changes.
-
----
 
 ## What You Can Build With It
 
@@ -257,8 +245,6 @@ IExecutor<string, string> executor = Pipeline
   .End(Executable.Create((string text) => text.Length));
 ```
 
----
-
 ## Why Not Just Use Methods?
 
 Direct methods are often enough for small, local, straightforward code.
@@ -274,8 +260,6 @@ Direct methods are often enough for small, local, straightforward code.
 If your codebase already stays simple and direct method calls express everything clearly, this library may be
 unnecessary.
 
----
-
 ## Why Not Just Use Delegates?
 
 Delegates are a good low-level representation of behavior, but they do not by themselves give you:
@@ -290,8 +274,6 @@ Delegates are a good low-level representation of behavior, but they do not by th
 
 `Executables` starts from delegates, but turns them into explicit reusable application primitives.
 
----
-
 ## Why Not Just Use Middleware or Polly?
 
 Middleware and resilience libraries solve important parts of the problem, but usually from specific angles.
@@ -305,8 +287,6 @@ This makes it possible to reuse the same logic across different execution enviro
 instead of only decorating execution at specific integration points.
 
 Depending on the use case, these approaches can also complement each other.
-
----
 
 ## Sync and Async Stay Aligned
 
@@ -330,8 +310,6 @@ IAsyncExecutable<string, string> asyncPipeline =
   });
 ```
 
----
-
 ## Typical Flow
 
 A common workflow looks like this:
@@ -343,8 +321,6 @@ A common workflow looks like this:
 5. apply policies, operators, branching, context, or result shaping.
 
 This keeps composition reusable and moves runtime concerns to the execution boundary.
-
----
 
 ## When to Use It
 
@@ -366,8 +342,6 @@ Good fits include:
 * boundary-heavy code with validation and fallback logic,
 * explicit runtime control around execution.
 
----
-
 ## When Not to Use It
 
 `Executables` is probably not the right tool when:
@@ -385,8 +359,6 @@ It is also useful to be clear about what this library is not:
 * not a reactive stream library,
 * not a framework that dictates your entire architecture.
 
----
-
 ## Feature Overview
 
 * strongly typed executable composition
@@ -402,8 +374,6 @@ It is also useful to be clear about what this library is not:
 * tuple-based composition and partial execution
 * reversible adaptation with IIso<T1, T2>
 
----
-
 ## Installation
 
 ```powershell
@@ -416,8 +386,6 @@ Supported target frameworks:
 * `netstandard2.1`
 * `net48`
 
----
-
 ## Documentation
 
 * [Manual](https://dducode.github.io/executables/manual/introduction.html)
@@ -425,8 +393,6 @@ Supported target frameworks:
 * [Conceptual Model](https://dducode.github.io/executables/manual/conceptual-model.html)
 * [Composition](https://dducode.github.io/executables/manual/composition.html)
 * [Execution Runtime](https://dducode.github.io/executables/manual/execution-runtime.html)
-
----
 
 ## Local Documentation
 
@@ -436,8 +402,6 @@ The repository uses a local `DocFX` tool manifest.
 dotnet tool restore
 dotnet docfx docs\docfx.json --serve
 ```
-
----
 
 ## Project Files
 
