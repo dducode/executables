@@ -24,16 +24,16 @@ jobs:
           dotnet-version: 9.0.312
 
       - name: Restore
-        run: dotnet restore executables/executables.csproj
+        run: dotnet restore executables\executables.csproj
 
       - name: Build
-        run: dotnet build executables/executables.csproj --configuration Release --no-restore
+        run: dotnet build executables\executables.csproj --configuration Release --no-restore
 
       - name: Pack
-        run: dotnet pack executables/executables.csproj --configuration Release --no-build --no-restore
+        run: dotnet pack executables\executables.csproj --configuration Release --no-build --no-restore
 
       - name: Publish to GitHub Packages
-        run: dotnet nuget push "executables/bin/Release/*.nupkg" --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" --api-key "${{ secrets.GITHUB_TOKEN }}" --skip-duplicate
+        run: dotnet nuget push "executables\bin\Release\*.nupkg" --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" --api-key "${{ secrets.GITHUB_TOKEN }}" --skip-duplicate
 
       - name: Publish to NuGet.org
-        run: dotnet nuget push "executables/bin/Release/*.nupkg" --source "https://api.nuget.org/v3/index.json" --api-key "${{ secrets.NUGET_API_KEY }}" --skip-duplicate
+        run: dotnet nuget push "executables\bin\Release\*.nupkg" --source "https://api.nuget.org/v3/index.json" --api-key "${{ secrets.NUGET_API_KEY }}" --skip-duplicate
