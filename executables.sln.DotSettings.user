@@ -1,0 +1,172 @@
+﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003AAssert_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003FUsers_003FDenis_003FAppData_003FRoaming_003FJetBrains_003FRider2025_002E3_003Fresharper_002Dhost_003FDecompilerCache_003Fdecompiler_003F285675a6903d43ca89ed13e37e2bfe3c2d4d0_003Fe7_003F1f5647d0_003FAssert_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003ABehaviorSubject_00601_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003FUsers_003FDenis_003FAppData_003FRoaming_003FJetBrains_003FRider2024_002E3_003Fresharper_002Dhost_003FDecompilerCache_003Fdecompiler_003F3b8a3d06763744718fba18c6f47206ff92400_003F4a_003F247ea012_003FBehaviorSubject_00601_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003ABooleanAsserts_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003FUsers_003FDenis_003FAppData_003FRoaming_003FJetBrains_003FRider2025_002E3_003Fresharper_002Dhost_003FSourcesCache_003Fbfff78ecaa39c818519fc918bb2d4bbdca6ad93d7170f5cf325f67ccd0b97d43_003FBooleanAsserts_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003ADefaultInterpolatedStringHandler_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003FUsers_003FDenis_003FAppData_003FRoaming_003FJetBrains_003FRider2025_002E3_003Fresharper_002Dhost_003FSourcesCache_003Fc1c946eaa6d8ddaaea1b63e936ca8ed2791d9316c5b025a41d445891e8a59ecd_003FDefaultInterpolatedStringHandler_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003AEnumerable_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003FUsers_003FDenis_003FAppData_003FRoaming_003FJetBrains_003FRider2025_002E3_003Fresharper_002Dhost_003FDecompilerCache_003Fdecompiler_003F42006b5ce8834f2992903a832ccb1707a0938_003Fb5_003F469d15b1_003FEnumerable_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003AExceptionAsserts_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003FUsers_003FDenis_003FAppData_003FRoaming_003FJetBrains_003FRider2025_002E3_003Fresharper_002Dhost_003FSourcesCache_003F47921adef6414a816a08bfc17edfc0ef70baa3a6d7a6c94f9e56682a1d1c_003FExceptionAsserts_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003AFactAttribute_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003FUsers_003FDenis_003FAppData_003FRoaming_003FJetBrains_003FRider2025_002E3_003Fresharper_002Dhost_003FSourcesCache_003Fa0bb57407e64e473814b6906c6e2a4cd6622c898e843bb759436eacf23a_003FFactAttribute_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003AIAsyncEnumerator_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003FUsers_003FDenis_003FAppData_003FRoaming_003FJetBrains_003FRider2025_002E3_003Fresharper_002Dhost_003FSourcesCache_003F41cc61bcbc19425f8f9018ba4b79c072e8e918_003F_005F6ac65_003FIAsyncEnumerator_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003AList_00601_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003FUsers_003FDenis_003FAppData_003FRoaming_003FJetBrains_003FRider2024_002E3_003Fresharper_002Dhost_003FDecompilerCache_003Fdecompiler_003F16227fefc7024ef6bd64d4804436db67dd38_003Fb8_003F622b809f_003FList_00601_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003AMethodBaseInvoker_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003FUsers_003FDenis_003FAppData_003FRoaming_003FJetBrains_003FRider2025_002E3_003Fresharper_002Dhost_003FSourcesCache_003F69ba5438e03a0e3a5d2f133f37405f9e32f9e0abb1fbe0a8cb7145514ff85f_003FMethodBaseInvoker_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003ANetworkStream_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003FUsers_003FDenis_003FAppData_003FRoaming_003FJetBrains_003FRider2025_002E3_003Fresharper_002Dhost_003FSourcesCache_003F5db1255c57d73fbeb45f13c6a05a44abd51453dd4796ef3c277872a1c6eb67_003FNetworkStream_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003AObject_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003FUsers_003FDenis_003FAppData_003FRoaming_003FJetBrains_003FRider2025_002E3_003Fresharper_002Dhost_003FDecompilerCache_003Fdecompiler_003F7019dab993da41e0a0259a4be7d6aa69531820_003F76_003F159b46f6_003FObject_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003AObserver_00601_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003FUsers_003FDenis_003FAppData_003FRoaming_003FJetBrains_003FRider2024_002E3_003Fresharper_002Dhost_003FDecompilerCache_003Fdecompiler_003F3b8a3d06763744718fba18c6f47206ff92400_003Fda_003F2dc5a32d_003FObserver_00601_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003ARecord_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003FUsers_003FDenis_003FAppData_003FRoaming_003FJetBrains_003FRider2025_002E3_003Fresharper_002Dhost_003FSourcesCache_003Fbea8c41514fe19b15a2e9a98f2116d6d3effa32491c5349cfda989bc9f393_003FRecord_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003AResult_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003FUsers_003FDenis_003FAppData_003FRoaming_003FJetBrains_003FRider2024_002E3_003Fresharper_002Dhost_003FDecompilerCache_003Fdecompiler_003F3b8a3d06763744718fba18c6f47206ff92400_003F3f_003F2cf7f191_003FResult_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003ATaskAsyncEnumerableExtensions_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003FUsers_003FDenis_003FAppData_003FRoaming_003FJetBrains_003FRider2025_002E3_003Fresharper_002Dhost_003FSourcesCache_003F80ad4493f42c6d1b72ab8f7118295a3c32e6fe94346edf912b2717d93ac14022_003FTaskAsyncEnumerableExtensions_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003ATestInvoker_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003FUsers_003FDenis_003FAppData_003FRoaming_003FJetBrains_003FRider2024_002E3_003Fresharper_002Dhost_003FSourcesCache_003F5e14a4e27990972fa4ae94975603bd298aaf328ee083c03b10569ee4724d57_003FTestInvoker_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003ATimeoutException_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003FUsers_003FDenis_003FAppData_003FRoaming_003FJetBrains_003FRider2025_002E3_003Fresharper_002Dhost_003FSourcesCache_003Fcd2c3e908f4c4a01186d41ca3de63286b1459447d4671c3daa93b8f1d71974_003FTimeoutException_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=C74EB7E5_002D15BD_002D4D77_002DB33C_002D3C08A0E29930_002Fd_003ACommands_002Ff_003AAsyncCommandsTest_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
+	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/UserRules/=a0b4bc4d_002Dd13b_002D4a37_002Db37e_002Dc9c6864e4302/@EntryIndexedValue">&lt;Policy&gt;&lt;Descriptor Staticness="Any" AccessRightKinds="Any" Description="Types and namespaces"&gt;&lt;ElementKinds&gt;&lt;Kind Name="NAMESPACE" /&gt;&lt;Kind Name="CLASS" /&gt;&lt;Kind Name="STRUCT" /&gt;&lt;Kind Name="ENUM" /&gt;&lt;Kind Name="DELEGATE" /&gt;&lt;/ElementKinds&gt;&lt;/Descriptor&gt;&lt;Policy Inspect="True" WarnAboutPrefixesAndSuffixes="False" Prefix="" Suffix="" Style="AaBb_AaBb" /&gt;&lt;/Policy&gt;</s:String>
+	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/UserRules/=c85a0503_002D4de2_002D40f1_002D9cd6_002Da4054c05d384/@EntryIndexedValue">&lt;Policy&gt;&lt;Descriptor Staticness="Any" AccessRightKinds="Any" Description="Properties"&gt;&lt;ElementKinds&gt;&lt;Kind Name="PROPERTY" /&gt;&lt;/ElementKinds&gt;&lt;/Descriptor&gt;&lt;Policy Inspect="True" WarnAboutPrefixesAndSuffixes="False" Prefix="" Suffix="" Style="AaBb" /&gt;&lt;/Policy&gt;</s:String>
+	<s:String x:Key="/Default/Environment/AssemblyExplorer/XmlDocument/@EntryValue">&lt;AssemblyExplorer&gt;&#xD;
+  &lt;Assembly Path="C:\Users\Denis\.nuget\packages\xunit.extensibility.core\2.9.2\lib\netstandard1.1\xunit.core.dll" /&gt;&#xD;
+  &lt;Assembly Path="C:\Users\Denis\.nuget\packages\system.threading.tasks.extensions\4.6.3\lib\net462\System.Threading.Tasks.Extensions.dll" /&gt;&#xD;
+&lt;/AssemblyExplorer&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/CreateUnitTestDialog/TestProjectMapping/=24B79985_002D074B_002D4FE6_002DA0E0_002DF15CEB1A7829/@EntryIndexedValue">C74EB7E5-15BD-4D77-B33C-3C08A0E29930</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/CreateUnitTestDialog/TestProjectMapping/=E8B8DF54_002DB2F4_002D4C8E_002D990E_002D14DC845FAEB2/@EntryIndexedValue">AFDE3D79-674A-4C96-A82D-07C0D8F4619E</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/CreateUnitTestDialog/TestTemplateMapping/=xUnit/@EntryIndexedValue">33ff99d8-b1ad-4ed5-a4fd-376b97c2c841</s:String>
+	<s:Boolean x:Key="/Default/Environment/UnitTesting/CreateUnitTestDialog/ShowAdvancedOptions/@EntryValue">True</s:Boolean>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=459f58c6_002D2ba6_002D421c_002Da423_002Dac6a18db81a4/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="UndoRedoTest" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;TestAncestor&gt;&#xD;
+    &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Commands.CommandContextTest.UndoRedoTest&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Handlers.PipelineHandlerTest.PipelineWithDifferentTypesTest&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Handlers.PipelineHandlerTest.NestedInvocationTest&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Policies.PolicyTest.PolicyQueryTest&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Validation.ValidationPolicyTest.ValidateRequestTest&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.HandlersFactoryTest.IdentityHandlerTest&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.Handlers.AsyncLazyHandlerTest.ProvideNullHandlerTest&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.Handlers.AsyncLazyHandlerTest&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.Handlers.AsyncDynamicHandlerTest.Cancel&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.Queries.QueryTest.GetData&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.Queries.AsyncQueryTest&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.Queries.AsyncProxyQueryTest.SendRequest&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.Queries.AsyncProxyQueryTest.Cancel&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.Handlers.AsyncAutoDisposeHandlerTest&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.Handlers.AutoDisposeHandlerTest.DisposeOnException&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.Handlers.AsyncDynamicHandlerTest.ProvideNullHandler&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.Handlers.AsyncDynamicHandlerTest.DisposedHandler&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.Handlers.AsyncDynamicHandlerTest.MultiplyHandle&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.Handlers.DynamicHandlerTest&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.Handlers.LazyHandlerTest.DisposeHandler&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.HandlerTest.DisposeHandler&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.AsyncHandlerTest.DisposeHandler&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.AsyncHandlerTest.Cancel&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.Handlers.AsyncProxyHandlerTest.DisposeInnerHandler&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.ConditionalHandlerTest.DisposeInnerHandlers&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.ConditionalHandlerTest&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.Handlers.IdentityHandlerTest.ReturnIdentityValue&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.Handlers.LazyHandlerTest.DisposeInnerHandler&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.Commands.CommandTest&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.Commands.AsyncCommandTest&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.Commands.AsyncProxyCommandTest.Cancel&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.Events.EventTest.Publish&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.Events.EventTest.SimplePublish&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.Events.EventTest.OneSubscriberThrowsException&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.Events.EventTest.TwoSubscribersThrowsException&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.Events.EventTest.UnsubscribedHandlersNotReceive&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.Events.EventTest.StressTest&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.Events.EventTest.Resubscription&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.Events.EventTest&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.Queries.QueryTest.AddHandlerWhenOtherExists&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.Queries.QueryTest.PassNullHandler&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.Queries.QueryTest&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.Handlers.AsyncConditionalHandlerTest.DisposeInnerHandlers&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.BranchBuilderTest&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.AsyncBranchBuilderTest&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.CompositeDisposableTest.FirstDisposableThrowsException&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.CompositeDisposableTest.BothDisposablesThrowsException&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.CompositeDisposableTest.SecondDisposableThrowsException&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.DisposableTest.PassNullDisposable&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.CompositeDisposableTest.ComposeWithNullDisposable&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.DisposableBagTest&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.DisposeHandleTest.DoubleDispose&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.DisposeHandleTest&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.CompositeDisposableTest.DoubleDispose&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.HandleableTest.PassNullArguments&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.HandleableTest.PassNullHandler&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.AsyncMergedHandleableTest.PassNullHandler&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.MergedHandleableTest.FirstHandleableThrowsException&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.MergedHandleableTest.PassNullHandler&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.MergedHandleableTest.SecondHandleableThrowsException&lt;/TestId&gt;&#xD;
+  &lt;/TestAncestor&gt;&#xD;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=5523ea35_002D3c3f_002D4057_002D984b_002Db569cfad7223/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="ChainedHandlersTest" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;Or&gt;&#xD;
+    &lt;TestAncestor&gt;&#xD;
+      &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Handlers.UseHandlerTest.NestedInvocationTest&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Handlers.UseHandlerTest.NestedInvocationWithDifferentTypesTest&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Transformation.ListTransformerTest.FilterListTest&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Transformation.TransformHandlerTest.FilterListTest&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Commands.ReversibleCommandTest.UndoRedoTest&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Handlers.PipelineHandlerTest.NestedInvocationTest&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Handlers.PipelineHandlerTest.NestedInvocationWithDifferentTypesTest&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Handlers.PipelineHandlerTest.PipelineWithDifferentTypesTest&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.ConditionalHandlerTest.NestedBranchTest&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Transformation.SplitConcatStringsTransformerTest.SplitTest&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Transformation.SplitConcatStringsTransformerTest.ConcatTest&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Transformation.SplitConcatStringsTransformerTest&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.Queries.AsyncQueryTest.Test&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.Commands.AsyncCommandTest.ExecutionCancelTest&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Commands.UndoRedoCommandTest.UndoRedoTest&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Commands.CommandContextTest.UndoRedoTest&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Commands.ReversibleCommandTest.SetVariableValueTest&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Commands.ReversibleCommandTest.AddNumsToListTest&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Commands.ReversibleCommandTest.AssigneeVariableTest&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Policies.PolicyTest.PolicyQueryTest&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Validation.ValidationPolicyTest.ValidateRequestTest&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.HandlersFactoryTest.IdentityHandlerTest&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.HandlersFactoryTest.LazyHandlerTest&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.HandlersFactoryTest.AsyncLazyHandlerTest&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.HandlersFactoryTests.DynamicHandlerTest&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.HandlersFactoryTests.AsyncDynamicHandlerTest&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.HandlersFactoryTests.ThrowArgumentNullExceptionTest&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.Handlers.LazyHandlerTest.ThrowDisposedExceptionTest&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.Handlers.LazyHandlerTest&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.Handlers.AsyncLazyHandlerTest&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.Handlers.DynamicHandlerTest.DisposedHandlerTest&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.Handlers.DynamicHandlerTest&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.Handlers.AsyncDynamicHandlerTest&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.HandlersFactoryTests&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.Queries.QueryTest.HandlerLifecycleTest&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.Handlers.AutoDisposeHandlerTest.DisposeOnExceptionTest&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.Handlers.ConditionalHandlerTest.DisposeInnerHandlers&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.Handlers.AsyncHandlerTest&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.Queries.QueryTest.HandlerLifecycle&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::AFDE3D79-674A-4C96-A82D-07C0D8F4619E::net9.0::Interactions.Core.Tests.Queries.AsyncQueryTest.HandlerLifecycle&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Commands.CommandHistoryTest.WriteToHistory&lt;/TestId&gt;&#xD;
+    &lt;/TestAncestor&gt;&#xD;
+    &lt;Project Location="C:\.NETProjects\interactions\interactions.core.tests" Presentation="&amp;lt;interactions.core.tests&amp;gt;" /&gt;&#xD;
+  &lt;/Or&gt;&#xD;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=73f6c665_002D3f8f_002D4684_002Da393_002D3079e4b40a1f/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="AddItemToList" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;Or&gt;&#xD;
+    &lt;Project Location="C:\.NETProjects\interactions\interactions.core.tests" Presentation="&amp;lt;interactions.core.tests&amp;gt;" /&gt;&#xD;
+    &lt;TestAncestor&gt;&#xD;
+      &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Policies.PreventReentrancePolicyTest&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Policies.AsyncPreventReentrancePolicyTest.MultiplyExecute&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Policies.AsyncPreventReentrancePolicyTest.NestedExecution&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Policies.AsyncPreventReentrancePolicyTest.SequentialExecute&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Policies.AsyncPreventReentrancePolicyTest&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Policies.FallbackPolicyTest.RegularExecution&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Policies.FallbackPolicyTest.ReturnFallbackOnException&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Policies.FallbackPolicyTest.ThrowExceptionFromFallbackHandler&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Policies.AsyncFallbackPolicyTest&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Policies.OptionalPolicyTest.SwitchPolicyByCondition&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Policies.AsyncOptionalPolicyTest.SwitchPolicyByCondition&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Handlers.AnonymousDisposeHandlerTest.DisposeHandler&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Handlers.AnonymousDisposeHandlerTest.InvokeInnerHandler&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Handlers.AnonymousDisposeHandlerTest&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Handlers.AsyncAnonymousDisposeHandlerTest.InvokeInnerHandler&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Handlers.AsyncAnonymousDisposeHandlerTest.DisposeHandler&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::C74EB7E5-15BD-4D77-B33C-3C08A0E29930::net9.0::Interactions.Tests.Context.InteractionContextTest.EnableGuardOnRelease&lt;/TestId&gt;&#xD;
+    &lt;/TestAncestor&gt;&#xD;
+  &lt;/Or&gt;&#xD;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=c554cf46_002D4698_002D456c_002D8ffd_002D8b1a5b2a5cac/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="SecondHandleableThrowsException" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;Project Location="C:\.NETProjects\executables\executables.tests" Presentation="&amp;lt;executables.tests&amp;gt;" /&gt;&#xD;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=eb53d67b_002D0b0f_002D42e9_002D8e78_002Df87e6b7be184/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="PassNullProvider" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;Project Location="C:\.NETProjects\executables\executables.tests" Presentation="&amp;lt;executables.tests&amp;gt;" /&gt;&#xD;
+&lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>

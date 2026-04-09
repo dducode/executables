@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <PackageId>Executables</PackageId>
+        <Version>1.0.0</Version>
+        <Authors>dducode</Authors>
+        <Company>dducode</Company>
+        <Product>executables-package</Product>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageTags>executables;executor;composition;runtime;policies;validation;query;command;event</PackageTags>
+        <RepositoryUrl>https://github.com/dducode/com.dducode.executables.git</RepositoryUrl>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NoWarn>$(NoWarn);CS1591</NoWarn>
+
+        <RootNamespace>Executables</RootNamespace>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>disable</Nullable>
+        <TargetFrameworks>net9.0;netstandard2.1;net48</TargetFrameworks>
+        <LangVersion>13.0</LangVersion>
+        <PackageReleaseNotes>Initial release.</PackageReleaseNotes>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.6.3"/>
+        <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+            <_Parameter1>executables.tests</_Parameter1>
+        </AssemblyAttribute>
+    </ItemGroup>
+
+</Project>
