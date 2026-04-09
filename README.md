@@ -68,10 +68,10 @@ composition or reusable execution rules.
 
 ## Documentation
 
-- [Manual](docs/manual/introduction.md)
-- [Getting Started](docs/manual/getting-started.md)
-- [Composition](docs/manual/composition.md)
-- [Execution Runtime](docs/manual/execution-runtime.md)
+- [Manual](https://dducode.github.io/executables/manual/introduction.html)
+- [Getting Started](https://dducode.github.io/executables/manual/getting-started.html)
+- [Composition](https://dducode.github.io/executables/manual/composition.html)
+- [Execution Runtime](https://dducode.github.io/executables/manual/execution-runtime.html)
 
 ## Installation
 
