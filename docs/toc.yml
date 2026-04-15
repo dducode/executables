@@ -2,3 +2,7 @@
   href: manual/
 - name: API
   href: api/
+- name: Changes
+  href: CHANGES.md
+- name: License
+  href: LICENSE.md
